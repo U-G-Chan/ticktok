@@ -33,11 +33,8 @@ export default defineComponent({
 
 <style scoped>
 .foot-nav {
-    position: fixed;
-    bottom: 0;
-    left: 0;
+    flex: 0.06;
     width: 100%;
-    height: 6%;
     display: flex;
     justify-content: space-around;
     align-items: center;
@@ -67,15 +64,14 @@ export default defineComponent({
 }
 
 .upload-btn {
-    width: 40px;
-    height: 40px;
+    width: 24px;
+    height: 30px;
     border: 2px solid #fff;
-    border: 50%;
     display: flex;
     justify-content: center;
     align-items: center;
     flex: 1;
-    padding: 0;
+    padding: 0 2px;
     margin: 0 10px;
     transition: all 0.3s ease;
 }
