@@ -6,7 +6,7 @@
         <router-link to="/friend" class="nav-item" active-class="active">
             <span>朋友</span>
         </router-link>
-        <router-link to="/upload" class="nav-item" active-class="active">
+        <router-link to="/upload" class="nav-item upload-btn" active-class="active">
             <span class="upload-icon">+</span>
         </router-link>
         <router-link to="/chat" class="nav-item" active-class="active">
@@ -48,11 +48,36 @@ export default defineComponent({
 .nav-item {
     color: #fff;
     text-decoration: none;
-    font-size: 14px;
+    font-size: 16px;
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: center;
     cursor: pointer;
+    height: 100%;
+    padding: 0 15px;
+    flex: 1;
+    transition: all 0.3s ease;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+}
+
+.nav-item:active {
+    opacity: 0.7;
+}
+
+.upload-btn {
+    width: 40px;
+    height: 40px;
+    border: 2px solid #fff;
+    border: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex: 1;
+    padding: 0;
+    margin: 0 10px;
+    transition: all 0.3s ease;
 }
 
 .upload-icon {
@@ -62,5 +87,11 @@ export default defineComponent({
 
 .active {
     color: #fe2c55;
+    transform: scale(1.1);
+}
+
+.upload-btn.active {
+    border-color: #fe2c55;
+    transform: scale(1.1);
 }
 </style>

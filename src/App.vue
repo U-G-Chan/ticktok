@@ -41,7 +41,7 @@ html, body, #app {
 
 .container {
   width: 100%;
-  min-height: 94vh;
+  min-height: 93%;
   overflow-y: auto;
   position: relative;
   z-index: 1;
