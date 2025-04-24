@@ -6,7 +6,7 @@
 </template>
 
 <script setup lang="ts">
-import HeadNav from './components/HeadNav.vue'
+import HeadNav from './components/head-nav/HeadNav.vue'
 </script>
 
 <style scoped>
