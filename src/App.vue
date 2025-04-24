@@ -1,26 +1,100 @@
 <template>
-  <div class="container">
-    <router-view></router-view>
+  <div class="app">
+    <div class="middle" :class="{ 'menu-open': showSideMenu }">
+      <div class="container">
+        <router-view></router-view>
+      </div>
+      <FootNav />
+    </div>
+    <div class="side-menu-container" :class="{ 'menu-open': showSideMenu }">
+      <side-menu class="side-menu" />
+      <div class="side-menu-mask" @click="toggleSideMenu"></div>
+    </div>
   </div>
-  <FootNav />
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { defineComponent, ref, provide } from 'vue'
 import FootNav from '@/components/FootNav.vue'
+import SideMenu from '@/components/SideMenu.vue'
 
 export default defineComponent({
   name: 'App',
   components: {
-    FootNav
+    FootNav,
+    SideMenu
+  },
+  setup() {
+    const showSideMenu = ref(false)
+    
+    const toggleSideMenu = () => {
+      showSideMenu.value = !showSideMenu.value
+    }
+
+    // 提供给子组件使用
+    provide('toggleSideMenu', toggleSideMenu)
+    
+    return {
+      showSideMenu,
+      toggleSideMenu
+    }
   }
 })
 </script>
 
 <style>
+.app {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  position: relative;
+}
+
+.middle {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background-color: #121212;
+  transition: transform 0.3s ease;
+  position: relative;
+  z-index: 1;
+}
+
 .container {
   flex: 0.94;
   width: 100%;
   overflow-y: auto;
+}
+
+.side-menu-container {
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  transition: transform 0.3s ease;
+  z-index: 0;
+}
+
+.side-menu {
+  width: 70%;
+  height: 100%;
+  background: #fff;
+}
+
+.side-menu-mask {
+  width: 30%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.middle.menu-open {
+  transform: translateX(70%);
+}
+
+.side-menu-container.menu-open {
+  transform: translateX(100%);
 }
 </style>
