@@ -14,15 +14,15 @@ const router = createRouter({
       children: [
         {
           path: 'blog',
-          component: () => import('@/pages/home/blog.vue')
+          component: () => import('@/pages/home/components/blog')
         },
         {
           path: 'mall',
-          component: () => import('@/pages/home/mall.vue')
+          component: () => import('@/pages/home/components/mall')
         },
         {
           path: 'recommend',
-          component: () => import('@/pages/home/recommend.vue')
+          component: () => import('@/pages/home/components/recommend')
         }
       ]
     },
@@ -33,22 +33,22 @@ const router = createRouter({
     {
       path: "/friend",
       name: "Friend",
-      component: () => import("@/pages/friend/index.vue")
+      component: () => import("@/pages/friend")
     },
     {
       path: "/upload",
       name: "Upload",
-      component: () => import("@/pages/upload/index.vue")
+      component: () => import("@/pages/upload")
     },
     {
       path: "/chat",
       name: "Chat",
-      component: () => import("@/pages/chat/index.vue")
+      component: () => import("@/pages/chat")
     },
     {
       path: "/me",
       name: "Me",
-      component: () => import("@/pages/me/index.vue")
+      component: () => import("@/pages/me")
     }
   ]
 })
