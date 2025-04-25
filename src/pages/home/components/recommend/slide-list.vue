@@ -1,12 +1,8 @@
 <template>
   <div class="slide-list" ref="slideListRef">
     <div class="slide-container" :style="containerStyle">
-      <slide-item
-        v-for="(item, index) in slideItemBuffer"
-        :key="item.id"
-        :content-type="item.contentType"
-        :style="getItemStyle(index)"
-      >
+      <slide-item v-for="(item, index) in slideItemBuffer" :key="item.id" :content-type="item.contentType"
+        :style="getItemStyle(index)">
         <template #default>
           <component :is="getContentComponent(item.contentType)" :data="item" />
         </template>
@@ -69,11 +65,11 @@ export default defineComponent({
     // 获取更多滑动项
     const getMoreSlideItems = async () => {
       if (slideItemBuffer.value.length === 0) return
-      
+
       // 获取最后一个元素的 id，并转换为数字
       const lastItemId = parseInt(slideItemBuffer.value[slideItemBuffer.value.length - 1].id)
       const newItems = await getSlideItemsData(lastItemId)
-      
+
       // 如果超过最大缓存大小，移除头部数据
       if (slideItemBuffer.value.length + newItems.length > maxBufferSize.value) {
         // 计算需要移除的数据量
@@ -119,22 +115,22 @@ export default defineComponent({
 
     const handleTouchMove = (e: TouchEvent) => {
       if (!isDragging.value) return
-      
+
       const deltaY = e.touches[0].clientY - startY.value
       const deltaX = Math.abs(e.touches[0].clientX - startX.value)
-      
+
       if (deltaX > Math.abs(deltaY)) return
-      
+
       const sensitivity = 0.5
       currentY.value = startY.value + deltaY * sensitivity
     }
 
     const handleTouchEnd = () => {
       if (!isDragging.value) return
-      
+
       const deltaY = currentY.value - startY.value
       const singleItemHeight = (slideListRef.value?.clientHeight || 0) / 5
-      
+
       if (Math.abs(deltaY) > singleItemHeight * 0.5) {
         if (deltaY > 0 && currentIndex.value > 0) {
           currentIndex.value--
@@ -146,7 +142,7 @@ export default defineComponent({
           }
         }
       }
-      
+
       isDragging.value = false
     }
 
@@ -196,4 +192,4 @@ export default defineComponent({
   top: 0;
   left: 0;
 }
-</style> 
+</style>

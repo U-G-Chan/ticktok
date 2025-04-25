@@ -5,7 +5,15 @@ const mockData: SlideItemData[] = [
   {
     id: '1',
     contentType: 'video',
-    title: '视频内容 1'
+    title: '汤姆和杰瑞的日常',
+    author: '大漂亮',
+    videoUrl: '/src/assets/data/video-demo.mp4',
+    avatar: '/src/assets/images/avatar.jpg',
+    likes: 347,
+    comments: 89,
+    stars: 1523,
+    forwards: 19000,
+    labels: ['猫和老鼠', '汤姆和杰瑞', '童年动画', '我在抖音看动画', '我的汤姆猫短片动画']
   },
   {
     id: '2',
