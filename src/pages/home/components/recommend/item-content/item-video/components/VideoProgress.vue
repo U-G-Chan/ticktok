@@ -103,7 +103,7 @@ onUnmounted(() => {
   bottom: 0;
   left: 0;
   right: 0;
-  height: 44px;
+  height: 30px;
   padding: 0 12px;
   display: flex;
   align-items: center;

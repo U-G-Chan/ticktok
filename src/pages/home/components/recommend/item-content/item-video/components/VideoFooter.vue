@@ -4,11 +4,11 @@
       <a href="#" class="author-name">@{{ author }}</a>
     </div>
     <div class="content">
-      <p class="title" :class="{ 'truncated': isTruncated }">{{ title }}</p>
-      <div class="labels">
+      <div class="text-content">
+        <span class="title" :class="{ 'truncated': isTruncated }">{{ title }}</span>
         <span v-for="(label, index) in labels" :key="index" class="label">#{{ label }}</span>
+        <span v-if="isTruncated" class="expand-btn">展开</span>
       </div>
-      <span v-if="isTruncated" class="expand-btn">展开</span>
     </div>
   </div>
 </template>
@@ -38,9 +38,8 @@ const opacityStyle = computed(() => {
 <style scoped>
 .video-footer {
   position: absolute;
-  left: 12px;
-  bottom: 80px;
-  max-width: calc(100% - 100px);
+  bottom: 5%;
+  max-width: calc(100% - 80px);
   z-index: 1;
   padding: 8px 12px;
   border-radius: 8px;
@@ -63,13 +62,17 @@ const opacityStyle = computed(() => {
   position: relative;
 }
 
-.title {
+.text-content {
+  display: inline;
   color: #fff;
   font-size: 14px;
   line-height: 1.4;
-  margin-bottom: 4px;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
   word-break: break-word;
+}
+
+.title {
+  margin-right: 4px;
 }
 
 .title.truncated {
@@ -80,17 +83,8 @@ const opacityStyle = computed(() => {
   overflow: hidden;
 }
 
-.labels {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-bottom: 2px;
-}
-
 .label {
-  color: #fff;
-  font-size: 13px;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  margin-right: 8px;
   opacity: 0.85;
 }
 
@@ -98,12 +92,15 @@ const opacityStyle = computed(() => {
   display: inline-block;
   color: #fff;
   font-size: 12px;
-  margin-left: 4px;
   opacity: 0.8;
   cursor: pointer;
-  padding: 2px 6px;
+  padding: 1px 6px;
   background-color: rgba(255, 255, 255, 0.15);
   border-radius: 4px;
   backdrop-filter: blur(4px);
+  line-height: inherit;
+  margin-left: 4px;
+  position: relative;
+  top: -1px;
 }
 </style> 

@@ -78,7 +78,7 @@ const toggleLike = () => {
 .video-sidebar {
   position: absolute;
   right: 12px;
-  bottom: 90px;
+  bottom: 5%;
   display: flex;
   flex-direction: column;
   align-items: center;
