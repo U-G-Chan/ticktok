@@ -12,7 +12,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, computed, onMounted, onUnmounted, defineAsyncComponent, watch } from 'vue'
+import { defineComponent, ref, computed, onMounted, onUnmounted, defineAsyncComponent } from 'vue'
 import { getSlideItems } from '@/api/slide'
 import type { SlideItemData } from '@/types/slide'
 
