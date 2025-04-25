@@ -2,7 +2,7 @@
   <div class="slide-list" ref="slideListRef">
     <div class="slide-container" :style="containerStyle">
       <slide-item
-        v-for="(item, index) in items"
+        v-for="(item, index) in slideItemBuffer"
         :key="item.id"
         :content-type="item.contentType"
         :style="getItemStyle(index)"
@@ -17,17 +17,13 @@
 
 <script lang="ts">
 import { defineComponent, ref, computed, onMounted, onUnmounted, defineAsyncComponent } from 'vue'
+import { getSlideItems } from '@/api/slide'
+import type { SlideItemData } from '@/types/slide'
+
 const SlideItem = defineAsyncComponent(() => import('./slide-item.vue'))
 const VideoContent = defineAsyncComponent(() => import('./video-content.vue'))
 const PictureContent = defineAsyncComponent(() => import('./picture-content.vue'))
 const AdvertisementContent = defineAsyncComponent(() => import('./advertisement-content.vue'))
-
-interface SlideItemData {
-  id: string
-  contentType: 'video' | 'picture' | 'advertisement'
-  title: string
-  [key: string]: any
-}
 
 export default defineComponent({
   name: 'SlideList',
@@ -38,17 +34,13 @@ export default defineComponent({
     AdvertisementContent
   },
   props: {
-    cacheSize: {
+    pageSize: {
       type: Number,
       default: 5
     },
     defaultIndex: {
       type: Number,
-      default: 2
-    },
-    items: {
-      type: Array as () => SlideItemData[],
-      required: true
+      default: 0
     }
   },
   setup(props) {
@@ -59,6 +51,42 @@ export default defineComponent({
     const isDragging = ref(false)
     const startX = ref(0)
     const itemHeight = ref(0)
+    const slideItemBuffer = ref<SlideItemData[]>([])
+    const maxBufferSize = ref(props.pageSize * 3)
+
+    // 获取滑动项数据
+    const getSlideItemsData = async (startIndex: number) => {
+      return await getSlideItems(startIndex, props.pageSize)
+    }
+
+    // 刷新滑动列表
+    const refreshSlideList = async () => {
+      slideItemBuffer.value = []
+      const items = await getSlideItemsData(0)
+      slideItemBuffer.value = items
+    }
+
+    // 获取更多滑动项
+    const getMoreSlideItems = async () => {
+      if (slideItemBuffer.value.length === 0) return
+      
+      // 获取最后一个元素的 id，并转换为数字
+      const lastItemId = parseInt(slideItemBuffer.value[slideItemBuffer.value.length - 1].id)
+      const newItems = await getSlideItemsData(lastItemId)
+      
+      // 如果超过最大缓存大小，移除头部数据
+      if (slideItemBuffer.value.length + newItems.length > maxBufferSize.value) {
+        // 计算需要移除的数据量
+        const removeCount = (slideItemBuffer.value.length + newItems.length) - maxBufferSize.value
+        // 移除头部数据
+        slideItemBuffer.value = [...slideItemBuffer.value.slice(removeCount), ...newItems]
+        // 保持当前显示位置不变
+        currentIndex.value = Math.max(0, currentIndex.value - removeCount)
+      } else {
+        // 直接追加新数据
+        slideItemBuffer.value = [...slideItemBuffer.value, ...newItems]
+      }
+    }
 
     const containerStyle = computed(() => ({
       transform: `translateY(${-currentIndex.value * 100 + (isDragging.value ? (currentY.value - startY.value) : 0)}%)`,
@@ -110,8 +138,12 @@ export default defineComponent({
       if (Math.abs(deltaY) > singleItemHeight * 0.5) {
         if (deltaY > 0 && currentIndex.value > 0) {
           currentIndex.value--
-        } else if (deltaY < 0 && currentIndex.value < props.items.length - 1) {
+        } else if (deltaY < 0 && currentIndex.value < slideItemBuffer.value.length - 1) {
           currentIndex.value++
+          // 当滑动到最后一个item时，加载更多数据
+          if (currentIndex.value === slideItemBuffer.value.length - 1) {
+            getMoreSlideItems()
+          }
         }
       }
       
@@ -125,6 +157,8 @@ export default defineComponent({
         slideListRef.value.addEventListener('touchmove', handleTouchMove)
         slideListRef.value.addEventListener('touchend', handleTouchEnd)
       }
+      // 初始化加载数据
+      refreshSlideList()
     })
 
     onUnmounted(() => {
@@ -140,7 +174,8 @@ export default defineComponent({
       currentIndex,
       containerStyle,
       getItemStyle,
-      getContentComponent
+      getContentComponent,
+      slideItemBuffer
     }
   }
 })
