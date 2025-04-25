@@ -2,9 +2,9 @@
   <div class="slide-list" ref="slideListRef">
     <div class="slide-container" :style="containerStyle">
       <slide-item v-for="(item, index) in slideItemBuffer" :key="item.id" :content-type="item.contentType"
-        :style="getItemStyle(index)">
-        <template #default>
-          <component :is="getContentComponent(item.contentType)" :data="item" />
+        :is-activated="isItemActivated(index)" :style="getItemStyle(index)">
+        <template #default="{ isActivated }">
+          <component :is="getContentComponent(item.contentType)" :data="item" :is-activated="isActivated" />
         </template>
       </slide-item>
     </div>
@@ -12,7 +12,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, computed, onMounted, onUnmounted, defineAsyncComponent } from 'vue'
+import { defineComponent, ref, computed, onMounted, onUnmounted, defineAsyncComponent, watch } from 'vue'
 import { getSlideItems } from '@/api/slide'
 import type { SlideItemData } from '@/types/slide'
 
@@ -146,6 +146,18 @@ export default defineComponent({
       isDragging.value = false
     }
 
+    const isItemActivated = (index: number) => {
+      return index === currentIndex.value
+    }
+
+    // [debug]监听 currentIndex 变化，打印当前激活的 item
+    // watch(currentIndex, (newIndex) => {
+    //   const activatedItem = slideItemBuffer.value[newIndex]
+    //   if (activatedItem) {
+    //     console.log('当前激活的 item:', activatedItem.id)
+    //   }
+    // })
+
     onMounted(() => {
       if (slideListRef.value) {
         itemHeight.value = slideListRef.value.clientHeight
@@ -174,7 +186,8 @@ export default defineComponent({
       containerStyle,
       getItemStyle,
       getContentComponent,
-      slideItemBuffer
+      slideItemBuffer,
+      isItemActivated
     }
   }
 })

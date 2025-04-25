@@ -1,10 +1,11 @@
 <template>
-  <div class="video-player" @touchstart="handleTouchStart" @touchmove="handleTouchMove" @touchend="handleTouchEnd">
+  <div class="video-player" ref="playerRef" @touchstart="handleTouchStart" @touchmove="handleTouchMove" @touchend="handleTouchEnd">
     <video
       ref="videoRef"
       class="video"
       :src="videoUrl"
-      loop
+      :muted="false"
+      :loop="true"
       autoplay
       playsinline
       webkit-playsinline
@@ -15,14 +16,17 @@
       @timeupdate="handleTimeUpdate"
       @click="togglePlay"
     ></video>
+    <video-progress :progress="progress" :is-paused="isPaused" />
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted, watch } from 'vue'
+import VideoProgress from './VideoProgress.vue'
 
-defineProps<{
+const props = defineProps<{
   videoUrl: string
+  isActivated: boolean
 }>()
 
 const emit = defineEmits<{
@@ -34,10 +38,24 @@ const emit = defineEmits<{
 }>()
 
 const videoRef = ref<HTMLVideoElement | null>(null)
+const playerRef = ref<HTMLElement | null>(null)
 const progress = ref(0)
 const startX = ref(0)
 const startY = ref(0)
-const isPaused = ref(false)
+const isPaused = ref(true)
+
+// 监听 isActivated 变化
+watch(() => props.isActivated, (newVal) => {
+  if (videoRef.value) {
+    if (newVal) {
+      videoRef.value.play()
+    } else {
+      videoRef.value.pause()
+      videoRef.value.currentTime = 0
+      progress.value = 0
+    }
+  }
+})
 
 const togglePlay = () => {
   if (!videoRef.value) return

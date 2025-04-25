@@ -1,12 +1,13 @@
 <template>
   <div class="slide-item">
-    <slot></slot>
+    <slot :isActivated="isActivated"></slot>
   </div>
 </template>
 
 <script setup lang="ts">
 const props = defineProps<{
   contentType: 'video' | 'picture' | 'advertisement'
+  isActivated: boolean
 }>()
 
 console.log(props.contentType)

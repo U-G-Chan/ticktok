@@ -3,6 +3,7 @@
     <video-player
       ref="videoPlayerRef"
       :video-url="data.videoUrl"
+      :is-activated="isActivated"
       @drag-start="handleDragStart"
       @drag-move="handleDragMove"
       @drag-end="handleDragEnd"
@@ -15,12 +16,16 @@
       :comments="data.comments"
       :stars="data.stars"
       :forwards="data.forwards"
+      :is-liked="isLiked"
+      :is-paused="isPaused"
       :opacity="overlayOpacity"
+      @toggleLike="handleToggleLike"
     />
     <video-footer
       :author="data.author"
       :title="data.title"
       :labels="data.labels"
+      :description="data.description"
       :opacity="overlayOpacity"
     />
     <video-progress 
@@ -32,29 +37,17 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onUnmounted } from 'vue'
+import { ref, onUnmounted, watch } from 'vue'
 import VideoPlayer from './components/VideoPlayer.vue'
 import VideoSidebar from './components/VideoSidebar.vue'
 import VideoFooter from './components/VideoFooter.vue'
 import VideoProgress from './components/VideoProgress.vue'
 import '@/components/Icon/iconfont.css'
+import type { VideoItemData } from '@/types/video.ts'
 
-interface VideoData {
-  id: string
-  title: string
-  author: string
-  videoUrl: string
-  avatar: string
-  likes: number
-  comments: number
-  stars: number
-  forwards: number
-  labels: string[]
-  [key: string]: any
-}
-
-const { data } = defineProps<{
-  data: VideoData
+const props = defineProps<{
+  data: VideoItemData
+  isActivated: boolean
 }>()
 
 const videoPlayerRef = ref()
@@ -62,6 +55,7 @@ const overlayOpacity = ref(1)
 const startY = ref(0)
 const progress = ref(0)
 const isPaused = ref(false)
+const isLiked = ref(false)
 
 const handleDragStart = (e: TouchEvent) => {
   startY.value = e.touches[0].clientY
@@ -90,6 +84,18 @@ const handleProgressChange = (newProgress: number) => {
     videoPlayerRef.value.setProgress(newProgress)
   }
 }
+
+const handleToggleLike = () => {
+  isLiked.value = !isLiked.value
+}
+
+// 监听 isActivated 变化
+watch(() => props.isActivated, (newVal) => {
+  if (!newVal) {
+    // 当视频不再激活时，重置暂停状态
+    isPaused.value = true
+  }
+})
 
 // 当组件被卸载时重置视频
 onUnmounted(() => {
