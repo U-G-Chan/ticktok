@@ -13,42 +13,25 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent, computed, ref } from 'vue'
+<script setup lang="ts">
+import { computed, ref } from 'vue'
 
-export default defineComponent({
-  name: 'VideoFooter',
-  props: {
-    author: {
-      type: String,
-      required: true
-    },
-    title: {
-      type: String,
-      required: true
-    },
-    labels: {
-      type: Array as () => string[],
-      required: true
-    },
-    opacity: {
-      type: Number,
-      required: false
-    }
-  },
-  setup(props) {
-    const isTruncated = ref(true)
+const props = defineProps<{
+  author: string
+  title: string
+  labels: string[]
+  opacity?: number
+}>()
 
-    const opacityStyle = computed(() => {
-      if (props.opacity === undefined) return 1
-      return Math.max(0.5, props.opacity)
-    })
+defineOptions({
+  name: 'VideoFooter'
+})
 
-    return {
-      isTruncated,
-      opacityStyle
-    }
-  }
+const isTruncated = ref(true)
+
+const opacityStyle = computed(() => {
+  if (props.opacity === undefined) return 1
+  return Math.max(0.5, props.opacity)
 })
 </script>
 
@@ -56,22 +39,22 @@ export default defineComponent({
 .video-footer {
   position: absolute;
   left: 12px;
-  bottom: 50px;
+  bottom: 80px;
   max-width: calc(100% - 100px);
   z-index: 1;
-  padding: 10px;
-  background: linear-gradient(to top, rgba(0, 0, 0, 0.3), transparent);
+  padding: 8px 12px;
   border-radius: 8px;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.2), transparent);
 }
 
 .author {
-  margin-bottom: 10px;
+  margin-bottom: 8px;
 }
 
 .author-name {
   color: #fff;
-  font-size: 17px;
-  font-weight: 600;
+  font-size: 16px;
+  font-weight: 500;
   text-decoration: none;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 }
@@ -82,11 +65,11 @@ export default defineComponent({
 
 .title {
   color: #fff;
-  font-size: 15px;
+  font-size: 14px;
   line-height: 1.4;
-  margin-bottom: 6px;
+  margin-bottom: 4px;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
-  word-break: break-all;
+  word-break: break-word;
 }
 
 .title.truncated {
@@ -100,25 +83,26 @@ export default defineComponent({
 .labels {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
-  margin-bottom: 4px;
+  gap: 8px;
+  margin-bottom: 2px;
 }
 
 .label {
   color: #fff;
-  font-size: 14px;
+  font-size: 13px;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
-  opacity: 0.9;
+  opacity: 0.85;
 }
 
 .expand-btn {
+  display: inline-block;
   color: #fff;
-  font-size: 14px;
-  margin-left: 6px;
+  font-size: 12px;
+  margin-left: 4px;
   opacity: 0.8;
   cursor: pointer;
   padding: 2px 6px;
-  background-color: rgba(255, 255, 255, 0.1);
+  background-color: rgba(255, 255, 255, 0.15);
   border-radius: 4px;
   backdrop-filter: blur(4px);
 }

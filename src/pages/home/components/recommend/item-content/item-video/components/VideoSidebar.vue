@@ -38,76 +38,51 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent, computed, ref } from 'vue'
+<script setup lang="ts">
+import { computed, ref } from 'vue'
 import '@/components/Icon/iconfont.css'
 
-export default defineComponent({
-  name: 'VideoSidebar',
-  props: {
-    avatar: {
-      type: String,
-      required: true
-    },
-    likes: {
-      type: Number,
-      required: true
-    },
-    comments: {
-      type: Number,
-      required: true
-    },
-    stars: {
-      type: Number,
-      required: true
-    },
-    forwards: {
-      type: Number,
-      required: true
-    },
-    opacity: {
-      type: Number,
-      required: false
-    }
-  },
-  setup(props) {
-    const isLiked = ref(false)
+const props = defineProps<{
+  avatar: string
+  likes: number
+  comments: number
+  stars: number
+  forwards: number
+  opacity?: number
+}>()
 
-    const opacityStyle = computed(() => {
-      if (props.opacity === undefined) return 1
-      return Math.max(0.5, props.opacity)
-    })
-
-    const formatCount = (count: number) => {
-      if (count >= 10000) {
-        return (count / 10000).toFixed(1) + '万'
-      }
-      return count.toString()
-    }
-
-    const toggleLike = () => {
-      isLiked.value = !isLiked.value
-    }
-
-    return {
-      isLiked,
-      opacityStyle,
-      formatCount,
-      toggleLike
-    }
-  }
+defineOptions({
+  name: 'VideoSidebar'
 })
+
+const isLiked = ref(false)
+
+const opacityStyle = computed(() => {
+  if (props.opacity === undefined) return 1
+  return Math.max(0.5, props.opacity)
+})
+
+const formatCount = (count: number) => {
+  if (count >= 10000) {
+    return (count / 10000).toFixed(1) + '万'
+  }
+  return count.toString()
+}
+
+const toggleLike = () => {
+  isLiked.value = !isLiked.value
+}
 </script>
 
 <style scoped>
 .video-sidebar {
   position: absolute;
   right: 12px;
-  bottom: 100px;
+  bottom: 90px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 15px;
+  gap: 12px;
   z-index: 1;
 }
 
@@ -115,17 +90,17 @@ export default defineComponent({
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
 }
 
 .avatar-container {
   position: relative;
-  margin-bottom: 15px;
+  margin-bottom: 10px;
 }
 
 .avatar {
-  width: 52px;
-  height: 52px;
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
   border: 2px solid #fff;
   overflow: hidden;
@@ -140,33 +115,33 @@ export default defineComponent({
 
 .follow-btn {
   position: absolute;
-  bottom: -8px;
+  bottom: -6px;
   left: 50%;
   transform: translateX(-50%);
-  width: 22px;
-  height: 22px;
+  width: 20px;
+  height: 20px;
   background-color: #ff4040;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   color: #fff;
-  font-size: 18px;
+  font-size: 16px;
   line-height: 1;
   cursor: pointer;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .icon {
-  width: 44px;
-  height: 44px;
+  width: 40px;
+  height: 40px;
   background-color: rgba(255, 255, 255, 0.1);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
   backdrop-filter: blur(4px);
 }
 
@@ -179,10 +154,17 @@ export default defineComponent({
   font-size: 13px;
   font-weight: 500;
   text-shadow: 0 1px 1px rgba(0, 0, 0, 0.3);
+  min-width: 30px;
+  text-align: center;
 }
 
 .iconfont {
   font-size: 24px;
   color: #fff;
+}
+
+.icon-heart.active {
+  color: #ff4040;
+  text-shadow: 0 0 8px rgba(255, 64, 64, 0.5);
 }
 </style> 
