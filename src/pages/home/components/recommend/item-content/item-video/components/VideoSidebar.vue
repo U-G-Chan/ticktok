@@ -42,14 +42,19 @@
 import { computed, ref } from 'vue'
 import '@/components/Icon/iconfont.css'
 
-const props = defineProps<{
+const props = withDefaults(defineProps<{
   avatar: string
-  likes: number
-  comments: number
-  stars: number
-  forwards: number
+  likes?: number
+  comments?: number
+  stars?: number
+  forwards?: number
   opacity?: number
-}>()
+}>(), {
+  likes: 0,
+  comments: 0,
+  stars: 0,
+  forwards: 0
+})
 
 defineOptions({
   name: 'VideoSidebar'
@@ -62,7 +67,8 @@ const opacityStyle = computed(() => {
   return Math.max(0.5, props.opacity)
 })
 
-const formatCount = (count: number) => {
+const formatCount = (count: number | undefined) => {
+  if (count === undefined || count === null) return '0'
   if (count >= 10000) {
     return (count / 10000).toFixed(1) + '万'
   }

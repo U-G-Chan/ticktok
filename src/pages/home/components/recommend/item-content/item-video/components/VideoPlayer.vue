@@ -6,6 +6,10 @@
       :src="videoUrl"
       loop
       autoplay
+      playsinline
+      webkit-playsinline
+      x5-video-player-type="h5"
+      x5-video-player-fullscreen="true"
       @play="handlePlay"
       @pause="handlePause"
       @timeupdate="handleTimeUpdate"
@@ -15,15 +19,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 
 defineProps<{
   videoUrl: string
 }>()
-
-defineOptions({
-  name: 'VideoPlayer'
-})
 
 const emit = defineEmits<{
   dragStart: [e: TouchEvent]
@@ -100,8 +100,19 @@ const reset = () => {
   emit('isPausedChange', true)
 }
 
+onMounted(() => {
+  if (videoRef.value) {
+    videoRef.value.muted = false
+  }
+})
+
 onUnmounted(() => {
-  reset()
+  if (videoRef.value) {
+    videoRef.value.pause()
+    videoRef.value.src = ''
+    videoRef.value.load()
+  }
+  videoRef.value = null
 })
 
 defineExpose({

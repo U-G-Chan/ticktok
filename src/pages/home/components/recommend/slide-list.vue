@@ -158,11 +158,14 @@ export default defineComponent({
     })
 
     onUnmounted(() => {
+      // 确保在组件卸载前移除所有事件监听
       if (slideListRef.value) {
         slideListRef.value.removeEventListener('touchstart', handleTouchStart)
         slideListRef.value.removeEventListener('touchmove', handleTouchMove)
         slideListRef.value.removeEventListener('touchend', handleTouchEnd)
       }
+      // 清理数据
+      slideItemBuffer.value = []
     })
 
     return {

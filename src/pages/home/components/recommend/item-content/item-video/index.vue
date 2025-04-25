@@ -94,8 +94,19 @@ const handleProgressChange = (newProgress: number) => {
 // 当组件被卸载时重置视频
 onUnmounted(() => {
   if (videoPlayerRef.value) {
-    videoPlayerRef.value.reset()
+    // 停止视频播放
+    const video = videoPlayerRef.value.$el.querySelector('video')
+    if (video) {
+      video.pause()
+      video.currentTime = 0
+      video.src = ''
+      video.load()
+    }
   }
+  // 清理引用
+  videoPlayerRef.value = null
+  progress.value = 0
+  isPaused.value = true
 })
 
 defineOptions({

@@ -91,8 +91,10 @@ watch(() => props.isPaused, (isPaused) => {
 })
 
 onUnmounted(() => {
+  // 清理所有定时器
   if (hideTimer.value) {
     clearTimeout(hideTimer.value)
+    hideTimer.value = null
   }
 })
 </script>
