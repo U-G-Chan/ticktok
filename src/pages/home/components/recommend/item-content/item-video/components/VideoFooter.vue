@@ -4,11 +4,11 @@
       <a href="#" class="author-name">@{{ author }}</a>
     </div>
     <div class="content">
-      <div class="text-content">
-        <span class="title" :class="{ 'truncated': isTruncated }">{{ title }}</span>
+      <div class="text-content" :class="{ 'expanded': isExpanded }">
+        {{ title }}
         <span v-for="(label, index) in labels" :key="index" class="label">#{{ label }}</span>
-        <span v-if="isTruncated" class="expand-btn">展开</span>
       </div>
+      <span class="expand-btn" @click="toggleExpand">{{ isExpanded ? '收起' : '展开' }}</span>
     </div>
   </div>
 </template>
@@ -27,19 +27,23 @@ defineOptions({
   name: 'VideoFooter'
 })
 
-const isTruncated = ref(true)
+const isExpanded = ref(false)
 
 const opacityStyle = computed(() => {
   if (props.opacity === undefined) return 1
   return Math.max(0.5, props.opacity)
 })
+
+const toggleExpand = () => {
+  isExpanded.value = !isExpanded.value
+}
 </script>
 
 <style scoped>
 .video-footer {
   position: absolute;
   bottom: 5%;
-  max-width: calc(100% - 80px);
+  max-width: calc(100% - 100px);
   z-index: 1;
   padding: 8px 12px;
   border-radius: 8px;
@@ -60,47 +64,47 @@ const opacityStyle = computed(() => {
 
 .content {
   position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 4px;
 }
 
 .text-content {
-  display: inline;
   color: #fff;
   font-size: 14px;
   line-height: 1.4;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
   word-break: break-word;
-}
-
-.title {
-  margin-right: 4px;
-}
-
-.title.truncated {
   display: -webkit-box;
+  -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
   line-clamp: 2;
-  -webkit-box-orient: vertical;
   overflow: hidden;
+  transition: all 0.3s ease;
+  flex: 1;
+}
+
+.text-content.expanded {
+  -webkit-line-clamp: unset;
+  line-clamp: unset;
 }
 
 .label {
-  margin-right: 8px;
+  margin: 0 4px;
   opacity: 0.85;
 }
 
 .expand-btn {
   display: inline-block;
   color: #fff;
-  font-size: 12px;
+  font-size: 14px;
   opacity: 0.8;
   cursor: pointer;
   padding: 1px 6px;
   background-color: rgba(255, 255, 255, 0.15);
   border-radius: 4px;
   backdrop-filter: blur(4px);
-  line-height: inherit;
-  margin-left: 4px;
-  position: relative;
-  top: -1px;
+  margin-top: 1.4em;
+  flex-shrink: 0;
 }
 </style> 
