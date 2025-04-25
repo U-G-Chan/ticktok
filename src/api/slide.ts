@@ -14,6 +14,7 @@ const mockData: SlideItemData[] = [
     stars: 1523,
     forwards: 19000,
     labels: ['猫和老鼠', '汤姆和杰瑞', '童年动画', '我在抖音看动画', '我的汤姆猫短片动画']
+    // labels: ['猫和老鼠', '汤姆和杰瑞']
   },
   {
     id: '2',
