@@ -9,6 +9,8 @@ const props = defineProps<{
   contentType: 'video' | 'picture' | 'advertisement'
 }>()
 
+console.log(props.contentType)
+
 defineOptions({
   name: 'SlideItem'
 })

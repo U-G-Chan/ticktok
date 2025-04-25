@@ -16,6 +16,8 @@ const props = defineProps<{
   data: VideoData
 }>()
 
+console.log(props.data)
+
 defineOptions({
   name: 'VideoContent'
 })

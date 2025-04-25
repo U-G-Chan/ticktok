@@ -21,9 +21,9 @@ import { getSlideItems } from '@/api/slide'
 import type { SlideItemData } from '@/types/slide'
 
 const SlideItem = defineAsyncComponent(() => import('./slide-item.vue'))
-const VideoContent = defineAsyncComponent(() => import('./video-content.vue'))
-const PictureContent = defineAsyncComponent(() => import('./picture-content.vue'))
-const AdvertisementContent = defineAsyncComponent(() => import('./advertisement-content.vue'))
+const VideoContent = defineAsyncComponent(() => import('./item-content/item-video/index.vue'))
+const PictureContent = defineAsyncComponent(() => import('./item-content/item-picture/index.vue'))
+const AdvertisementContent = defineAsyncComponent(() => import('./item-content/item-advertisement/index.vue'))
 
 export default defineComponent({
   name: 'SlideList',

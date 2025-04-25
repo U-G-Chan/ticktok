@@ -1,32 +1,33 @@
 <template>
-  <div class="advertisement-content">
-    <h3>广告内容</h3>
+  <div class="picture-content">
+    <h3>图片内容</h3>
     <p>{{ data.title }}</p>
   </div>
 </template>
 
 <script setup lang="ts">
-interface AdvertisementData {
+interface PictureData {
   id: string
   title: string
   [key: string]: any
 }
 
 const props = defineProps<{
-  data: AdvertisementData
+  data: PictureData
 }>()
 
 console.log(props.data)
+
 defineOptions({
-  name: 'AdvertisementContent'
+  name: 'PictureContent'
 })
 </script>
 
 <style scoped>
-.advertisement-content {
+.picture-content {
   width: 100%;
   height: 100%;
-  background-color: #ffeb3b;
+  background-color: #f0f0f0;
   display: flex;
   flex-direction: column;
   align-items: center;
