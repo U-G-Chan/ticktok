@@ -12,9 +12,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-
-const props = defineProps<{
+defineProps<{
   currentIndex: number,
   totalCount: number
 }>()
@@ -38,12 +36,17 @@ defineOptions({
 
 .progress-bar {
   display: flex;
-  justify-content: center;
-  gap: 8px;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  max-width: 100%;
+  gap: 0;
+  padding: 0 12px;
 }
 
 .progress-dot {
-  width: 16px;
+  flex: 1 1 0;
+  margin: 0 2px;
   height: 3px;
   background-color: rgba(255, 255, 255, 0.5);
   opacity: 0.5;

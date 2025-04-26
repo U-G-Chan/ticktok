@@ -153,7 +153,7 @@ const stopAutoPlay = () => {
 }
 
 // 切换播放/暂停状态
-const togglePlay = (e: MouseEvent) => {
+const togglePlay = () => {
   // 如果是滑动结束触发的点击事件，忽略
   if (Math.abs(touchDeltaX.value) > 10) {
     return;
@@ -319,7 +319,7 @@ const handleTouchMove = (e: TouchEvent) => {
 }
 
 // 处理触摸结束
-const handleTouchEnd = (e: TouchEvent) => {
+const handleTouchEnd = () => {
   if (!isUserInteracting.value || props.album.length <= 1 || isTransitioning.value) return;
   
   isUserInteracting.value = false;
