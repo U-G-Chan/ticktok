@@ -102,7 +102,7 @@ onUnmounted(() => {
   z-index: 1;
   padding: 8px 12px;
   border-radius: 8px;
-  background: linear-gradient(to top, rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.2), transparent);
+  background: transparent;
 }
 
 .author {

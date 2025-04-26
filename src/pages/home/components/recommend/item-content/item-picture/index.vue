@@ -102,6 +102,6 @@ watch(() => props.isActivated, (newVal) => {
   height: 100%;
   position: relative;
   overflow: hidden;
-  background-color: #000;
+  /* background-color: #000; */
 }
 </style> 

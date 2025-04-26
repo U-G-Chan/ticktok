@@ -2,7 +2,7 @@
   <div class="picture-sidebar" :style="{ opacity: opacityStyle }">
     <div class="sidebar-item avatar-container">
       <div class="avatar">
-        <img :src="avatar" alt="avatar" />
+        <img :src="getImageUrl(avatar)" alt="avatar" />
       </div>
       <div class="follow-btn">+</div>
     </div>
@@ -62,18 +62,6 @@ const opacityStyle = computed(() => {
   return Math.max(0.5, props.opacity)
 })
 
-// 处理图片路径
-const getImageUrl = (url: string) => {
-  if (!url) return ''
-  
-  // 移除前导斜杠，确保路径以正确的方式解析
-  if (url.startsWith('/')) {
-    url = url.substring(1)
-  }
-  
-  // 创建一个相对于当前基础URL的路径
-  return new URL(url, import.meta.url).href
-}
 
 const formatCount = (count: number | undefined) => {
   if (count === undefined || count === null) return '0'
@@ -85,6 +73,14 @@ const formatCount = (count: number | undefined) => {
 
 const toggleLike = () => {
   isLiked.value = !isLiked.value
+}
+
+// 处理图片路径
+const getImageUrl = (url: string) => {
+  if (!url) return '';
+  
+  // 直接返回原始路径
+  return url;
 }
 </script>
 
