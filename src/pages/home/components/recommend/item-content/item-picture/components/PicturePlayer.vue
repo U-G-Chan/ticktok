@@ -64,7 +64,7 @@
     </div>
     
     <!-- 暂停/播放图标 -->
-    <div class="play-pause-icon" v-if="isPaused || isUserInteracting">
+    <div class="play-pause-icon" v-if="isPaused && !isUserInteracting">
       <div class="play-triangle"></div>
     </div>
   </div>
