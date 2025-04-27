@@ -18,7 +18,17 @@ const router = createRouter({
         },
         {
           path: 'mall',
-          component: () => import('@/pages/home/components/mall')
+          component: () => import('@/pages/home/components/mall'),
+          children: [
+            {
+              path: 'search',
+              component: () => import('@/pages/home/components/mall/search-page/index.vue')
+            },
+            {
+              path: 'cart',
+              component: () => import('@/pages/home/components/mall/cart-page/index.vue')
+            }
+          ]
         },
         {
           path: 'recommend',
