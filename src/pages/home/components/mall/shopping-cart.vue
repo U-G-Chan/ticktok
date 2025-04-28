@@ -5,9 +5,11 @@
 </template>
 <script setup>
 import { useRouter } from 'vue-router'
+
 const router = useRouter()
 const goCart = () => {
   router.push('/home/mall/cart')
+  console.log('跳转到购物车页面', router.currentRoute.value)
 }
 </script>
 <style scoped>

@@ -135,7 +135,14 @@ const removeItem = (index) => {
 
 <style scoped>
 .cart-page {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 999;
   height: 100vh;
+  width: 100vw;
   background: #f5f5f5;
   display: flex;
   flex-direction: column;
@@ -146,14 +153,28 @@ const removeItem = (index) => {
   align-items: center;
   justify-content: space-between;
   padding: 12px 16px;
-  background: #fff;
+  background: linear-gradient(to right, #ffecf4, #e6f2ff);
   border-bottom: 1px solid #f0f0f0;
 }
 
 .back-btn {
-  font-size: 18px;
-  color: #333;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
+}
+
+/* 更新返回按钮图标 */
+.back-btn .icon-back::before {
+  content: "";
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-top: 2px solid #333;
+  border-left: 2px solid #333;
+  transform: rotate(-45deg);
 }
 
 .header-title {

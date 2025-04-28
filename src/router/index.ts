@@ -29,7 +29,10 @@ const router = createRouter({
             },
             {
               path: 'cart',
-              component: () => import('@/pages/home/components/mall/cart-page/index.vue')
+              component: () => import('@/pages/home/components/mall/cart-page/index.vue'),
+              meta: {
+                transition: 'slide-left'
+              }
             }
           ]
         },
