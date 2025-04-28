@@ -2,7 +2,9 @@
   <div class="search-page">
     <div class="search-header">
       <div class="back-btn" @click="goBack">
-        <span class="iconfont icon-back"></span>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M15 18L9 12L15 6" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
       </div>
       <div class="search-input-wrapper">
         <span class="iconfont icon-search"></span>
@@ -116,7 +118,14 @@ onMounted(() => {
 
 <style scoped>
 .search-page {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 999;
   height: 100vh;
+  width: 100vw;
   background: #fff;
   display: flex;
   flex-direction: column;
@@ -127,37 +136,42 @@ onMounted(() => {
   display: flex;
   align-items: center;
   border-bottom: 1px solid #f0f0f0;
-  background: #fff;
+  background: linear-gradient(to right, #ffecf4, #e6f2ff);
 }
 
 .back-btn {
-  padding: 6px 10px;
-  font-size: 18px;
-  color: #333;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
+  margin-right: 10px;
 }
 
 .search-input-wrapper {
   flex: 1;
   display: flex;
   align-items: center;
-  background: #f5f5f5;
+  background: #fff;
   border-radius: 20px;
-  padding: 6px 12px;
+  padding: 8px 12px;
   position: relative;
 }
 
 .icon-search {
   color: #999;
   margin-right: 6px;
+  font-size: 16px;
 }
 
 .search-input {
   flex: 1;
   border: none;
   background: transparent;
-  font-size: 14px;
+  font-size: 15px;
   outline: none;
+  color: #333;
 }
 
 .clear-btn {

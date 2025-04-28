@@ -22,7 +22,10 @@ const router = createRouter({
           children: [
             {
               path: 'search',
-              component: () => import('@/pages/home/components/mall/search-page/index.vue')
+              component: () => import('@/pages/home/components/mall/search-page/index.vue'),
+              meta: {
+                transition: 'slide-left'
+              }
             },
             {
               path: 'cart',

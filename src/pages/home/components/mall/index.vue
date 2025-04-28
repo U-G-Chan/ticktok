@@ -16,11 +16,13 @@
       </div>
     </div>
     
-    <!-- 商城子路由 -->
-    <router-view v-slot="{ Component }">
-      <keep-alive>
-        <component :is="Component" />
-      </keep-alive>
+    <!-- 商城子路由，添加过渡动画 -->
+    <router-view v-slot="{ Component, route }">
+      <transition :name="route.meta.transition || 'fade'">
+        <keep-alive>
+          <component :is="Component" />
+        </keep-alive>
+      </transition>
     </router-view>
   </div>
 </template>
@@ -33,9 +35,32 @@ import GoodsMasonryLayout from './goods-masonry-layout/index.vue'
 </script>
 
 <style scoped>
+/* 路由过渡动画 */
+.slide-left-enter-active,
+.slide-left-leave-active {
+  transition: all 0.3s ease;
+}
+.slide-left-enter-from {
+  transform: translateX(100%);
+  opacity: 0;
+}
+.slide-left-leave-to {
+  transform: translateX(-100%);
+  opacity: 0;
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+
 .mall {
-  width: 100%;
-  height: 100%;
+  width: 100vw;
+  height: 100vh;
   background: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 50%, #a5b4fc 100%);
   overflow: hidden;
 }
@@ -50,9 +75,8 @@ import GoodsMasonryLayout from './goods-masonry-layout/index.vue'
 .mall-content {
   width: 100%;
   height: calc(100% - 52px);
-  background: transparent;
+  background: #fff;
   position: relative;
-  
 }
 
 .mall-sticky-bar {
@@ -62,16 +86,14 @@ import GoodsMasonryLayout from './goods-masonry-layout/index.vue'
   display: flex;
   flex-direction: row;
   align-items: center;
-  background: transparent;
+  background: #fff;
   box-shadow: 0 2px 8px rgba(0,0,0,0.03);
   padding: 8px 12px;
-  
 }
 
 .mall-main {
   width: 100%;
   height: calc(100% - 56px);
   overflow-y: auto;
-  background: transparent;
 }
 </style> 
