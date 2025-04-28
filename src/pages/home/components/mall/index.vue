@@ -10,11 +10,18 @@
         <shopping-cart />
       </div>
       <!-- 商城菜单和商品区 -->
-      <div class="mall-main">
+      <div class="mall-main" ref="mallMainRef" @scroll="handleScroll">
         <mall-menu />
         <goods-masonry-layout />
       </div>
     </div>
+    
+    <!-- 回到顶部按钮组件 -->
+    <back-to-top 
+      :visible="showBackToTop" 
+      :target="mallMainRef" 
+      @scroll-to-top="scrollToTop"
+    />
     
     <!-- 商城子路由，添加过渡动画 -->
     <router-view v-slot="{ Component, route }">
@@ -28,10 +35,39 @@
 </template>
 
 <script setup>
+import { ref, onMounted } from 'vue'
 import GoodsSearchBar from './goods-search-bar.vue'
 import ShoppingCart from './shopping-cart.vue'
 import MallMenu from './mall-menu/index.vue'
 import GoodsMasonryLayout from './goods-masonry-layout/index.vue'
+import BackToTop from './back-to-top/index.vue'
+
+// 回到顶部按钮的显示控制和滚动区域引用
+const showBackToTop = ref(false)
+const mallMainRef = ref(null)
+
+// 监听滚动事件 - 监听mall-main的滚动
+const handleScroll = () => {
+  // 当mall-main滚动超过300px时显示回到顶部按钮
+  if (mallMainRef.value) {
+    showBackToTop.value = mallMainRef.value.scrollTop > 300
+  }
+}
+
+// 平滑滚动到顶部功能 - 在组件自己处理，这里只是备用
+const scrollToTop = () => {
+  if (!mallMainRef.value) return
+  
+  mallMainRef.value.scrollTop = 0
+}
+
+// 生命周期钩子
+onMounted(() => {
+  // 初始化时检查是否需要显示按钮
+  if (mallMainRef.value) {
+    showBackToTop.value = mallMainRef.value.scrollTop > 300
+  }
+})
 </script>
 
 <style scoped>
@@ -63,9 +99,9 @@ import GoodsMasonryLayout from './goods-masonry-layout/index.vue'
   height: 100vh;
   background: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 50%, #a5b4fc 100%);
   overflow: hidden;
+  position: relative;
 }
 
-/* 头部占位，高度与head-nav一致 */
 .head-nav-placeholder {
   width: 100%;
   height: 52px;
@@ -95,5 +131,6 @@ import GoodsMasonryLayout from './goods-masonry-layout/index.vue'
   width: 100%;
   height: calc(100% - 56px);
   overflow-y: auto;
+  position: relative; /* 添加相对定位 */
 }
 </style> 
