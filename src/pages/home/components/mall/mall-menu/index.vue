@@ -6,7 +6,7 @@
     >
       <div 
         class="menu-swiper" 
-        :style="{ transform: `translateX(-${currentPage * 100}%)` }"
+        :style="{ transform: `translateX(-${currentPage * 50}%)` }"
         @touchstart="handleTouchStart"
         @touchmove="handleTouchMove"
         @touchend="handleTouchEnd"
@@ -66,7 +66,13 @@ const menuItems = [
   { text: '关注店铺', icon: 'icon-follow' },
   { text: '全球购', icon: 'icon-global' },
   { text: '品牌会员', icon: 'icon-vip' },
-  { text: '更多', icon: 'icon-more' }
+  
+  { text: '限时秒杀', icon: 'icon-flash' },
+  { text: '满减活动', icon: 'icon-discount' },
+  { text: '借钱', icon: 'icon-loan' },
+  { text: '游戏', icon: 'icon-game' },
+  { text: '书城', icon: 'icon-book' },
+  { text: '更多', icon: 'icon-more' },
 ]
 
 // 当前页面
@@ -131,11 +137,11 @@ const handleTouchEnd = (e) => {
 }
 
 .menu-page-wrapper.first-page {
-  height: 120px !important;
+  height: 90px !important;
 }
 
 .menu-page-wrapper.second-page {
-  height: 300px !important;
+  height: 240px !important;
 }
 
 .menu-swiper {
@@ -153,16 +159,17 @@ const handleTouchEnd = (e) => {
   display: flex;
   justify-content: space-around;
   align-items: center;
-  padding: 10px 0;
-  height: 100px;
+  padding: 5px 0;
+  height: 80px;
 }
 
 .menu-page-2 .menu-grid {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   grid-template-rows: repeat(3, 1fr);
-  gap: 10px;
-  padding: 0 10px;
+  gap: 8px;
+  padding: 5px 10px;
+  height: 220px;
 }
 
 .menu-item {
@@ -199,7 +206,9 @@ const handleTouchEnd = (e) => {
   display: flex;
   justify-content: center;
   gap: 6px;
-  margin-top: -20px;
+  margin-top: 8px;
+  position: relative;
+  z-index: 5;
 }
 
 .indicator-dot {
