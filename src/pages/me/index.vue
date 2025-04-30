@@ -42,7 +42,7 @@
 import { defineComponent, ref, computed, onMounted } from 'vue'
 import TopBar from './components/TopBar.vue'
 import UserInfo from './components/UserInfo.vue'
-import UserSpace from './components/UserSpace.vue'
+import UserSpace from './components/UserSpace/index.vue'
 
 export default defineComponent({
   name: 'MePage',

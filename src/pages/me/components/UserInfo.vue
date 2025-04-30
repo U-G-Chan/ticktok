@@ -36,7 +36,7 @@ export default defineComponent({
   align-items: center;
   padding: 20px 15px;
   position: relative;
-  margin-top: 50px;
+  margin-top: 60px;
 }
 
 .avatar-container {
