@@ -142,7 +142,7 @@ export default defineComponent({
 <style scoped>
 .me-page {
   width: 100%;
-  height: 100vh;
+  height: 100%;
   position: relative;
   overflow: hidden;
   background-color: #121212;
@@ -153,7 +153,7 @@ export default defineComponent({
   top: 0;
   left: 0;
   right: 0;
-  width: 100%;
+  width: auto;
   z-index: 1;
 }
 
@@ -175,7 +175,7 @@ export default defineComponent({
 .scroll-container {
   position: relative;
   z-index: 2;
-  height: 100vh;
+  height: 100%;
   overflow-y: auto;
   will-change: transform;
   transition: transform 0.1s;

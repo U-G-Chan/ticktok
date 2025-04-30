@@ -334,7 +334,7 @@ export default defineComponent({
 
 /* 内容区域 */
 .content-area {
-  min-height: 300px;
+  min-height: 350px;
 }
 
 .tab-content {
