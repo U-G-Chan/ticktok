@@ -14,7 +14,23 @@ const router = createRouter({
       children: [
         {
           path: 'blog',
-          component: () => import('@/pages/home/components/blog')
+          component: () => import('@/pages/home/components/blog'),
+          children: [
+            {
+              path: 'search',
+              component: () => import('@/pages/home/components/blog/search-page'),
+              meta: {
+                transition: 'slide-left'
+              }
+            },
+            {
+              path: 'detail/:id',
+              component: () => import('@/pages/home/components/blog/blog-detail'),
+              meta: {
+                transition: 'zoom-in'
+              }
+            }
+          ]
         },
         {
           path: 'mall',
@@ -22,14 +38,14 @@ const router = createRouter({
           children: [
             {
               path: 'search',
-              component: () => import('@/pages/home/components/mall/search-page/index.vue'),
+              component: () => import('@/pages/home/components/mall/search-page'),
               meta: {
                 transition: 'slide-left'
               }
             },
             {
               path: 'cart',
-              component: () => import('@/pages/home/components/mall/cart-page/index.vue'),
+              component: () => import('@/pages/home/components/mall/cart-page'),
               meta: {
                 transition: 'slide-left'
               }
