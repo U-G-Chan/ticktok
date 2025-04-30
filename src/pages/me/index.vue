@@ -6,14 +6,19 @@
     @touchend="handleTouchEnd"
     @click="handleBackgroundClick"
   >
-    <!-- 背景图 -->
+    <!-- 背景图容器 -->
     <div 
-      class="background" 
-      :style="{ 
-        transform: `scale(${1 + Math.min(0.2, pullDistance / 1000)})`,
-        height: `${backgroundHeight}px` 
-      }"
-    ></div>
+      class="background-container"
+      :style="{ height: `${backgroundHeight}px` }"
+    >
+      <div 
+        class="background-image"
+        :style="{ 
+          transform: `scale(${1 + pullDistance / 200})`,
+          height: `${backgroundHeight}px`
+        }"
+      ></div>
+    </div>
     
     <!-- 顶部操作栏 -->
     <TopBar />
@@ -77,7 +82,7 @@ export default defineComponent({
       
       // 只有向下拉才有效果，且容器滚动到顶部才能触发
       if (diff > 0 && scrollContainer.value && scrollContainer.value.scrollTop <= 0) {
-        pullDistance.value = Math.min(200, diff * 0.5) // 限制最大下拉距离为200px
+        pullDistance.value = diff * 0.3 // 移除最大下拉距离限制
         e.preventDefault() // 阻止默认滚动
       } else {
         pullDistance.value = 0
@@ -115,7 +120,7 @@ export default defineComponent({
     const handleBackgroundClick = (e: MouseEvent) => {
       // 检查点击位置是否在背景区域
       const target = e.target as HTMLElement
-      if (target.classList.contains('background')) {
+      if (target.classList.contains('background-image')) {
         console.log('点击背景进入设置页面')
       }
     }
@@ -140,16 +145,31 @@ export default defineComponent({
   height: 100vh;
   position: relative;
   overflow: hidden;
+  background-color: #121212;
 }
 
-.background {
+.background-container {
   position: absolute;
   top: 0;
   left: 0;
+  right: 0;
   width: 100%;
-  background: linear-gradient(180deg, #409EFF 0%, #1989FA 100%);
-  transition: transform 0.1s;
   z-index: 1;
+}
+
+.background-image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  background-image: url('@/assets/images/me-background.jpg');
+  background-size: 100% auto;
+  background-repeat: no-repeat;
+  background-position: top center;
+  transform-origin: top center;
+  transition: transform 0.1s;
+  will-change: transform;
 }
 
 .scroll-container {
