@@ -5,7 +5,7 @@
        url('//at.alicdn.com/t/font_2267418_tnn4qbm6nv.ttf?t=1680147207') format('truetype');
 }
 
-.iconfont {
+.iconfont, [class^="icon-"], [class*=" icon-"] {
   font-family: "iconfont" !important;
   font-size: 16px;
   font-style: normal;
@@ -43,4 +43,61 @@
 
 .icon-refresh:before {
   content: "\e72c";
+}
+
+/* 添加 Me 页面需要的图标 */
+.icon-user-add:before {
+  content: "\e7d9";
+}
+
+.icon-users:before {
+  content: "\e7d8";
+}
+
+.icon-menu:before {
+  content: "\e7f4";
+}
+
+.icon-copy:before {
+  content: "\e744";
+}
+
+.icon-qrcode:before {
+  content: "\e7dd";
+}
+
+.icon-edit:before {
+  content: "\e7a1";
+}
+
+.icon-plus:before {
+  content: "\e8fe";
+}
+
+.icon-shop:before {
+  content: "\e7ce";
+}
+
+.icon-wallet:before {
+  content: "\e7d7";
+}
+
+.icon-service:before {
+  content: "\e76f";
+}
+
+.icon-mini-program:before {
+  content: "\e7db";
+}
+
+.icon-more:before {
+  content: "\e902";
+}
+
+.icon-camera:before {
+  content: "\e7d0";
+}
+
+.icon-lock:before {
+  content: "\e7c9";
 } 
