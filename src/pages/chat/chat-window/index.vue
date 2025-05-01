@@ -187,4 +187,29 @@ export default defineComponent({
   background-color: #000;
   color: #fff;
 }
+
+.chat-window-header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background-color: #000;
+}
+
+.chat-history {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+  padding-bottom: 80px; /* 为底部输入框留出空间 */
+}
+
+.chat-input {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: #000;
+  padding: 8px 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  margin-bottom: 50px;
+}
 </style> 
