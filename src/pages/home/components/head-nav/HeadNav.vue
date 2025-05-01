@@ -1,17 +1,20 @@
 <template>
   <nav class="head-nav">
-    <side-menu-nav @click="toggleSideMenu" />
+    <side-menu-nav @click="sideMenuStore.toggle()" />
     <content-nav />
     <search-nav @click="goToSearch" />
   </nav>
 </template>
 
 <script lang="ts">
-import { defineComponent, inject } from 'vue'
+import { defineComponent} from 'vue'
 import { useRouter } from 'vue-router'
 import SideMenuNav from './SideMenuNav.vue'
 import ContentNav from './ContentNav.vue'
 import SearchNav from './SearchNav.vue'
+import { useSideMenuStore } from '@/store/sideMenu'
+
+
 
 export default defineComponent({
   name: 'HeadNav',
@@ -22,14 +25,14 @@ export default defineComponent({
   },
   setup() {
     const router = useRouter()
-    const toggleSideMenu = inject('toggleSideMenu') as () => void
+    const sideMenuStore = useSideMenuStore()
 
     const goToSearch = () => {
       router.push('/search')
     }
 
     return {
-      toggleSideMenu,
+      sideMenuStore,
       goToSearch
     }
   }

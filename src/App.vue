@@ -69,19 +69,21 @@ export default defineComponent({
   height: 100%;
   display: flex;
   transition: transform 0.3s ease;
-  z-index: 0;
+  z-index: 2;
 }
 
 .side-menu {
   width: 70%;
   height: 100%;
   background: #fff;
+  z-index: 2;
 }
 
 .side-menu-mask {
   width: 30%;
   height: 100%;
   background: rgba(0, 0, 0, 0.5);
+  z-index: 2;
 }
 
 .middle.menu-open {
