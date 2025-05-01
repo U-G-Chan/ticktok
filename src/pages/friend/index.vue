@@ -1,25 +1,34 @@
 <template>
-    <div class="friend page">
-        <h1>朋友</h1>
+    <div class="friend-page">
+        <friend-header />
+        <address-book />
+        <friend-three-part />
     </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue'
+import FriendHeader from './components/FriendHeader.vue'
+import AddressBook from './components/AddressBook.vue'
+import FriendThreePart from './components/FriendThreePart.vue'
 
 export default defineComponent({
-    name: 'FriendPage'
+    name: 'FriendPage',
+    components: {
+        FriendHeader,
+        AddressBook,
+        FriendThreePart
+    }
 })
 </script>
 
 <style scoped>
-.friend {
-    color: #fff;
-    padding: 20px;
-}
-
-.page {
+.friend-page {
     width: 100%;
     height: 100%;
+    display: flex;
+    flex-direction: column;
+    background-color: #1e0521;
+    color: #fff;
 }
 </style>
