@@ -80,7 +80,7 @@ const router = createRouter({
     {
       path: "/chat/window/:id",
       name: "ChatWindow",
-      component: () => import("@/pages/chat/chat-window")
+      component: () => import("@/pages/chat/components/chat-window")
     },
     {
       path: "/me",

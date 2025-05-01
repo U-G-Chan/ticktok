@@ -180,12 +180,22 @@ export default defineComponent({
 </script>
 
 <style scoped>
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
 .chat-window {
   display: flex;
   flex-direction: column;
   height: 100vh;
   color: #333;
   background-color: white;
+  animation: slideIn 0.1s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .chat-window-header {
