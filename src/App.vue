@@ -1,22 +1,23 @@
 <template>
   <div class="app">
-    <div class="middle" :class="{ 'menu-open': showSideMenu }">
+    <div class="middle" :class="{ 'menu-open': sideMenuStore.isOpen }">
       <div class="container">
         <router-view></router-view>
       </div>
       <FootNav />
     </div>
-    <div class="side-menu-container" :class="{ 'menu-open': showSideMenu }">
+    <div class="side-menu-container" :class="{ 'menu-open': sideMenuStore.isOpen }">
       <side-menu class="side-menu" />
-      <div class="side-menu-mask" @click="toggleSideMenu"></div>
+      <div class="side-menu-mask" @click="sideMenuStore.close()"></div>
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, provide } from 'vue'
+import { defineComponent } from 'vue'
 import FootNav from '@/components/FootNav.vue'
 import SideMenu from '@/components/SideMenu.vue'
+import { useSideMenuStore } from '@/store/sideMenu'
 
 export default defineComponent({
   name: 'App',
@@ -25,18 +26,11 @@ export default defineComponent({
     SideMenu
   },
   setup() {
-    const showSideMenu = ref(false)
-    
-    const toggleSideMenu = () => {
-      showSideMenu.value = !showSideMenu.value
-    }
-
-    // 提供给子组件使用
-    provide('toggleSideMenu', toggleSideMenu)
+    // 使用侧边栏的 store
+    const sideMenuStore = useSideMenuStore()
     
     return {
-      showSideMenu,
-      toggleSideMenu
+      sideMenuStore
     }
   }
 })

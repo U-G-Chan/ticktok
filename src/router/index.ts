@@ -60,7 +60,7 @@ const router = createRouter({
     },
     {
       path: '/search',
-      component: () => import('@/components/Search.vue')
+      component: () => import('@/components/Search')
     },
     {
       path: "/friend",
@@ -76,6 +76,11 @@ const router = createRouter({
       path: "/chat",
       name: "Chat",
       component: () => import("@/pages/chat")
+    },
+    {
+      path: "/chat/window/:id",
+      name: "ChatWindow",
+      component: () => import("@/pages/chat/chat-window")
     },
     {
       path: "/me",
