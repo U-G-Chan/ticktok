@@ -115,8 +115,8 @@ export default defineComponent({
   display: flex;
   flex-direction: column;
   height: 100vh;
-  background-color: #000;
-  color: #fff;
+  background-color: white;
+  color: #333;
 }
 
 /* 滚动容器 */

@@ -118,7 +118,7 @@ export default defineComponent({
 
 .message-badge {
   position: absolute;
-  top: 16px;
+  top: 35px;
   right: 0;
   min-width: 18px;
   height: 18px;

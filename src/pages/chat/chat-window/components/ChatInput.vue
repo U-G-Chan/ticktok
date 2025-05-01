@@ -81,7 +81,6 @@ export default defineComponent({
   display: flex;
   align-items: center;
   padding: 10px 16px;
-  background-color: #121212;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
@@ -95,7 +94,6 @@ export default defineComponent({
   padding: 10px 12px;
   border-radius: 20px;
   border: none;
-  background-color: #333;
   color: #fff;
   font-size: 16px;
 }

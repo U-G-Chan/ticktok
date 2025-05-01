@@ -60,12 +60,13 @@ export default defineComponent({
   margin: 0 12px;
   padding: 10px 12px;
   border-radius: 18px;
-  background-color: #333;
   position: relative;
+  background-color: white; 
 }
 
+
 .message-bubble.self {
-  background-color: #1877f2; /* 蓝色 */
+  background-color: #4e95f3; /* 蓝色 */
   border-bottom-right-radius: 4px;
 }
 

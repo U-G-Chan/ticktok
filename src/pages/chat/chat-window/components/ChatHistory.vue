@@ -101,7 +101,7 @@ export default defineComponent({
   flex: 1;
   overflow-y: auto;
   padding: 16px;
-  background-color: #121212;
+  background-color: #f8f8f8;
 }
 
 .message-item {
