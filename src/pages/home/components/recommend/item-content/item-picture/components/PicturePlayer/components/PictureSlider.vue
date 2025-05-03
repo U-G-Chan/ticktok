@@ -17,6 +17,7 @@
           :src="getImageUrl(album[album.length - 1])" 
           alt="图片" 
           class="picture"
+          @load="onImageLoad(-1)"
         />
       </div>
       
@@ -46,6 +47,7 @@
           :src="getImageUrl(album[0])" 
           alt="图片" 
           class="picture"
+          @load="onImageLoad(album.length)"
         />
       </div>
     </div>
@@ -88,11 +90,13 @@ defineProps<{
   display: flex;
   align-items: center;
   justify-content: center;
+  will-change: transform;
 }
 
 .picture {
   max-width: 100%;
   max-height: 100%;
   object-fit: contain;
+  z-index: 2;
 }
 </style> 

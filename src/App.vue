@@ -69,7 +69,9 @@ export default defineComponent({
   display: flex;
   flex-direction: column;
   background-color: #121212;
-  transition: transform 0.2s cubic-bezier(0.4, 0, 0.6, 1);
+  transform: translateX(0);
+  will-change: transform;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
   z-index: 1;
 }
@@ -88,6 +90,9 @@ export default defineComponent({
   height: 100%;
   display: flex;
   transition: transform 0.2s cubic-bezier(0.4, 0, 0.6, 1);
+  transform: translateX(0);
+  will-change: transform;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   z-index: 2;
 }
 

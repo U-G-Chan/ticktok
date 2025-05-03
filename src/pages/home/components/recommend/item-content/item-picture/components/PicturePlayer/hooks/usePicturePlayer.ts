@@ -50,9 +50,22 @@ export function usePicturePlayer(props: PicturePlayerProps, emit: PicturePlayerE
 
   // 图片加载完成处理
   const onImageLoad = (index: number) => {
+    // 记录已加载的图片
     loadedImages.value.add(index);
     
-    if (index === 0 && SlideItemStatusHelper.shouldPlay(props.itemStatus) && !isPaused.value) {
+    // 特殊处理克隆图片的加载
+    if (index === -1) {
+      // 克隆的最后一张图片加载完成，记录为已加载
+      loadedImages.value.add(props.album.length - 1);
+    } else if (index === props.album.length) {
+      // 克隆的第一张图片加载完成，记录为已加载
+      loadedImages.value.add(0);
+    }
+    
+    // 当第一张图片加载完成且组件处于激活状态时，开始自动播放
+    if ((index === 0 || loadedImages.value.has(0)) && 
+        SlideItemStatusHelper.shouldPlay(props.itemStatus) && 
+        !isPaused.value) {
       startAutoPlay();
     }
   }
@@ -66,7 +79,8 @@ export function usePicturePlayer(props: PicturePlayerProps, emit: PicturePlayerE
     autoPlayTimer.value = window.setTimeout(() => {
       if (!isPaused.value && !isUserInteracting.value && !isTransitioning.value && 
           SlideItemStatusHelper.shouldPlay(props.itemStatus)) {
-        goToNextImage(true);
+        // 使用isUserAction=false调用，表示这是系统自动轮播，不是用户交互
+        goToNextImage(true, false);
       }
     }, props.interval || 3000);
   }
@@ -98,9 +112,14 @@ export function usePicturePlayer(props: PicturePlayerProps, emit: PicturePlayerE
   }
 
   // 前往下一张图片（始终从右向左滑动）
-  const goToNextImage = (animate = true) => {
+  const goToNextImage = (animate = true, isUserAction = true) => {
     if (props.album.length <= 1) return;
     if (isTransitioning.value) return;
+    
+    // 用户操作且已在最后一张，不执行任何操作
+    if (isUserAction && displayIndex.value === props.album.length - 1) {
+      return;
+    }
     
     // 停止自动播放，避免多次触发
     stopAutoPlay();
@@ -113,10 +132,9 @@ export function usePicturePlayer(props: PicturePlayerProps, emit: PicturePlayerE
     currentIndex.value = nextIndex;
     
     // 计算显示索引
-    const nextDisplayIndex = nextIndex <= props.album.length 
-      ? nextIndex % props.album.length
-      : 0;
+    const nextDisplayIndex = nextIndex % props.album.length;
     
+    // 更新显示索引
     displayIndex.value = nextDisplayIndex;
     emit.indexChange(nextDisplayIndex);
     
@@ -124,7 +142,7 @@ export function usePicturePlayer(props: PicturePlayerProps, emit: PicturePlayerE
     translateX.value = -nextIndex * playerWidth.value;
     
     // 检查是否需要处理回到第一张图片的无缝过渡
-    if (nextIndex > props.album.length) {
+    if (nextIndex >= props.album.length) {
       // 进入过渡状态
       isTransitioning.value = true;
       
@@ -134,12 +152,8 @@ export function usePicturePlayer(props: PicturePlayerProps, emit: PicturePlayerE
         isAnimating.value = false;
         
         // 重置到真实的第一张图片位置
-        currentIndex.value = 1; // 关键改动：设置为1而不是0，因为下一次应该显示第2张
-        translateX.value = -playerWidth.value; // 对应位置也调整为第1张的位置
-        
-        // 同步更新显示索引为第一张
-        displayIndex.value = 1; // 保持与currentIndex一致
-        emit.indexChange(1); // 同步通知父组件显示索引变化
+        currentIndex.value = nextDisplayIndex; // 重置为真实索引位置
+        translateX.value = -currentIndex.value * playerWidth.value; // 对应位置也调整
         
         // 设置一个足够长的延迟，确保位置重置已完成
         setTimeout(() => {
@@ -148,15 +162,9 @@ export function usePicturePlayer(props: PicturePlayerProps, emit: PicturePlayerE
           // 重新启动自动播放（仅当不是暂停状态）
           if (!isPaused.value && !isUserInteracting.value && 
               SlideItemStatusHelper.shouldPlay(props.itemStatus)) {
-            // 使用setTimeout而不是setInterval，避免累积调用
-            autoPlayTimer.value = window.setTimeout(() => {
-              if (!isPaused.value && !isUserInteracting.value && 
-                  SlideItemStatusHelper.shouldPlay(props.itemStatus)) {
-                goToNextImage(true);
-              }
-            }, props.interval || 3000);
+            startAutoPlay();
           }
-        }, 100); // 增加延迟确保状态完全稳定
+        }, 50); // 减少延迟时间，但仍保证状态稳定
       }, transitionDuration.value);
     } else {
       // 普通切换，等待动画完成后重置状态
@@ -173,37 +181,79 @@ export function usePicturePlayer(props: PicturePlayerProps, emit: PicturePlayerE
   }
 
   // 前往上一张图片（始终从左向右滑动）
-  const goToPrevImage = (animate = true) => {
+  const goToPrevImage = (animate = true, isUserAction = true) => {
     if (props.album.length <= 1) return;
     if (isTransitioning.value) return;
+    
+    // 用户操作且已在第一张，不执行任何操作
+    if (isUserAction && displayIndex.value === 0) {
+      return;
+    }
+    
+    // 停止自动播放，避免多次触发
+    stopAutoPlay();
     
     isAnimating.value = animate;
     transitionDuration.value = animate ? 300 : 0;
     
-    // 如果是第一张，先立即转到克隆的最后一张位置
+    // 如果已经是第一张，进入特殊处理流程
     if (currentIndex.value === 0) {
-      currentIndex.value = props.album.length;
+      // 进入过渡状态
+      isTransitioning.value = true;
+      
+      // 计算下一个显示索引（应显示最后一张图片）
+      const prevDisplayIndex = props.album.length - 1;
+      
+      // 更新用于显示的索引
+      displayIndex.value = prevDisplayIndex;
+      emit.indexChange(prevDisplayIndex);
+      
+      // 设置动画移动到克隆的最后一张图片位置（在轮播图的左侧）
+      translateX.value = playerWidth.value; // 向右移动一个位置
+
+      // 等待过渡动画完成
+      setTimeout(() => {
+        // 禁用过渡动画
+        isAnimating.value = false;
+        
+        // 重置到真实的最后一张图片位置
+        currentIndex.value = props.album.length - 1;
+        translateX.value = -currentIndex.value * playerWidth.value;
+        
+        // 恢复正常状态
+        setTimeout(() => {
+          isTransitioning.value = false;
+          
+          // 如果需要，重新启动自动播放
+          if (!isPaused.value && !isUserInteracting.value && 
+              SlideItemStatusHelper.shouldPlay(props.itemStatus)) {
+            startAutoPlay();
+          }
+        }, 50);
+      }, transitionDuration.value);
+    } else {
+      // 标准情况：只需向前移动一个位置
+      currentIndex.value--;
+      const prevDisplayIndex = currentIndex.value % props.album.length;
+      
+      // 更新显示索引
+      displayIndex.value = prevDisplayIndex;
+      emit.indexChange(prevDisplayIndex);
+      
+      // 更新位置
       translateX.value = -currentIndex.value * playerWidth.value;
       
-      // 强制一次重绘，确保位置已更新
-      void playerRef.value?.offsetWidth;
+      // 重置滑动动画状态
+      setTimeout(() => {
+        isAnimating.value = false;
+        
+        // 如果需要，重新启动自动播放
+        if (!isPaused.value && !isUserInteracting.value && 
+            SlideItemStatusHelper.shouldPlay(props.itemStatus)) {
+          startAutoPlay();
+        }
+      }, transitionDuration.value);
     }
-    
-    // 向前移动一个位置
-    currentIndex.value--;
-    const prevDisplayIndex = currentIndex.value % props.album.length;
-    
-    // 更新显示索引
-    displayIndex.value = prevDisplayIndex;
-    emit.indexChange(prevDisplayIndex);
-    
-    // 更新位置
-    translateX.value = -currentIndex.value * playerWidth.value;
-    
-    // 重置滑动动画状态
-    setTimeout(() => {
-      isAnimating.value = false;
-    }, transitionDuration.value);
   }
 
   // 更新播放器尺寸
@@ -216,14 +266,31 @@ export function usePicturePlayer(props: PicturePlayerProps, emit: PicturePlayerE
 
   // 初始化轮播位置
   const initCarousel = () => {
-    // 确保从第一张图片开始
-    currentIndex.value = 0;
-    displayIndex.value = 0;
+    // 确保从第一张图片开始，考虑克隆逻辑
+    if (props.album.length > 1) {
+      // 对于多张图片，初始位置设为第一张图片，而不是克隆图片
+      currentIndex.value = 0;
+      displayIndex.value = 0;
+    } else {
+      // 单张图片的情况
+      currentIndex.value = 0;
+      displayIndex.value = 0;
+    }
+    
+    // 初始位置设为0，更新尺寸后会重新计算
     translateX.value = 0;
     
-    // 更新尺寸
+    // 更新尺寸并设置正确的初始位置
     nextTick(() => {
       updatePlayerSize();
+      
+      // 对于多张图片，延迟一帧确保位置正确设置
+      if (props.album.length > 1) {
+        requestAnimationFrame(() => {
+          // 实际图片应该在索引0的位置
+          translateX.value = -currentIndex.value * playerWidth.value;
+        });
+      }
     });
   }
 

@@ -80,10 +80,21 @@ export function useTouchEvents(options: TouchEventsOptions) {
     // 防止默认行为（如页面滚动）
     e.preventDefault();
     
-    // 计算滑动位置，添加阻尼效果
-    const dampingFactor = 0.8; // 阻尼系数
-    const baseTranslateX = -currentIndex.value * playerWidth.value;
-    translateX.value = baseTranslateX + (touchDeltaX.value * dampingFactor);
+    // 检查是否在边界位置
+    const currentDisplayIndex = options.displayIndex.value;
+    const isFirstImage = currentDisplayIndex === 0;
+    const isLastImage = currentDisplayIndex === album().length - 1;
+    
+    // 在边界位置尝试向错误方向滑动时，完全不响应滑动
+    if ((isFirstImage && touchDeltaX.value > 0) || (isLastImage && touchDeltaX.value < 0)) {
+      // 不更新 translateX，保持在当前位置，完全阻止滑动
+      return;
+    } else {
+      // 正常滑动的阻尼效果
+      const dampingFactor = 0.8; // 阻尼系数
+      const baseTranslateX = -currentIndex.value * playerWidth.value;
+      translateX.value = baseTranslateX + (touchDeltaX.value * dampingFactor);
+    }
   }
 
   // 处理触摸结束
@@ -105,6 +116,28 @@ export function useTouchEvents(options: TouchEventsOptions) {
       return;
     }
     
+    // 检查是否在边界位置
+    const currentDisplayIndex = options.displayIndex.value;
+    const isFirstImage = currentDisplayIndex === 0;
+    const isLastImage = currentDisplayIndex === album().length - 1;
+    
+    // 在边界位置尝试向错误方向滑动时，直接返回原位
+    if ((isFirstImage && touchDeltaX.value > 0) || (isLastImage && touchDeltaX.value < 0)) {
+      translateX.value = -currentIndex.value * playerWidth.value;
+      
+      // 重置动画状态
+      setTimeout(() => {
+        isAnimating.value = false;
+      }, 150);
+      
+      // 如果未暂停，恢复自动播放
+      if (!isPaused.value && SlideItemStatusHelper.shouldPlay(itemStatus())) {
+        startAutoPlay();
+      }
+      
+      return;
+    }
+    
     // 计算滑动阈值（播放器宽度的50%）
     const threshold = playerWidth.value * 0.5;
     
@@ -121,12 +154,12 @@ export function useTouchEvents(options: TouchEventsOptions) {
     } else {
       // 滑动距离小于阈值，回弹到当前图片
       translateX.value = -currentIndex.value * playerWidth.value;
-      
-      // 重置动画状态
-      setTimeout(() => {
-        isAnimating.value = false;
-      }, 300);
     }
+    
+    // 重置动画状态
+    setTimeout(() => {
+      isAnimating.value = false;
+    }, 300);
     
     // 如果未暂停，恢复自动播放
     if (!isPaused.value && SlideItemStatusHelper.shouldPlay(itemStatus())) {
