@@ -17,6 +17,11 @@
       @click="togglePlay"
     ></video>
     <video-progress :progress="progress" :is-paused="isPaused" />
+    
+    <!-- 暂停/播放图标 -->
+    <div class="play-pause-icon" v-if="isPaused && !isUserInteracting">
+      <div class="play-triangle"></div>
+    </div>
   </div>
 </template>
 
@@ -45,6 +50,7 @@ const startX = ref(0)
 const startY = ref(0)
 const isPaused = ref(true)
 const lastStatus = ref(SlideItemStatus.INACTIVE)
+const isUserInteracting = ref(false)
 
 // 监听 itemStatus 变化
 watch(() => props.itemStatus, (newStatus, oldStatus) => {
@@ -104,6 +110,7 @@ const handleTimeUpdate = () => {
 const handleTouchStart = (e: TouchEvent) => {
   startX.value = e.touches[0].clientX
   startY.value = e.touches[0].clientY
+  isUserInteracting.value = true
   emit('dragStart', e)
 }
 
@@ -117,6 +124,7 @@ const handleTouchMove = (e: TouchEvent) => {
 }
 
 const handleTouchEnd = (e: TouchEvent) => {
+  isUserInteracting.value = false
   emit('dragEnd', e)
 }
 
@@ -168,5 +176,30 @@ defineExpose({
   width: 100%;
   height: 100%;
   object-fit: contain;
+}
+
+.play-pause-icon {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.play-triangle {
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 12px 0 12px 20px;
+  border-color: transparent transparent transparent rgba(255, 255, 255, 0.8);
+  margin-left: 4px;
 }
 </style> 
