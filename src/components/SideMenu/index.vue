@@ -25,8 +25,8 @@ export default defineComponent({
 <style scoped>
 .side-menu {
   background: #f5f5f5;
-  height: 100%;
   overflow-y: auto;
-  width: 100%;
+  height: 100%;
+  width: 80%;
 }
 </style> 

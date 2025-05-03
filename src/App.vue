@@ -69,7 +69,7 @@ export default defineComponent({
   display: flex;
   flex-direction: column;
   background-color: #121212;
-  transition: transform 0.3s ease;
+  transition: transform 0.2s cubic-bezier(0.4, 0, 0.6, 1);
   position: relative;
   z-index: 1;
 }
@@ -87,26 +87,19 @@ export default defineComponent({
   width: 100%;
   height: 100%;
   display: flex;
-  transition: transform 0.3s ease;
-  z-index: 2;
-}
-
-.side-menu {
-  width: 70%;
-  height: 100%;
-  background: #fff;
+  transition: transform 0.2s cubic-bezier(0.4, 0, 0.6, 1);
   z-index: 2;
 }
 
 .side-menu-mask {
-  width: 30%;
+  width: 20%;
   height: 100%;
   background: rgba(0, 0, 0, 0.5);
   z-index: 2;
 }
 
 .middle.menu-open {
-  transform: translateX(70%);
+  transform: translateX(80%);
 }
 
 .side-menu-container.menu-open {
