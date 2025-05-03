@@ -18,8 +18,8 @@
     ></video>
     <video-progress :progress="progress" :is-paused="isPaused" />
     
-    <!-- 暂停/播放图标 -->
-    <div class="play-pause-icon" v-if="isPaused && !isUserInteracting">
+    <!-- 暂停/播放图标 - 只在用户主动暂停时显示 -->
+    <div class="play-pause-icon" v-if="isPaused && isUserPaused && !isUserInteracting">
       <div class="play-triangle"></div>
     </div>
   </div>
@@ -51,6 +51,7 @@ const startY = ref(0)
 const isPaused = ref(true)
 const lastStatus = ref(SlideItemStatus.INACTIVE)
 const isUserInteracting = ref(false)
+const isUserPaused = ref(false)
 
 // 监听 itemStatus 变化
 watch(() => props.itemStatus, (newStatus, oldStatus) => {
@@ -84,8 +85,10 @@ const togglePlay = () => {
   if (!videoRef.value) return
   if (videoRef.value.paused) {
     videoRef.value.play()
+    isUserPaused.value = false
   } else {
     videoRef.value.pause()
+    isUserPaused.value = true
   }
 }
 

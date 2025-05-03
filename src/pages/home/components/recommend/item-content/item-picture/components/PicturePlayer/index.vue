@@ -19,7 +19,8 @@
     />
     <play-pause-icon 
       :is-paused="isPaused" 
-      :is-user-interacting="isUserInteracting" 
+      :is-user-interacting="isUserInteracting"
+      :is-user-paused="isUserPaused"
     />
   </div>
 </template>
@@ -46,6 +47,7 @@ const emit = defineEmits<{
 const {
   playerRef,
   isPaused,
+  isUserPaused,
   isAnimating,
   isUserInteracting,
   displayIndex,

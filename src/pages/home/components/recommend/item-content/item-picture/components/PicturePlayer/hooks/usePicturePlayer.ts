@@ -19,6 +19,7 @@ export function usePicturePlayer(props: PicturePlayerProps, emit: PicturePlayerE
   const isPaused = ref(true)
   const isAnimating = ref(false)
   const isUserInteracting = ref(false)
+  const isUserPaused = ref(false) // 添加用户主动暂停状态
   const currentIndex = ref(0) // 实际索引（带克隆逻辑）
   const displayIndex = ref(0) // 显示给用户的索引
   const playerWidth = ref(0)
@@ -86,6 +87,7 @@ export function usePicturePlayer(props: PicturePlayerProps, emit: PicturePlayerE
     }
     
     isPaused.value = !isPaused.value;
+    isUserPaused.value = isPaused.value; // 设置用户主动暂停状态
     emit.isPausedChange(isPaused.value);
     
     if (!isPaused.value) {
@@ -231,6 +233,7 @@ export function usePicturePlayer(props: PicturePlayerProps, emit: PicturePlayerE
     displayIndex.value = 0;
     translateX.value = 0;
     isPaused.value = true;
+    isUserPaused.value = false; // 重置用户暂停状态
     isTransitioning.value = false;
     emit.indexChange(0);
     emit.isPausedChange(true);
@@ -265,6 +268,7 @@ export function usePicturePlayer(props: PicturePlayerProps, emit: PicturePlayerE
     if (SlideItemStatusHelper.shouldPlay(newStatus)) {
       // 真正激活时开始播放
       isPaused.value = false;
+      // 不更改isUserPaused状态，因为这是系统触发的
       emit.isPausedChange(false);
       
       // 确保尺寸正确
@@ -275,6 +279,7 @@ export function usePicturePlayer(props: PicturePlayerProps, emit: PicturePlayerE
     } else if (SlideItemStatusHelper.isPaused(newStatus)) {
       // 暂停状态
       isPaused.value = true;
+      // 不更改isUserPaused状态，因为这是系统触发的
       emit.isPausedChange(true);
       stopAutoPlay();
       
@@ -319,6 +324,7 @@ export function usePicturePlayer(props: PicturePlayerProps, emit: PicturePlayerE
   return {
     playerRef,
     isPaused,
+    isUserPaused, // 返回用户暂停状态
     isAnimating,
     isUserInteracting,
     displayIndex,

@@ -1,5 +1,5 @@
 <template>
-  <div class="play-pause-icon" v-if="isPaused && !isUserInteracting">
+  <div class="play-pause-icon" v-if="isPaused && isUserPaused && !isUserInteracting">
     <div class="play-triangle"></div>
   </div>
 </template>
@@ -8,6 +8,7 @@
 defineProps<{
   isPaused: boolean
   isUserInteracting: boolean
+  isUserPaused: boolean
 }>()
 </script>
 
