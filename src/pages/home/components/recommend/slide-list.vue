@@ -1,10 +1,10 @@
 <template>
   <div class="slide-list" ref="slideListRef">
     <div class="slide-container" :style="containerStyle">
-      <slide-item v-for="(item, index) in slideItemBuffer" :key="item.id" :content-type="item.contentType"
-        :is-activated="isItemActivated(index)" :style="getItemStyle(index)">
-        <template #default="{ isActivated }">
-          <component :is="getContentComponent(item.contentType)" :data="item" :is-activated="isActivated" />
+      <slide-item v-for="(item, index) in slideStore.slideItems" :key="item.id" :content-type="item.contentType"
+        :item-status="slideStore.getItemStatus(index)" :style="getItemStyle(index)">
+        <template #default="{ itemStatus }">
+          <component :is="getContentComponent(item.contentType)" :data="item" :item-status="itemStatus" />
         </template>
       </slide-item>
     </div>
@@ -14,7 +14,7 @@
 <script lang="ts">
 import { defineComponent, ref, computed, onMounted, onUnmounted, defineAsyncComponent } from 'vue'
 import { getSlideItems } from '@/api/slide'
-import type { SlideItemData } from '@/types/slide'
+import { useSlideStore } from '@/store/slide'
 
 const SlideItem = defineAsyncComponent(() => import('./slide-item.vue'))
 const VideoContent = defineAsyncComponent(() => import('./item-content/item-video/index.vue'))
@@ -41,14 +41,16 @@ export default defineComponent({
   },
   setup(props) {
     const slideListRef = ref<HTMLElement | null>(null)
-    const currentIndex = ref(props.defaultIndex)
     const startY = ref(0)
     const currentY = ref(0)
     const isDragging = ref(false)
     const startX = ref(0)
     const itemHeight = ref(0)
-    const slideItemBuffer = ref<SlideItemData[]>([])
-    const maxBufferSize = ref(props.pageSize * 3)
+    
+    // 使用Pinia状态管理
+    const slideStore = useSlideStore()
+    slideStore.setMaxBufferSize(props.pageSize * 3)
+    slideStore.setCurrentIndex(props.defaultIndex)
 
     // 获取滑动项数据
     const getSlideItemsData = async (startIndex: number) => {
@@ -57,35 +59,25 @@ export default defineComponent({
 
     // 刷新滑动列表
     const refreshSlideList = async () => {
-      slideItemBuffer.value = []
+      slideStore.reset()
       const items = await getSlideItemsData(0)
-      slideItemBuffer.value = items
+      slideStore.setSlideItems(items)
     }
 
     // 获取更多滑动项
     const getMoreSlideItems = async () => {
-      if (slideItemBuffer.value.length === 0) return
+      if (slideStore.slideItems.length === 0) return
 
       // 获取最后一个元素的 id，并转换为数字
-      const lastItemId = parseInt(slideItemBuffer.value[slideItemBuffer.value.length - 1].id)
+      const lastItemId = parseInt(slideStore.slideItems[slideStore.slideItems.length - 1].id)
       const newItems = await getSlideItemsData(lastItemId)
-
-      // 如果超过最大缓存大小，移除头部数据
-      if (slideItemBuffer.value.length + newItems.length > maxBufferSize.value) {
-        // 计算需要移除的数据量
-        const removeCount = (slideItemBuffer.value.length + newItems.length) - maxBufferSize.value
-        // 移除头部数据
-        slideItemBuffer.value = [...slideItemBuffer.value.slice(removeCount), ...newItems]
-        // 保持当前显示位置不变
-        currentIndex.value = Math.max(0, currentIndex.value - removeCount)
-      } else {
-        // 直接追加新数据
-        slideItemBuffer.value = [...slideItemBuffer.value, ...newItems]
-      }
+      
+      // 添加到store中
+      slideStore.addItems(newItems)
     }
 
     const containerStyle = computed(() => ({
-      transform: `translateY(${-currentIndex.value * 100 + (isDragging.value ? (currentY.value - startY.value) : 0)}%)`,
+      transform: `translateY(${-slideStore.currentIndex * 100 + (isDragging.value ? (currentY.value - startY.value) : 0)}%)`,
       transition: isDragging.value ? 'none' : 'transform 0.4s cubic-bezier(0.25, 0.1, 0.25, 1)'
     }))
 
@@ -132,12 +124,12 @@ export default defineComponent({
       const singleItemHeight = (slideListRef.value?.clientHeight || 0) / 5
 
       if (Math.abs(deltaY) > singleItemHeight * 0.5) {
-        if (deltaY > 0 && currentIndex.value > 0) {
-          currentIndex.value--
-        } else if (deltaY < 0 && currentIndex.value < slideItemBuffer.value.length - 1) {
-          currentIndex.value++
+        if (deltaY > 0) {
+          slideStore.movePrevious()
+        } else {
+          const moved = slideStore.moveNext()
           // 当滑动到最后一个item时，加载更多数据
-          if (currentIndex.value === slideItemBuffer.value.length - 1) {
+          if (moved && slideStore.currentIndex === slideStore.slideItems.length - 1) {
             getMoreSlideItems()
           }
         }
@@ -145,18 +137,6 @@ export default defineComponent({
 
       isDragging.value = false
     }
-
-    const isItemActivated = (index: number) => {
-      return index === currentIndex.value
-    }
-
-    // [debug]监听 currentIndex 变化，打印当前激活的 item
-    // watch(currentIndex, (newIndex) => {
-    //   const activatedItem = slideItemBuffer.value[newIndex]
-    //   if (activatedItem) {
-    //     console.log('当前激活的 item:', activatedItem.id)
-    //   }
-    // })
 
     onMounted(() => {
       if (slideListRef.value) {
@@ -177,17 +157,15 @@ export default defineComponent({
         slideListRef.value.removeEventListener('touchend', handleTouchEnd)
       }
       // 清理数据
-      slideItemBuffer.value = []
+      slideStore.reset()
     })
 
     return {
       slideListRef,
-      currentIndex,
       containerStyle,
       getItemStyle,
       getContentComponent,
-      slideItemBuffer,
-      isItemActivated
+      slideStore
     }
   }
 })

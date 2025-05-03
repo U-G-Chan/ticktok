@@ -72,10 +72,11 @@
 
 <script setup lang="ts">
 import { ref, computed, watch, onMounted, onUnmounted, nextTick } from 'vue'
+import { SlideItemStatus, SlideItemStatusHelper } from '@/types/slide'
 
 const props = defineProps<{
   album: string[]
-  isActivated: boolean
+  itemStatus: SlideItemStatus
   interval?: number // 轮播间隔时间，默认3000ms
 }>()
 
@@ -94,6 +95,7 @@ const displayIndex = ref(0) // 显示给用户的索引
 const playerWidth = ref(0)
 const loadedImages = ref<Set<number>>(new Set())
 const isTransitioning = ref(false)
+const lastStatus = ref(SlideItemStatus.INACTIVE)
 
 // 触摸相关
 const touchStartX = ref(0)
@@ -126,7 +128,7 @@ const getImageUrl = (url: string) => {
 const onImageLoad = (index: number) => {
   loadedImages.value.add(index);
   
-  if (index === 0 && props.isActivated && !isPaused.value) {
+  if (index === 0 && SlideItemStatusHelper.shouldPlay(props.itemStatus) && !isPaused.value) {
     startAutoPlay();
   }
 }
@@ -138,7 +140,8 @@ const startAutoPlay = () => {
   
   // 设置新的定时器
   autoPlayTimer.value = window.setTimeout(() => {
-    if (!isPaused.value && !isUserInteracting.value && !isTransitioning.value) {
+    if (!isPaused.value && !isUserInteracting.value && !isTransitioning.value && 
+        SlideItemStatusHelper.shouldPlay(props.itemStatus)) {
       goToNextImage(true);
     }
   }, props.interval || 3000);
@@ -218,10 +221,12 @@ const goToNextImage = (animate = true) => {
         isTransitioning.value = false;
         
         // 重新启动自动播放（仅当不是暂停状态）
-        if (!isPaused.value && !isUserInteracting.value) {
+        if (!isPaused.value && !isUserInteracting.value && 
+            SlideItemStatusHelper.shouldPlay(props.itemStatus)) {
           // 使用setTimeout而不是setInterval，避免累积调用
           autoPlayTimer.value = window.setTimeout(() => {
-            if (!isPaused.value && !isUserInteracting.value) {
+            if (!isPaused.value && !isUserInteracting.value && 
+                SlideItemStatusHelper.shouldPlay(props.itemStatus)) {
               goToNextImage(true);
             }
           }, props.interval || 3000);
@@ -234,7 +239,8 @@ const goToNextImage = (animate = true) => {
       isAnimating.value = false;
       
       // 重新启动自动播放（如果需要）
-      if (!isPaused.value && !isUserInteracting.value) {
+      if (!isPaused.value && !isUserInteracting.value && 
+          SlideItemStatusHelper.shouldPlay(props.itemStatus)) {
         startAutoPlay();
       }
     }, transitionDuration.value);
@@ -331,7 +337,7 @@ const handleTouchEnd = () => {
     translateX.value = -currentIndex.value * playerWidth.value;
     
     // 如果未暂停，恢复自动播放
-    if (!isPaused.value) {
+    if (!isPaused.value && SlideItemStatusHelper.shouldPlay(props.itemStatus)) {
       startAutoPlay();
     }
     return;
@@ -361,7 +367,7 @@ const handleTouchEnd = () => {
   }
   
   // 如果未暂停，恢复自动播放
-  if (!isPaused.value) {
+  if (!isPaused.value && SlideItemStatusHelper.shouldPlay(props.itemStatus)) {
     startAutoPlay();
   }
 }
@@ -400,9 +406,12 @@ const reset = () => {
 }
 
 // 监听激活状态
-watch(() => props.isActivated, (newVal) => {
-  if (newVal) {
-    // 激活时开始播放
+watch(() => props.itemStatus, (newStatus, oldStatus) => {
+  // 保存上一个状态，便于后续处理
+  lastStatus.value = oldStatus as SlideItemStatus;
+  
+  if (SlideItemStatusHelper.shouldPlay(newStatus)) {
+    // 真正激活时开始播放
     isPaused.value = false;
     emit('isPausedChange', false);
     
@@ -411,8 +420,19 @@ watch(() => props.isActivated, (newVal) => {
     
     // 启动自动播放
     startAutoPlay();
-  } else {
-    // 未激活时重置状态
+  } else if (SlideItemStatusHelper.isPaused(newStatus)) {
+    // 暂停状态
+    isPaused.value = true;
+    emit('isPausedChange', true);
+    stopAutoPlay();
+    
+    // 如果不应保持状态，则重置
+    if (!SlideItemStatusHelper.shouldPreserveState(newStatus as SlideItemStatus) && 
+        !SlideItemStatusHelper.shouldPreserveState(oldStatus as SlideItemStatus)) {
+      reset();
+    }
+  } else if (newStatus === SlideItemStatus.INACTIVE) {
+    // 完全未激活状态
     reset();
   }
 }, { immediate: true });
@@ -431,7 +451,7 @@ onMounted(() => {
   window.addEventListener('resize', handleResize);
   
   // 如果组件已激活，开始自动播放
-  if (props.isActivated) {
+  if (SlideItemStatusHelper.shouldPlay(props.itemStatus)) {
     isPaused.value = false;
     emit('isPausedChange', false);
     startAutoPlay();

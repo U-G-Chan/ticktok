@@ -2,7 +2,7 @@
   <div class="picture-content">
     <picture-player 
       :album="pictureData.album" 
-      :is-activated="isActivated"
+      :item-status="itemStatus"
       @index-change="handleIndexChange"
       @is-paused-change="handlePausedChange"
     />
@@ -36,7 +36,7 @@ import PicturePlayer from './components/PicturePlayer.vue'
 import PictureFooter from './components/PictureFooter.vue'
 import PictureSidebar from './components/PictureSidebar.vue'
 import PictureProgress from './components/PictureProgress.vue'
-import { SlideItemData } from '@/types/slide'
+import { SlideItemData, SlideItemStatus } from '@/types/slide'
 
 interface PictureData extends SlideItemData {
   album: string[]
@@ -52,7 +52,7 @@ interface PictureData extends SlideItemData {
 
 const props = defineProps<{
   data: PictureData
-  isActivated: boolean
+  itemStatus: SlideItemStatus
 }>()
 
 defineOptions({
@@ -88,8 +88,8 @@ const handlePausedChange = (paused: boolean) => {
 }
 
 // 监听激活状态变化
-watch(() => props.isActivated, (newVal) => {
-  if (!newVal) {
+watch(() => props.itemStatus, (newVal) => {
+  if (newVal === SlideItemStatus.INACTIVE) {
     currentIndex.value = 0
     isPaused.value = true
   }

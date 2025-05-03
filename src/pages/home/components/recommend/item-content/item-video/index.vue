@@ -2,8 +2,8 @@
   <div class="video-content">
     <video-player
       ref="videoPlayerRef"
-      :video-url="data.videoUrl"
-      :is-activated="isActivated"
+      :video-url="props.data.videoUrl"
+      :item-status="props.itemStatus"
       @drag-start="handleDragStart"
       @drag-move="handleDragMove"
       @drag-end="handleDragEnd"
@@ -11,21 +11,21 @@
       @is-paused-change="handlePausedChange"
     />
     <video-sidebar
-      :avatar="data.avatar"
-      :likes="data.likes"
-      :comments="data.comments"
-      :stars="data.stars"
-      :forwards="data.forwards"
+      :avatar="props.data.avatar"
+      :likes="props.data.likes"
+      :comments="props.data.comments"
+      :stars="props.data.stars"
+      :forwards="props.data.forwards"
       :is-liked="isLiked"
       :is-paused="isPaused"
       :opacity="overlayOpacity"
       @toggleLike="handleToggleLike"
     />
     <video-footer
-      :author="data.author"
-      :title="data.title"
-      :labels="data.labels"
-      :description="data.description"
+      :author="props.data.author"
+      :title="props.data.title"
+      :labels="props.data.labels"
+      :description="props.data.description"
       :opacity="overlayOpacity"
     />
     <video-progress 
@@ -37,17 +37,18 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onUnmounted, watch } from 'vue'
+import { ref, onUnmounted } from 'vue'
 import VideoPlayer from './components/VideoPlayer.vue'
 import VideoSidebar from './components/VideoSidebar.vue'
 import VideoFooter from './components/VideoFooter.vue'
 import VideoProgress from './components/VideoProgress.vue'
 import '@/components/Icon/iconfont.css'
 import type { VideoItemData } from '@/types/video.ts'
+import { SlideItemStatus } from '@/types/slide'
 
 const props = defineProps<{
   data: VideoItemData
-  isActivated: boolean
+  itemStatus: SlideItemStatus
 }>()
 
 const videoPlayerRef = ref()
@@ -88,14 +89,6 @@ const handleProgressChange = (newProgress: number) => {
 const handleToggleLike = () => {
   isLiked.value = !isLiked.value
 }
-
-// 监听 isActivated 变化
-watch(() => props.isActivated, (newVal) => {
-  if (!newVal) {
-    // 当视频不再激活时，重置暂停状态
-    isPaused.value = true
-  }
-})
 
 // 当组件被卸载时重置视频
 onUnmounted(() => {

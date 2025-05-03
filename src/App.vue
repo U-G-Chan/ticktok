@@ -14,10 +14,11 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { defineComponent, watch } from 'vue'
 import FootNav from '@/components/FootNav.vue'
 import SideMenu from '@/components/SideMenu'
 import { useSideMenuStore } from '@/store/sideMenu'
+import { useSlideStore } from '@/store/slide'
 
 export default defineComponent({
   name: 'App',
@@ -28,6 +29,24 @@ export default defineComponent({
   setup() {
     // 使用侧边栏的 store
     const sideMenuStore = useSideMenuStore()
+    
+    // 使用slide的 store
+    const slideStore = useSlideStore()
+    
+    // 监听侧边栏状态变化
+    watch(() => sideMenuStore.isOpen, (isOpen) => {
+      // 通知slide store侧边栏状态变化
+      slideStore.setMenuOpen(isOpen)
+    })
+    
+    // 监听页面可见性变化
+    const handleVisibilityChange = () => {
+      const isHidden = document.hidden
+      slideStore.setSystemPaused(isHidden)
+    }
+    
+    // 添加页面可见性监听
+    document.addEventListener('visibilitychange', handleVisibilityChange)
     
     return {
       sideMenuStore

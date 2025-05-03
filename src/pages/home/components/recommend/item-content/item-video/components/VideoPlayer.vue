@@ -23,10 +23,11 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, watch } from 'vue'
 import VideoProgress from './VideoProgress.vue'
+import { SlideItemStatus, SlideItemStatusHelper } from '@/types/slide'
 
 const props = defineProps<{
   videoUrl: string
-  isActivated: boolean
+  itemStatus: SlideItemStatus
 }>()
 
 const emit = defineEmits<{
@@ -43,17 +44,33 @@ const progress = ref(0)
 const startX = ref(0)
 const startY = ref(0)
 const isPaused = ref(true)
+const lastStatus = ref(SlideItemStatus.INACTIVE)
 
-// 监听 isActivated 变化
-watch(() => props.isActivated, (newVal) => {
-  if (videoRef.value) {
-    if (newVal) {
-      videoRef.value.play()
-    } else {
-      videoRef.value.pause()
+// 监听 itemStatus 变化
+watch(() => props.itemStatus, (newStatus, oldStatus) => {
+  if (!videoRef.value) return
+  
+  // 保存上一个状态，便于后续处理
+  lastStatus.value = oldStatus
+
+  if (SlideItemStatusHelper.shouldPlay(newStatus)) {
+    // 应该播放的状态
+    videoRef.value.play()
+  } else if (SlideItemStatusHelper.isPaused(newStatus)) {
+    // 暂停状态
+    videoRef.value.pause()
+    
+    // 如果不应保持状态，则重置
+    if (!SlideItemStatusHelper.shouldPreserveState(newStatus) && 
+        !SlideItemStatusHelper.shouldPreserveState(oldStatus)) {
       videoRef.value.currentTime = 0
       progress.value = 0
     }
+  } else if (newStatus === SlideItemStatus.INACTIVE) {
+    // 完全未激活状态
+    videoRef.value.pause()
+    videoRef.value.currentTime = 0
+    progress.value = 0
   }
 })
 
