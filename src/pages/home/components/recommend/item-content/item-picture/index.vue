@@ -32,7 +32,7 @@
 
 <script setup lang="ts">
 import { ref, watch } from 'vue'
-import PicturePlayer from './components/PicturePlayer.vue'
+import PicturePlayer from './components/PicturePlayer/index.vue'
 import PictureFooter from './components/PictureFooter.vue'
 import PictureSidebar from './components/PictureSidebar.vue'
 import PictureProgress from './components/PictureProgress.vue'
