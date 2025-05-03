@@ -11,12 +11,13 @@
   "dependencies": {
     "pinia": "^3.0.2",
     "swiper": "^11.2.6",
-    "vue": "^3.4.15",
+    "vue": "^3.4.19",
     "vue-router": "^4.2.5"
   },
   "devDependencies": {
     "@types/node": "^20.11.19",
     "@vitejs/plugin-vue": "^5.0.3",
+    "@vue/runtime-core": "^3.5.13",
     "@vue/tsconfig": "^0.5.1",
     "typescript": "~5.3.3",
     "vite": "^5.1.0",
