@@ -16,4 +16,13 @@ export default defineConfig({
     },
     extensions: ['.js', '.ts', '.jsx', '.tsx', '.json', '.vue']
   },
+  server: {
+    host: '0.0.0.0',
+    port: 3000,
+    strictPort: true
+  },
+  build: {
+    target: 'esnext',
+    outDir: 'dist'
+  }
 });

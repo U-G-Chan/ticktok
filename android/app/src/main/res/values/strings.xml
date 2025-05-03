@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">ticktok</string>
+    <string name="title_activity_main">ticktok</string>
+    <string name="package_name">com.ticktok.app</string>
+    <string name="custom_url_scheme">com.ticktok.app</string>
+</resources>
