@@ -16,7 +16,7 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import FootNav from '@/components/FootNav.vue'
-import SideMenu from '@/components/SideMenu.vue'
+import SideMenu from '@/components/SideMenu'
 import { useSideMenuStore } from '@/store/sideMenu'
 
 export default defineComponent({

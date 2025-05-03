@@ -35,4 +35,57 @@
 
 .icon-heart.active:before {
   content: "\e8c4";
+}
+
+/* 侧边栏图标 */
+.icon-settings:before {
+  content: "\e78e";
+}
+
+.icon-scan:before {
+  content: "\e7d4";
+}
+
+.icon-survey:before {
+  content: "\e7dc";
+}
+
+.icon-wallet:before {
+  content: "\e7ce";
+}
+
+.icon-history:before {
+  content: "\e7bd";
+}
+
+.icon-download:before {
+  content: "\e7ef";
+}
+
+.icon-bookmark:before {
+  content: "\e7b8";
+}
+
+.icon-car:before {
+  content: "\e7c2";
+}
+
+.icon-video:before {
+  content: "\e7c8";
+}
+
+.icon-live:before {
+  content: "\e7f9";
+}
+
+.icon-shop:before {
+  content: "\e7db";
+}
+
+.icon-movie:before {
+  content: "\e7f8";
+}
+
+.icon-grid:before {
+  content: "\e7fd";
 } 
