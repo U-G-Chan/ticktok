@@ -24,6 +24,7 @@ import {
 import CameraScreen from './components/camera-screen/index.vue'
 import CameraTools from './components/camera-tools/index.vue'
 import OperationArea from './components/operation-area/index.vue'
+import { CaptureEffectType } from './components/camera-screen/captureEffects'
 
 export default defineComponent({
     name: 'CameraComponent',
@@ -39,11 +40,27 @@ export default defineComponent({
         const flashMode = ref(false)
         const Camera = ref<any>(null)
         const Filesystem = ref<any>(null)
+        
+        /**
+         * 配置当前使用的拍照效果
+         * 可选值: 
+         * - 'zoom': 缩放效果
+         * - 'flash': 闪光效果
+         * - 'shutter': 快门效果 
+         * - 'scan': 扫描效果
+         * - 'pulse': 脉冲效果
+         */
+        const CAPTURE_EFFECT: CaptureEffectType = 'flash';
 
         // 初始化API
         onMounted(async () => {
             Camera.value = await getCamera()
             Filesystem.value = await getFilesystem()
+            
+            // 设置拍照效果
+            if (cameraScreenRef.value && cameraScreenRef.value.setCaptureEffectType) {
+                cameraScreenRef.value.setCaptureEffectType(CAPTURE_EFFECT)
+            }
         })
 
         // 处理相机翻转
@@ -81,7 +98,11 @@ export default defineComponent({
                 if (currentMode.value === 'photo') {
                     if (cameraScreenRef.value) {
                         // 使用自定义相机实现
-                        await cameraScreenRef.value.captureImage()
+                        const imageUrl = await cameraScreenRef.value.captureImage()
+                        if (imageUrl) {
+                            // 直接保存图片，无需用户确认
+                            await handleImageConfirmed(imageUrl)
+                        }
                     } else {
                         // 使用Capacitor相机API
                         const image = await Camera.value.getPhoto({
@@ -109,7 +130,6 @@ export default defineComponent({
 
         // 处理图像确认
         const handleImageConfirmed = async (imageUrl: string) => {
-            console.log('照片已确认')
             
             try {
                 // 如果需要存储到设备，可以使用以下代码
