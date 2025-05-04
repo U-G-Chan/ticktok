@@ -73,7 +73,17 @@ const router = createRouter({
       component: () => import("@/pages/publish"),
       meta: {
         fullscreen: true
-      }
+      },
+      children: [
+        {
+          path: "album",
+          name: "PublishAlbum",
+          component: () => import("@/components/Album"),
+          meta: {
+            fullscreen: true
+          }
+        }
+      ]
     },
     {
       path: "/chat",

@@ -1,26 +1,32 @@
 <template>
     <div class="publish">
-        <!-- 左上角关闭按钮 -->
-        <div class="close-btn" @click="handleClose">
-            <i class="icon-close">✕</i>
-        </div>
+        <!-- 路由视图 - 用于显示子路由内容 (album) -->
+        <router-view />
 
-        <!-- 顶部选择音乐按钮 -->
-        <div class="music-select">
-            <i class="icon-music">🎵</i>
-            <span>选择音乐</span>
-        </div>
+        <!-- 当路径为/publish时显示发布页面主体内容 -->
+        <template v-if="$route.path === '/publish'">
+            <!-- 左上角关闭按钮 -->
+            <div class="close-btn" @click="handleClose">
+                <i class="icon-close">✕</i>
+            </div>
 
-        <!-- 主内容容器 -->
-        <div class="container">
-            <component :is="currentComponent" />
-        </div>
+            <!-- 顶部选择音乐按钮 -->
+            <div class="music-select">
+                <i class="icon-music">🎵</i>
+                <span>选择音乐</span>
+            </div>
 
-        <!-- 底部导航栏 -->
-        <app-footer 
-            :activeTab="activeTab" 
-            @change-tab="handleTabChange" 
-        />
+            <!-- 主内容容器 -->
+            <div class="container">
+                <component :is="currentComponent" />
+            </div>
+
+            <!-- 底部导航栏 -->
+            <app-footer 
+                :activeTab="activeTab" 
+                @change-tab="handleTabChange" 
+            />
+        </template>
     </div>
 </template>
 
@@ -39,6 +45,8 @@ export default defineComponent({
         const router = useRouter()
         const activeTab = ref('camera')
         const currentComponent = ref(markRaw(Camera))
+        // 记录进入页面前的路径
+        const fromRoute = ref('')
 
         const handleTabChange = (tab: string) => {
             activeTab.value = tab
@@ -53,19 +61,30 @@ export default defineComponent({
         }
 
         const handleClose = () => {
-            router.back()
+            // 根据记录的路径返回到之前的页面
+            if (fromRoute.value) {
+                router.push(fromRoute.value)
+            } else {
+                // 如果没有记录，默认返回首页
+                router.push('/home/recommend')
+            }
         }
 
         onMounted(() => {
             // 默认激活相机标签
             handleTabChange('camera')
+            // 记录来源路径（如果存在）
+            if (router.options.history.state.back) {
+                fromRoute.value = String(router.options.history.state.back)
+            }
         })
 
         return {
             activeTab,
             currentComponent,
             handleTabChange,
-            handleClose
+            handleClose,
+            fromRoute
         }
     }
 })
