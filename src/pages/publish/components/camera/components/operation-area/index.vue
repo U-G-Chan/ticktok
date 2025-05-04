@@ -14,8 +14,9 @@
             </div>
             
             <!-- 拍照按钮 -->
-            <div class="capture-button" @click="handleCapture">
+            <div class="capture-button" @click="$emit('capture')">
                 <div class="inner-circle"></div>
+                <div v-if="noCamera" class="upload-text">选择</div>
             </div>
             
             <!-- 相册按钮 -->
@@ -38,32 +39,24 @@ export default defineComponent({
     components: {
         ModeNav
     },
-    setup() {
+    props: {
+        noCamera: {
+            type: Boolean,
+            default: false
+        }
+    },
+    emits: ['capture', 'mode-change'],
+    setup(props, { emit }) {
         const activeMode = ref('photo')
         
         const handleModeChange = (mode: string) => {
             activeMode.value = mode
-        }
-        
-        const handleCapture = () => {
-            // 根据当前模式执行不同的拍摄操作
-            switch (activeMode.value) {
-                case 'segment':
-                    console.log('执行分段拍摄')
-                    break
-                case 'photo':
-                    console.log('拍照')
-                    break
-                case 'video':
-                    console.log('录制视频')
-                    break
-            }
+            emit('mode-change', mode)
         }
         
         return {
             activeMode,
-            handleModeChange,
-            handleCapture
+            handleModeChange
         }
     }
 })
@@ -75,7 +68,7 @@ export default defineComponent({
     bottom: 0;
     left: 0;
     width: 100%;
-    padding-bottom: 5%;
+    padding-bottom: 30px;
     z-index: 10;
     display: flex;
     flex-direction: column;
@@ -87,7 +80,7 @@ export default defineComponent({
     display: flex;
     justify-content: space-around;
     align-items: center;
-    margin-top: 10px;
+    margin-top: 30px;
     padding: 0 20px;
 }
 
@@ -96,6 +89,8 @@ export default defineComponent({
     flex-direction: column;
     align-items: center;
     gap: 5px;
+    -webkit-tap-highlight-color: transparent;
+    outline: none;
 }
 
 .button-icon {
@@ -106,17 +101,22 @@ export default defineComponent({
     display: flex;
     align-items: center;
     justify-content: center;
+    user-select: none;
+    -webkit-user-select: none;
 }
 
 .placeholder-icon {
     width: 30px;
     height: 30px;
     opacity: 0.8;
+    pointer-events: none;
 }
 
 .button-text {
     font-size: 12px;
     color: #fff;
+    user-select: none;
+    -webkit-user-select: none;
 }
 
 .capture-button {
@@ -129,6 +129,8 @@ export default defineComponent({
     justify-content: center;
     cursor: pointer;
     box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+    -webkit-tap-highlight-color: transparent;
+    outline: none;
 }
 
 .inner-circle {
@@ -136,5 +138,16 @@ export default defineComponent({
     height: 60px;
     border-radius: 50%;
     background-color: #fff;
+}
+
+.upload-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 12px;
+    color: #fff;
+    user-select: none;
+    -webkit-user-select: none;
 }
 </style> 

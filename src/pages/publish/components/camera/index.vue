@@ -1,18 +1,26 @@
 <template>
     <div class="camera">
         <!-- 相机屏幕 -->
-        <camera-screen />
+        <camera-screen ref="cameraScreenRef" />
         
         <!-- 相机工具栏 -->
-        <camera-tools />
+        <camera-tools @flip-camera="handleFlipCamera" @toggle-flash="handleToggleFlash" />
         
         <!-- 操作区域 -->
-        <operation-area />
+        <operation-area 
+            @capture="handleCapture" 
+            @mode-change="handleModeChange" 
+            :noCamera="cameraScreenRef?.noCamera" 
+        />
     </div>
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { defineComponent, ref, onMounted } from 'vue'
+import { 
+  getCamera, getFilesystem,
+  CameraResultType, CameraSource, CameraDirection, Directory
+} from '@/utils/web-capacitor-adapter'
 import CameraScreen from './components/camera-screen/index.vue'
 import CameraTools from './components/camera-tools/index.vue'
 import OperationArea from './components/operation-area/index.vue'
@@ -23,6 +31,113 @@ export default defineComponent({
         CameraScreen,
         CameraTools,
         OperationArea
+    },
+    setup() {
+        const cameraScreenRef = ref<InstanceType<typeof CameraScreen> | null>(null)
+        const currentMode = ref('photo')
+        const cameraDirection = ref(CameraDirection.Rear)
+        const flashMode = ref(false)
+        const Camera = ref<any>(null)
+        const Filesystem = ref<any>(null)
+
+        // 初始化API
+        onMounted(async () => {
+            Camera.value = await getCamera()
+            Filesystem.value = await getFilesystem()
+        })
+
+        // 处理相机翻转
+        const handleFlipCamera = () => {
+            cameraDirection.value = cameraDirection.value === CameraDirection.Rear 
+                ? CameraDirection.Front 
+                : CameraDirection.Rear
+            
+            if (cameraScreenRef.value) {
+                cameraScreenRef.value.switchCamera(cameraDirection.value)
+            }
+        }
+
+        // 处理闪光灯开关
+        const handleToggleFlash = () => {
+            flashMode.value = !flashMode.value
+            
+            if (cameraScreenRef.value) {
+                cameraScreenRef.value.toggleFlash(flashMode.value)
+            }
+        }
+
+        // 处理拍摄模式变化
+        const handleModeChange = (mode: string) => {
+            currentMode.value = mode
+        }
+
+        // 处理拍摄
+        const handleCapture = async () => {
+            try {
+                if (!Camera.value) {
+                    Camera.value = await getCamera()
+                }
+
+                if (currentMode.value === 'photo') {
+                    if (cameraScreenRef.value) {
+                        // 使用自定义相机实现
+                        const imageUrl = await cameraScreenRef.value.captureImage()
+                        if (imageUrl) {
+                            console.log('照片已拍摄')
+                            
+                            // 如果需要存储到设备，可以使用以下代码
+                            if (Filesystem.value) {
+                                const base64Data = imageUrl.split(',')[1]
+                                const savedFile = await Filesystem.value.writeFile({
+                                    path: `photos/${new Date().getTime()}.jpeg`,
+                                    data: base64Data,
+                                    directory: Directory.Data
+                                })
+                                console.log('照片已保存:', savedFile.uri)
+                            }
+                        }
+                    } else {
+                        // 使用Capacitor相机API
+                        const image = await Camera.value.getPhoto({
+                            quality: 90,
+                            allowEditing: false,
+                            resultType: CameraResultType.Uri,
+                            source: CameraSource.Camera,
+                            direction: cameraDirection.value,
+                            saveToGallery: true
+                        })
+                        
+                        console.log('照片已拍摄:', image.webPath)
+                    }
+                } else if (currentMode.value === 'video') {
+                    // 录制视频的实现需要使用其他Capacitor插件
+                    console.log('录制视频功能尚未实现')
+                } else if (currentMode.value === 'segment') {
+                    // 分段拍摄需要自定义实现
+                    console.log('分段拍摄功能尚未实现')
+                }
+            } catch (error) {
+                console.error('拍摄失败:', error)
+            }
+        }
+
+        // 将Blob转换为Base64
+        const convertBlobToBase64 = (blob: Blob): Promise<string | ArrayBuffer | null> => {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader()
+                reader.onloadend = () => resolve(reader.result)
+                reader.onerror = reject
+                reader.readAsDataURL(blob)
+            })
+        }
+
+        return {
+            cameraScreenRef,
+            handleFlipCamera,
+            handleToggleFlash,
+            handleModeChange,
+            handleCapture
+        }
     }
 })
 </script>

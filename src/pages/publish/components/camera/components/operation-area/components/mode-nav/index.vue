@@ -55,15 +55,17 @@ export default defineComponent({
 }
 
 .mode-item {
-    text-align: center;
-    width: 72px;
-    padding: 5px 15px;
+    padding: 8px 15px;
     border-radius: 20px;
     font-size: 14px;
     color: #fff;
     cursor: pointer;
     transition: all 0.3s ease;
     position: relative;
+    -webkit-tap-highlight-color: transparent;
+    outline: none;
+    user-select: none;
+    -webkit-user-select: none;
 }
 
 .mode-item.active {

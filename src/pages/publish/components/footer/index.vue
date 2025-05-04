@@ -103,7 +103,7 @@ export default defineComponent({
     font-size: 14px;
     padding: 10px;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all 0.1s ease;
     display: flex;
     align-items: center;
     justify-content: center;

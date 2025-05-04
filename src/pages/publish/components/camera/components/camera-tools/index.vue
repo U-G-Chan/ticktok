@@ -1,16 +1,36 @@
 <template>
     <div class="camera-tools">
         <div class="tools-group">
-            <div v-for="(tool, index) in topTools" :key="index" class="tool-item">
-                <div class="tool-icon">{{ tool.icon }}</div>
-                <div class="tool-text">{{ tool.name }}</div>
+            <div class="tool-item" @click="$emit('flip-camera')">
+                <div class="tool-icon">↺</div>
+                <div class="tool-text">翻转</div>
+            </div>
+            <div class="tool-item" @click="toggleFlash">
+                <div class="tool-icon">{{ flashEnabled ? '◉' : '◎' }}</div>
+                <div class="tool-text">闪光灯</div>
+            </div>
+            <div class="tool-item">
+                <div class="tool-icon">⚙</div>
+                <div class="tool-text">设置</div>
             </div>
         </div>
         <div class="divider"></div>
         <div class="tools-group">
-            <div v-for="(tool, index) in bottomTools" :key="index" class="tool-item">
-                <div class="tool-icon">{{ tool.icon }}</div>
-                <div class="tool-text">{{ tool.name }}</div>
+            <div class="tool-item">
+                <div class="tool-icon">❖</div>
+                <div class="tool-text">动图</div>
+            </div>
+            <div class="tool-item">
+                <div class="tool-icon">⏱</div>
+                <div class="tool-text">倒计时</div>
+            </div>
+            <div class="tool-item">
+                <div class="tool-icon">✿</div>
+                <div class="tool-text">美颜</div>
+            </div>
+            <div class="tool-item">
+                <div class="tool-icon">⋯</div>
+                <div class="tool-text">更多</div>
             </div>
         </div>
     </div>
@@ -21,23 +41,18 @@ import { defineComponent, ref } from 'vue'
 
 export default defineComponent({
     name: 'CameraTools',
-    setup() {
-        const topTools = ref([
-            { icon: '↺', name: '翻转' },
-            { icon: '◎', name: '闪光灯' },
-            { icon: '⚙', name: '设置' }
-        ])
-        
-        const bottomTools = ref([
-            { icon: '❖', name: '动图' },
-            { icon: '⏱', name: '倒计时' },
-            { icon: '✿', name: '美颜' },
-            { icon: '⋯', name: '更多' }
-        ])
+    emits: ['flip-camera', 'toggle-flash'],
+    setup(props, { emit }) {
+        const flashEnabled = ref(false)
+
+        const toggleFlash = () => {
+            flashEnabled.value = !flashEnabled.value
+            emit('toggle-flash', flashEnabled.value)
+        }
 
         return {
-            topTools,
-            bottomTools
+            flashEnabled,
+            toggleFlash
         }
     }
 })
@@ -74,6 +89,8 @@ export default defineComponent({
     flex-direction: column;
     align-items: center;
     gap: 5px;
+    -webkit-tap-highlight-color: transparent;
+    outline: none;
 }
 
 .tool-icon {
@@ -85,6 +102,9 @@ export default defineComponent({
     align-items: center;
     justify-content: center;
     font-size: 20px;
+    user-select: none;
+    -webkit-user-select: none;
+    cursor: pointer;
 }
 
 .tool-text {
