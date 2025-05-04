@@ -1,20 +1,26 @@
 <template>
   <div class="app">
-    <div class="middle" :class="{ 'menu-open': sideMenuStore.isOpen }">
-      <div class="container">
-        <router-view></router-view>
+    <template v-if="isFullscreenRoute">
+      <router-view></router-view>
+    </template>
+    <template v-else>
+      <div class="middle" :class="{ 'menu-open': sideMenuStore.isOpen }">
+        <div class="container">
+          <router-view></router-view>
+        </div>
+        <FootNav />
       </div>
-      <FootNav />
-    </div>
-    <div class="side-menu-container" :class="{ 'menu-open': sideMenuStore.isOpen }">
-      <side-menu class="side-menu" />
-      <div class="side-menu-mask" @click="sideMenuStore.close()"></div>
-    </div>
+      <div class="side-menu-container" :class="{ 'menu-open': sideMenuStore.isOpen }">
+        <side-menu class="side-menu" />
+        <div class="side-menu-mask" @click="sideMenuStore.close()"></div>
+      </div>
+    </template>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, watch } from 'vue'
+import { defineComponent, watch, computed } from 'vue'
+import { useRoute } from 'vue-router'
 import FootNav from '@/components/FootNav.vue'
 import SideMenu from '@/components/SideMenu'
 import { useSideMenuStore } from '@/store/sideMenu'
@@ -27,6 +33,14 @@ export default defineComponent({
     SideMenu
   },
   setup() {
+    // 使用路由
+    const route = useRoute()
+    
+    // 判断当前是否为全屏路由
+    const isFullscreenRoute = computed(() => {
+      return route.meta?.fullscreen === true
+    })
+    
     // 使用侧边栏的 store
     const sideMenuStore = useSideMenuStore()
     
@@ -49,7 +63,8 @@ export default defineComponent({
     document.addEventListener('visibilitychange', handleVisibilityChange)
     
     return {
-      sideMenuStore
+      sideMenuStore,
+      isFullscreenRoute
     }
   }
 })

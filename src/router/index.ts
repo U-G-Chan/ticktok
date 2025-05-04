@@ -68,9 +68,12 @@ const router = createRouter({
       component: () => import("@/pages/friend")
     },
     {
-      path: "/upload",
-      name: "Upload",
-      component: () => import("@/pages/upload")
+      path: "/publish",
+      name: "Publish",
+      component: () => import("@/pages/publish"),
+      meta: {
+        fullscreen: true
+      }
     },
     {
       path: "/chat",

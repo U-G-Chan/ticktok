@@ -12,8 +12,6 @@
 
 <script lang="ts">
 import { defineComponent, ref } from 'vue'
-import { Camera } from '@capacitor/camera'
-import { Filesystem, Directory } from '@capacitor/filesystem'
 
 export default defineComponent({
     name: 'UploadPage',
@@ -22,31 +20,47 @@ export default defineComponent({
 
         const takePicture = async () => {
             try {
-                const image = await Camera.getPhoto({
-                    quality: 90,
-                    allowEditing: true,
-                    resultType: 'uri',
-                    saveToGallery: true,
-                    promptLabelHeader: '选择操作',
-                    promptLabelPhoto: '从相册选择',
-                    promptLabelPicture: '拍照'
+                // 检查浏览器是否支持getUserMedia
+                if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                    alert('您的浏览器不支持摄像头功能')
+                    return
+                }
+
+                // 请求摄像头权限
+                const stream = await navigator.mediaDevices.getUserMedia({
+                    video: {
+                        facingMode: 'environment' // 优先使用后置摄像头
+                    }
                 })
 
-                // 显示图片
-                imageUrl.value = image.webPath || ''
+                // 创建video元素
+                const video = document.createElement('video')
+                video.srcObject = stream
+                video.autoplay = true
 
-                // 如果需要保存到应用目录
-                if (image.path) {
-                    const savedFile = await Filesystem.writeFile({
-                        path: 'photos/' + new Date().getTime() + '.jpg',
-                        data: image.base64String || '',
-                        directory: Directory.Data,
-                        recursive: true
-                    })
-                    console.log('图片已保存:', savedFile.uri)
+                // 等待视频加载
+                await new Promise((resolve) => {
+                    video.onloadedmetadata = () => {
+                        video.play()
+                        resolve(true)
+                    }
+                })
+
+                // 创建canvas元素
+                const canvas = document.createElement('canvas')
+                canvas.width = video.videoWidth
+                canvas.height = video.videoHeight
+                const ctx = canvas.getContext('2d')
+                if (ctx) {
+                    ctx.drawImage(video, 0, 0)
+                    // 停止视频流
+                    stream.getTracks().forEach(track => track.stop())
+                    // 转换为图片URL
+                    imageUrl.value = canvas.toDataURL('image/jpeg')
                 }
             } catch (error) {
                 console.error('拍照失败:', error)
+                alert('无法访问摄像头，请确保已授予摄像头权限')
             }
         }
 

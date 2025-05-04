@@ -6,9 +6,9 @@
         <router-link to="/friend" class="nav-item" active-class="active">
             <span>朋友</span>
         </router-link>
-        <router-link to="/upload" class="nav-item upload-btn" active-class="active">
-            <span class="upload-icon">+</span>
-        </router-link>
+        <div class="nav-item publish-btn" @click="handlePublish">
+            <span class="publish-icon">+</span>
+        </div>
         <router-link to="/chat" class="nav-item" active-class="active">
             <span>消息</span>
         </router-link>
@@ -26,7 +26,13 @@ export default defineComponent({
     name: 'FootNav',
     setup() {
         const router = useRouter()
-        return { router }
+        const handlePublish = () => {
+            router.push('/publish')
+        }
+        return { 
+            router,
+            handlePublish
+        }
     }
 })
 </script>
@@ -63,7 +69,7 @@ export default defineComponent({
     opacity: 0.7;
 }
 
-.upload-btn {
+.publish-btn {
     width: 24px;
     height: 30px;
     border: 2px solid #fff;
@@ -76,7 +82,7 @@ export default defineComponent({
     transition: all 0.3s ease;
 }
 
-.upload-icon {
+.publish-icon {
     font-size: 24px;
     font-weight: bold;
 }
@@ -86,7 +92,7 @@ export default defineComponent({
     transform: scale(1.1);
 }
 
-.upload-btn.active {
+.publish-btn.active {
     border-color: #fe2c55;
     transform: scale(1.1);
 }
