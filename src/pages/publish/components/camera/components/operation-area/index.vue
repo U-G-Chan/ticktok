@@ -20,7 +20,7 @@
             </div>
             
             <!-- 相册按钮 -->
-            <div class="action-button album">
+            <div class="action-button album" @click="navigateToAlbum">
                 <div class="button-icon">
                     <img src="/images/album-icon.png" alt="相册" class="placeholder-icon" />
                 </div>
@@ -32,6 +32,7 @@
 
 <script lang="ts">
 import { defineComponent, ref } from 'vue'
+import { useRouter } from 'vue-router'
 import ModeNav from './components/mode-nav/index.vue'
 
 export default defineComponent({
@@ -46,7 +47,8 @@ export default defineComponent({
         }
     },
     emits: ['capture', 'mode-change'],
-    setup(props, { emit }) {
+    setup(_, { emit }) {
+        const router = useRouter()
         const activeMode = ref('photo')
         
         const handleModeChange = (mode: string) => {
@@ -54,9 +56,14 @@ export default defineComponent({
             emit('mode-change', mode)
         }
         
+        const navigateToAlbum = () => {
+            router.push('/album')
+        }
+        
         return {
             activeMode,
-            handleModeChange
+            handleModeChange,
+            navigateToAlbum
         }
     }
 })
@@ -91,6 +98,7 @@ export default defineComponent({
     gap: 5px;
     -webkit-tap-highlight-color: transparent;
     outline: none;
+    cursor: pointer;
 }
 
 .button-icon {

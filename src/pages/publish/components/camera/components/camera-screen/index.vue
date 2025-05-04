@@ -1,8 +1,14 @@
 <template>
     <div class="camera-screen">
-        <video ref="videoEl" class="video" autoplay playsinline v-if="!imageCaptured && !noCamera"></video>
-        <img v-else-if="imageCaptured" :src="capturedImageUrl" class="captured-image" />
-        <div v-else class="no-camera-message">
+        <video ref="videoEl" class="video" autoplay playsinline v-if="!noCamera"></video>
+        <div v-if="imageCaptured" class="preview-container">
+            <img :src="capturedImageUrl" class="preview-image" />
+            <div class="preview-controls">
+                <button class="confirm-btn" @click="confirmImage">确认</button>
+                <button class="cancel-btn" @click="resetCamera">取消</button>
+            </div>
+        </div>
+        <div v-if="noCamera" class="no-camera-message">
             <div class="message-content">
                 <div class="message-icon">📷</div>
                 <div class="message-text">未检测到摄像头</div>
@@ -18,7 +24,8 @@ import { CameraDirection } from '@/utils/web-capacitor-adapter'
 
 export default defineComponent({
     name: 'CameraScreen',
-    setup() {
+    emits: ['image-confirmed'],
+    setup(_, { emit }) {
         const videoEl = ref<HTMLVideoElement | null>(null)
         let mediaStream: MediaStream | null = null
         const imageCaptured = ref<boolean>(false)
@@ -130,7 +137,7 @@ export default defineComponent({
                     // 转换为图片URL
                     const imageUrl = canvas.toDataURL('image/jpeg')
                     
-                    // 显示捕获的图像
+                    // 显示捕获的图像但不停止视频流
                     capturedImageUrl.value = imageUrl
                     imageCaptured.value = true
                     
@@ -141,6 +148,12 @@ export default defineComponent({
                 console.error('捕获图像失败:', error)
                 return null
             }
+        }
+
+        const confirmImage = () => {
+            // 确认使用已捕获的图像
+            emit('image-confirmed', capturedImageUrl.value)
+            resetCamera()
         }
 
         const resetCamera = () => {
@@ -171,7 +184,8 @@ export default defineComponent({
             switchCamera,
             toggleFlash,
             captureImage,
-            resetCamera
+            resetCamera,
+            confirmImage
         }
     }
 })
@@ -188,10 +202,55 @@ export default defineComponent({
     z-index: 1;
 }
 
-.video, .captured-image {
+.video {
     width: 100%;
     height: 100%;
     object-fit: cover;
+}
+
+.preview-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 2;
+}
+
+.preview-image {
+    max-width: 90%;
+    max-height: 70%;
+    object-fit: contain;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.preview-controls {
+    margin-top: 20px;
+    display: flex;
+    gap: 20px;
+}
+
+.confirm-btn, .cancel-btn {
+    padding: 10px 20px;
+    border-radius: 20px;
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+    color: white;
+}
+
+.confirm-btn {
+    background-color: #4CAF50;
+}
+
+.cancel-btn {
+    background-color: #f44336;
 }
 
 .no-camera-message {

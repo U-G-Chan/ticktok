@@ -1,7 +1,7 @@
 <template>
     <div class="camera">
         <!-- 相机屏幕 -->
-        <camera-screen ref="cameraScreenRef" />
+        <camera-screen ref="cameraScreenRef" @image-confirmed="handleImageConfirmed" />
         
         <!-- 相机工具栏 -->
         <camera-tools @flip-camera="handleFlipCamera" @toggle-flash="handleToggleFlash" />
@@ -81,21 +81,7 @@ export default defineComponent({
                 if (currentMode.value === 'photo') {
                     if (cameraScreenRef.value) {
                         // 使用自定义相机实现
-                        const imageUrl = await cameraScreenRef.value.captureImage()
-                        if (imageUrl) {
-                            console.log('照片已拍摄')
-                            
-                            // 如果需要存储到设备，可以使用以下代码
-                            if (Filesystem.value) {
-                                const base64Data = imageUrl.split(',')[1]
-                                const savedFile = await Filesystem.value.writeFile({
-                                    path: `photos/${new Date().getTime()}.jpeg`,
-                                    data: base64Data,
-                                    directory: Directory.Data
-                                })
-                                console.log('照片已保存:', savedFile.uri)
-                            }
-                        }
+                        await cameraScreenRef.value.captureImage()
                     } else {
                         // 使用Capacitor相机API
                         const image = await Camera.value.getPhoto({
@@ -121,14 +107,24 @@ export default defineComponent({
             }
         }
 
-        // 将Blob转换为Base64
-        const convertBlobToBase64 = (blob: Blob): Promise<string | ArrayBuffer | null> => {
-            return new Promise((resolve, reject) => {
-                const reader = new FileReader()
-                reader.onloadend = () => resolve(reader.result)
-                reader.onerror = reject
-                reader.readAsDataURL(blob)
-            })
+        // 处理图像确认
+        const handleImageConfirmed = async (imageUrl: string) => {
+            console.log('照片已确认')
+            
+            try {
+                // 如果需要存储到设备，可以使用以下代码
+                if (Filesystem.value) {
+                    const base64Data = imageUrl.split(',')[1]
+                    const savedFile = await Filesystem.value.writeFile({
+                        path: `photos/${new Date().getTime()}.jpeg`,
+                        data: base64Data,
+                        directory: Directory.Data
+                    })
+                    console.log('照片已保存:', savedFile.uri)
+                }
+            } catch (error) {
+                console.error('保存图片失败:', error)
+            }
         }
 
         return {
@@ -136,7 +132,8 @@ export default defineComponent({
             handleFlipCamera,
             handleToggleFlash,
             handleModeChange,
-            handleCapture
+            handleCapture,
+            handleImageConfirmed
         }
     }
 })

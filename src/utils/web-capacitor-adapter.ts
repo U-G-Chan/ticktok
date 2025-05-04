@@ -66,6 +66,71 @@ export const WebFilesystem = {
       console.error('Error saving file:', error)
       throw error
     }
+  },
+
+  async readdir(options: any) {
+    // 在Web环境中，模拟目录读取功能
+    try {
+      const prefix = `file_${options.path.replace(/\//g, '_')}`
+      const files = []
+      
+      // 遍历localStorage，查找指定前缀的项
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i)
+        if (key && key.startsWith(prefix)) {
+          // 提取文件名
+          const fileName = key.substring(prefix.length + 1) // +1 是为了跳过下划线
+          files.push({
+            name: fileName || `file_${i}.jpeg`, // 提供默认文件名
+            type: 'file',
+            size: localStorage.getItem(key)?.length || 0,
+            uri: key,
+            mtime: Date.now()
+          })
+        }
+      }
+      
+      return { files }
+    } catch (error) {
+      console.error('Error reading directory:', error)
+      throw error
+    }
+  },
+
+  async readFile(options: any) {
+    // 从localStorage读取文件
+    try {
+      const key = `file_${options.path.replace(/\//g, '_')}`
+      const data = localStorage.getItem(key)
+      
+      if (data === null) {
+        throw new Error('File not found')
+      }
+      
+      return { data }
+    } catch (error) {
+      console.error('Error reading file:', error)
+      throw error
+    }
+  },
+
+  async deleteFile(options: any) {
+    // 从localStorage删除文件
+    try {
+      const key = `file_${options.path.replace(/\//g, '_')}`
+      localStorage.removeItem(key)
+      return { success: true }
+    } catch (error) {
+      console.error('Error deleting file:', error)
+      throw error
+    }
+  },
+
+  async mkdir(options: any) {
+    // 在Web环境中，目录创建是隐式的，不需要实际操作
+    // 记录尝试创建的目录信息
+    console.log(`Web模拟: 创建目录 ${options.path} 在 ${options.directory}`);
+    return { success: true }
   }
 }
 

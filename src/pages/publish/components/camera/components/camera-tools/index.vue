@@ -42,7 +42,7 @@ import { defineComponent, ref } from 'vue'
 export default defineComponent({
     name: 'CameraTools',
     emits: ['flip-camera', 'toggle-flash'],
-    setup(props, { emit }) {
+    setup(_, { emit }) {
         const flashEnabled = ref(false)
 
         const toggleFlash = () => {
