@@ -75,7 +75,7 @@ export default defineComponent({
     bottom: 0;
     left: 0;
     width: 100%;
-    padding-bottom: 30px;
+    padding-bottom: 5%;
     z-index: 10;
     display: flex;
     flex-direction: column;
@@ -87,7 +87,7 @@ export default defineComponent({
     display: flex;
     justify-content: space-around;
     align-items: center;
-    margin-top: 30px;
+    margin-top: 10px;
     padding: 0 20px;
 }
 

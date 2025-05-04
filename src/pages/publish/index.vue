@@ -84,7 +84,7 @@ export default defineComponent({
 }
 
 .container {
-    height: 90vh;
+    height: 95vh;
     width: 100%;
     overflow: hidden;
     position: relative;
@@ -92,7 +92,7 @@ export default defineComponent({
 
 .close-btn {
     position: absolute;
-    top: 20px;
+    top: 10px;
     left: 20px;
     z-index: 100;
     width: 32px;
@@ -110,7 +110,7 @@ export default defineComponent({
 
 .music-select {
     position: absolute;
-    top: 20px;
+    top: 10px;
     left: 50%;
     transform: translateX(-50%);
     z-index: 100;

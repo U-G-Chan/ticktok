@@ -85,7 +85,7 @@ export default defineComponent({
 
 <style scoped>
 .footer {
-    height: 10vh;
+    height: 5vh;
     width: 100%;
     background-color: #000;
     display: flex;
@@ -95,6 +95,7 @@ export default defineComponent({
     bottom: 0;
     left: 0;
     z-index: 10;
+    padding: 0 10% 0 10%;
 }
 
 .tab {

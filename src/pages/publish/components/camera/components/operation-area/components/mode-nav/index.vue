@@ -55,7 +55,9 @@ export default defineComponent({
 }
 
 .mode-item {
-    padding: 8px 15px;
+    text-align: center;
+    width: 72px;
+    padding: 5px 15px;
     border-radius: 20px;
     font-size: 14px;
     color: #fff;
