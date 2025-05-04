@@ -56,20 +56,27 @@
         
         <!-- 媒体预览 -->
         <div class="media-preview" v-if="previewedMedia" @click="closePreview">
-            <div class="preview-content" @click.stop>
+            <div class="preview-content" >
+                <div class="preview-header">
+                    <button class="close-btn" @click="closePreview">
+                        <span>×</span>
+                    </button>
+                </div>
                 <img 
                     v-if="previewedMedia.type === 'photo'" 
                     :src="previewedMedia.url" 
                     alt="预览照片" 
                     class="preview-image"
+                    @click.stop
                 />
                 <video 
                     v-else-if="previewedMedia.type === 'video'" 
                     :src="previewedMedia.url" 
                     controls 
                     class="preview-video"
+                    @click.stop
                 ></video>
-                <div class="preview-actions">
+                <div class="preview-actions" @click.stop>
                     <button class="action-button delete-btn" @click="deleteMedia(previewedMedia)">
                         <span class="action-icon">🗑️</span>
                         <span>删除</span>
@@ -79,6 +86,7 @@
                         <span>分享</span>
                     </button>
                 </div>
+                <div class="preview-tip">点击空白区域返回相册</div>
             </div>
         </div>
     </div>
@@ -528,5 +536,43 @@ export default defineComponent({
 
 .share-btn {
     color: #2e86de;
+}
+
+.preview-header {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    padding: 16px;
+    display: flex;
+    justify-content: flex-end;
+    z-index: 5;
+}
+
+.close-btn {
+    background: rgba(255, 255, 255, 0.8);
+    border: none;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    font-size: 24px;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: #333;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+.preview-tip {
+    position: absolute;
+    bottom: 20px;
+    left: 0;
+    width: 100%;
+    text-align: center;
+    color: #666;
+    font-size: 14px;
+    opacity: 0.7;
 }
 </style> 

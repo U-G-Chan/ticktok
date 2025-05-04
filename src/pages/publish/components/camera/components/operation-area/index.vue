@@ -20,25 +20,31 @@
             </div>
             
             <!-- 相册按钮 -->
-            <div class="action-button album" @click="navigateToAlbum">
+            <div class="action-button album" @click="toggleAlbumView">
                 <div class="button-icon">
                     <img src="/images/album-icon.png" alt="相册" class="placeholder-icon" />
                 </div>
                 <div class="button-text">相册</div>
             </div>
         </div>
+        
+        <!-- 相册组件 -->
+        <div class="album-container" v-if="showAlbum">
+            <Album />
+        </div>
     </div>
 </template>
 
 <script lang="ts">
 import { defineComponent, ref } from 'vue'
-import { useRouter } from 'vue-router'
 import ModeNav from './components/mode-nav/index.vue'
+import Album from '@/components/Album/index.vue'
 
 export default defineComponent({
     name: 'OperationArea',
     components: {
-        ModeNav
+        ModeNav,
+        Album
     },
     props: {
         noCamera: {
@@ -48,22 +54,23 @@ export default defineComponent({
     },
     emits: ['capture', 'mode-change'],
     setup(_, { emit }) {
-        const router = useRouter()
         const activeMode = ref('photo')
+        const showAlbum = ref(false)
         
         const handleModeChange = (mode: string) => {
             activeMode.value = mode
             emit('mode-change', mode)
         }
         
-        const navigateToAlbum = () => {
-            router.push('/album')
+        const toggleAlbumView = () => {
+            showAlbum.value = !showAlbum.value
         }
         
         return {
             activeMode,
+            showAlbum,
             handleModeChange,
-            navigateToAlbum
+            toggleAlbumView
         }
     }
 })
@@ -157,5 +164,15 @@ export default defineComponent({
     color: #fff;
     user-select: none;
     -webkit-user-select: none;
+}
+
+.album-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 999;
+    background-color: #ffffff;
 }
 </style> 

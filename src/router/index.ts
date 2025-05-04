@@ -89,14 +89,6 @@ const router = createRouter({
       path: "/me",
       name: "Me",
       component: () => import("@/pages/me")
-    },
-    {
-      path: "/album",
-      name: "Album",
-      component: () => import("@/pages/album"),
-      meta: {
-        fullscreen: true
-      }
     }
   ]
 })
