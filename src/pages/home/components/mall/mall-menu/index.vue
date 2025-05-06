@@ -1,32 +1,24 @@
 <template>
   <div class="mall-menu">
-    <div 
-      class="menu-page-wrapper" 
-      :class="{ 'first-page': currentPage === 0, 'second-page': currentPage === 1 }"
-    >
-      <div 
-        class="menu-swiper" 
-        :style="{ transform: `translateX(-${currentPage * 50}%)` }"
-        @touchstart="handleTouchStart"
-        @touchmove="handleTouchMove"
-        @touchend="handleTouchEnd"
-      >
+    <div class="menu-page-wrapper" :class="{ 'first-page': currentPage === 0, 'second-page': currentPage === 1 }">
+      <div class="menu-swiper" :style="{ transform: `translateX(-${currentPage * 50}%)` }"
+        @touchstart="handleTouchStart" @touchmove="handleTouchMove" @touchend="handleTouchEnd">
         <!-- 第一页菜单 -->
         <div class="menu-page menu-page-1">
           <div class="menu-item" v-for="(item, index) in menuItems.slice(0, 5)" :key="index">
             <div class="menu-icon">
-              <span :class="['iconfont', item.icon]"></span>
+              <component :is="item.icon" theme="outline" size="30" fill="black" />
             </div>
             <div class="menu-text">{{ item.text }}</div>
           </div>
         </div>
-        
+
         <!-- 第二页菜单 -->
         <div class="menu-page menu-page-2">
           <div class="menu-grid">
             <div class="menu-item" v-for="(item, index) in menuItems.slice(5)" :key="index + 5">
               <div class="menu-icon">
-                <span :class="['iconfont', item.icon]"></span>
+                <component :is="item.icon" theme="outline" size="30" fill="black" />
               </div>
               <div class="menu-text">{{ item.text }}</div>
             </div>
@@ -34,15 +26,11 @@
         </div>
       </div>
     </div>
-    
+
     <!-- 分页指示器 -->
     <div class="menu-indicator">
-      <span 
-        v-for="n in 2" 
-        :key="n"
-        :class="['indicator-dot', { active: currentPage === n - 1 }]"
-        @click="setPage(n - 1)"
-      ></span>
+      <span v-for="n in 2" :key="n" :class="['indicator-dot', { active: currentPage === n - 1 }]"
+        @click="setPage(n - 1)"></span>
     </div>
   </div>
 </template>
@@ -66,7 +54,7 @@ const menuItems = [
   { text: '关注店铺', icon: 'icon-follow' },
   { text: '全球购', icon: 'icon-global' },
   { text: '品牌会员', icon: 'icon-vip' },
-  
+
   { text: '限时秒杀', icon: 'icon-flash' },
   { text: '满减活动', icon: 'icon-discount' },
   { text: '借钱', icon: 'icon-loan' },
@@ -96,7 +84,7 @@ const handleTouchMove = (e) => {
   if (!isDragging) return
   const currentX = e.touches[0].clientX
   const diff = startX - currentX
-  
+
   // 阻止浏览器默认滚动行为
   if (Math.abs(diff) > 10) {
     e.preventDefault()
@@ -107,7 +95,7 @@ const handleTouchEnd = (e) => {
   if (!isDragging) return
   const endX = e.changedTouches[0].clientX
   const diff = startX - endX
-  
+
   // 向左滑（显示下一页）
   if (diff > 50 && currentPage.value === 0) {
     currentPage.value = 1
@@ -116,24 +104,27 @@ const handleTouchEnd = (e) => {
   else if (diff < -50 && currentPage.value === 1) {
     currentPage.value = 0
   }
-  
+
   isDragging = false
 }
 </script>
 
 <style scoped>
 .mall-menu {
-  width: 100%;
+  width: calc(100% - 24px);
   position: relative;
   overflow: hidden;
+  background: white;
   padding: 15px 0;
-  background: #fff;
+  border-radius: 12px;
+  margin: 0 12px;
 }
 
 .menu-page-wrapper {
   width: 100%;
   overflow: hidden;
   transition: height 0.3s ease;
+
 }
 
 .menu-page-wrapper.first-page {
@@ -186,7 +177,6 @@ const handleTouchEnd = (e) => {
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background: #f0f4ff;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -224,4 +214,4 @@ const handleTouchEnd = (e) => {
   border-radius: 3px;
   background: #6366f1;
 }
-</style> 
+</style>

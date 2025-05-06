@@ -100,6 +100,22 @@ onMounted(() => {
   background: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 50%, #a5b4fc 100%);
   overflow: hidden;
   position: relative;
+  /* 基础白色背景 */
+  background: #fff;
+  /* 左上角淡蓝色渐变 */
+  background-image: radial-gradient(
+    circle at 0 0,
+    rgba(224, 250, 255, 0.6) 0%,
+    rgba(224, 231, 255, 0.3) 30%,
+    transparent 70%
+  ),
+  /* 右上角淡紫色渐变 */
+  radial-gradient(
+    circle at 100% 0,
+    rgba(199, 210, 254, 0.6) 0%, 
+    rgba(199, 210, 254, 0.3) 30%,
+    transparent 70%
+  );
 }
 
 .head-nav-placeholder {
@@ -111,7 +127,7 @@ onMounted(() => {
 .mall-content {
   width: 100%;
   height: calc(100% - 52px);
-  background: #fff;
+  background: transparent;
   position: relative;
 }
 
@@ -122,7 +138,7 @@ onMounted(() => {
   display: flex;
   flex-direction: row;
   align-items: center;
-  background: #fff;
+  background: transparent;
   box-shadow: 0 2px 8px rgba(0,0,0,0.03);
   padding: 8px 12px;
 }

@@ -29,13 +29,9 @@
 
 <script lang="ts">
 import { defineComponent, ref } from 'vue'
-import Icon from '../Icon/index.vue'
 
 export default defineComponent({
   name: 'ToolsBoard',
-  components: {
-    Icon
-  },
   setup() {
     const tools = ref([
       { name: '观看历史', iconName: 'history' },
