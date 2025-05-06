@@ -41,11 +41,32 @@ export default defineComponent({
 
 <style scoped>
 .head-nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 44px;
+  background-color: #000;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 10px 15px;
-  width: 100%;
+  padding: 0 12px;
+  z-index: 100;
+}
+
+.nav-left, .nav-right {
+  width: 44px;
   height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.nav-center {
+  flex: 1;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 </style> 
