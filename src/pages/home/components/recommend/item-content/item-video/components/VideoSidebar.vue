@@ -8,31 +8,32 @@
     </div>
     <div class="sidebar-item">
       <div class="icon like-icon" @click="toggleLike">
-        <i class="iconfont icon-heart" :class="{ active: isLiked }" :style="{ color: isLiked ? '#ff4040' : '#fff' }"></i>
+        <icon-like theme="filled" size="35" :fill="isLiked ? '#ff4040' : '#fff'" />
       </div>
       <span class="count">{{ formatCount(likes) }}</span>
     </div>
     <div class="sidebar-item">
       <div class="icon">
-        <i class="iconfont icon-comment"></i>
+        <!-- <icon-message theme="outline" size="35" fill="#ffffff"/> -->
+        <icon-comment theme="filled" size="35" fill="#ffffff"/>
       </div>
       <span class="count">{{ formatCount(comments) }}</span>
     </div>
     <div class="sidebar-item">
-      <div class="icon">
-        <i class="iconfont icon-star"></i>
+      <div class="icon" @click="toggleStar">
+        <icon-star theme="filled" size="35" :fill="isStarred ? '#ffc107' : '#fff'"/>
       </div>
       <span class="count">{{ formatCount(stars) }}</span>
     </div>
     <div class="sidebar-item">
       <div class="icon">
-        <i class="iconfont icon-forward"></i>
+        <icon-share-two theme="filled" size="35" fill="#ffffff"  strokeLinejoin="bevel"/>
       </div>
       <span class="count">{{ formatCount(forwards) }}</span>
     </div>
     <div class="sidebar-item">
       <div class="icon music-icon">
-        <i class="iconfont icon-music"></i>
+        <icon-music theme="outline" size="35" fill="#ffffff"/>
       </div>
     </div>
   </div>
@@ -40,7 +41,6 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import '@/components/Icon/iconfont.css'
 
 const props = withDefaults(defineProps<{
   avatar: string
@@ -61,6 +61,7 @@ defineOptions({
 })
 
 const isLiked = ref(false)
+const isStarred = ref(false)
 
 const opacityStyle = computed(() => {
   if (props.opacity === undefined) return 1
@@ -77,6 +78,10 @@ const formatCount = (count: number | undefined) => {
 
 const toggleLike = () => {
   isLiked.value = !isLiked.value
+}
+
+const toggleStar = () => {
+  isStarred.value = !isStarred.value
 }
 </script>
 
@@ -139,16 +144,14 @@ const toggleLike = () => {
 }
 
 .icon {
-  width: 40px;
-  height: 40px;
-  background-color: rgba(255, 255, 255, 0.1);
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   transition: all 0.2s ease;
-  backdrop-filter: blur(4px);
 }
 
 .icon:active {
@@ -162,15 +165,5 @@ const toggleLike = () => {
   text-shadow: 0 1px 1px rgba(0, 0, 0, 0.3);
   min-width: 30px;
   text-align: center;
-}
-
-.iconfont {
-  font-size: 24px;
-  color: #fff;
-}
-
-.icon-heart.active {
-  color: #ff4040;
-  text-shadow: 0 0 8px rgba(255, 64, 64, 0.5);
 }
 </style> 
