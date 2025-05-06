@@ -51,7 +51,7 @@ export default defineComponent({
 .nav-item {
     color: #fff;
     text-decoration: none;
-    font-size: 16px;
+    font-size: 18px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -63,6 +63,7 @@ export default defineComponent({
     transition: all 0.3s ease;
     -webkit-tap-highlight-color: transparent;
     user-select: none;
+    opacity: 0.5;
 }
 
 .nav-item:active {
@@ -70,26 +71,29 @@ export default defineComponent({
 }
 
 .publish-btn {
-    width: 24px;
+    width: 30px;
     height: 30px;
-    border: 2px solid #fff;
+    border: 3px solid #fff;
     display: flex;
     justify-content: center;
     align-items: center;
     flex: 1;
-    padding: 0 2px;
+    padding: 15px 0px;
     margin: 0 10px;
     transition: all 0.3s ease;
+    border-radius: 10px;
+    opacity: 1;
 }
 
 .publish-icon {
-    font-size: 24px;
+    font-size: 26px;
     font-weight: bold;
 }
 
 .active {
-    color: #fe2c55;
+    color: white;
     transform: scale(1.1);
+    opacity: 1;
 }
 
 .publish-btn.active {

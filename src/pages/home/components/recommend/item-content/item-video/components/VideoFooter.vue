@@ -97,7 +97,7 @@ onUnmounted(() => {
 <style scoped>
 .video-footer {
   position: absolute;
-  bottom: 5%;
+  bottom: 3%;
   max-width: calc(100% - 100px);
   z-index: 1;
   padding: 8px 12px;

@@ -38,20 +38,29 @@ export default defineComponent({
   justify-content: center;
   align-items: center;
   height: 100%;
+  
 }
 
 .nav-item {
   color: #fff;
   text-decoration: none;
-  font-size: 20px;
+  font-size: 18px;
   padding: 5px 10px;
   line-height: 20px;
   display: flex;
   align-items: center;
+  opacity: 0.5;
+  transition: all 0.3s ease;
+}
+
+.nav-item:active {
+  opacity: 0.7;
 }
 
 .active {
-  color: #007AFF;
+  color: white;
   font-weight: bold;
+  opacity: 1;
+  transform: scale(1.1);
 }
 </style> 

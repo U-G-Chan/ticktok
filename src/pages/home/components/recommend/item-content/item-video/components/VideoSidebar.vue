@@ -8,7 +8,7 @@
     </div>
     <div class="sidebar-item">
       <div class="icon like-icon" @click="toggleLike">
-        <icon-like theme="filled" size="35" :fill="isLiked ? '#ff4040' : '#fff'" />
+        <icon-like theme="filled" size="35" :fill="isLiked ? '#ff4040' : '#fff'" :class="{ 'icon-pop': isLikePop }" />
       </div>
       <span class="count">{{ formatCount(likes) }}</span>
     </div>
@@ -21,7 +21,7 @@
     </div>
     <div class="sidebar-item">
       <div class="icon" @click="toggleStar">
-        <icon-star theme="filled" size="35" :fill="isStarred ? '#ffc107' : '#fff'"/>
+        <icon-star theme="filled" size="35" :fill="isStarred ? '#ffc107' : '#fff'" :class="{ 'icon-pop': isStarPop }" />
       </div>
       <span class="count">{{ formatCount(stars) }}</span>
     </div>
@@ -62,6 +62,8 @@ defineOptions({
 
 const isLiked = ref(false)
 const isStarred = ref(false)
+const isLikePop = ref(false)
+const isStarPop = ref(false)
 
 const opacityStyle = computed(() => {
   if (props.opacity === undefined) return 1
@@ -78,10 +80,18 @@ const formatCount = (count: number | undefined) => {
 
 const toggleLike = () => {
   isLiked.value = !isLiked.value
+  isLikePop.value = true
+  setTimeout(() => {
+    isLikePop.value = false
+  }, 300)
 }
 
 const toggleStar = () => {
   isStarred.value = !isStarred.value
+  isStarPop.value = true
+  setTimeout(() => {
+    isStarPop.value = false
+  }, 300)
 }
 </script>
 
@@ -89,7 +99,7 @@ const toggleStar = () => {
 .video-sidebar {
   position: absolute;
   right: 12px;
-  bottom: 5%;
+  bottom: 3%;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -165,5 +175,21 @@ const toggleStar = () => {
   text-shadow: 0 1px 1px rgba(0, 0, 0, 0.3);
   min-width: 30px;
   text-align: center;
+}
+
+.icon-pop {
+  animation: pop-effect 0.3s ease;
+}
+
+@keyframes pop-effect {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.3);
+  }
+  100% {
+    transform: scale(1);
+  }
 }
 </style> 
