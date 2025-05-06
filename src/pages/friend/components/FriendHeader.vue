@@ -1,15 +1,15 @@
 <template>
     <div class="friend-header">
         <div class="add-friend-btn" @click="handleAddFriend">
-            <span class="plus-icon">+</span>
+            <icon-plus theme="outline" size="20" fill="#ffffff"/>
             <span>朋友日常</span>
         </div>
         <div class="right-icons">
             <div class="icon-circle" @click="handleGroupChat">
-                <span class="icon">👥</span>
+                <icon-people-plus theme="outline" size="24" fill="#ffffff"/>
             </div>
             <div class="icon-circle" @click="handleSearch">
-                <span class="icon">🔍</span>
+                <icon-search theme="outline" size="24" fill="#ffffff"/>
             </div>
         </div>
     </div>
@@ -48,7 +48,7 @@ export default defineComponent({
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background-color: #4a0042;
+    background-color: transparent;
 }
 
 .add-friend-btn {
@@ -56,6 +56,15 @@ export default defineComponent({
     align-items: center;
     font-size: 16px;
     font-weight: 500;
+    padding: 3px 10px;
+    border-radius: 20px;
+    background-color: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(4px);
+    transition: all 0.3s ease;
+}
+
+.add-friend-btn:active {
+    background-color: rgba(255, 255, 255, 0.2);
 }
 
 .plus-icon {

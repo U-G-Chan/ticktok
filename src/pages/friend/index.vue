@@ -28,7 +28,10 @@ export default defineComponent({
     height: 100%;
     display: flex;
     flex-direction: column;
-    background-color: #1e0521;
+    background: #000000;
+    background-image: 
+        radial-gradient(circle at top left, rgba(114, 13, 54, 0.4), transparent),
+        radial-gradient(circle at bottom right, rgba(5, 59, 50, 0.4), transparent);
     color: #fff;
 }
 </style>

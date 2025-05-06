@@ -3,21 +3,21 @@
         <div class="friend-item wechat" @click="handleAddWechatFriend">
             <div class="item-content">
                 <div class="item-logo wechat-logo">
-                    <span class="logo-icon">微</span>
+                    <img src="@/assets/icon/three-part-logo/wechat.webp" alt="微信" style="width: 100%; height: 100%; object-fit: contain;">
                 </div>
                 <div class="item-text">快速添加微信朋友</div>
             </div>
-            <div class="arrow-icon">›</div>
+            <icon-right theme="outline" size="20" fill="#ffffff" strokeLinejoin="bevel"/>
         </div>
         
         <div class="friend-item qq" @click="handleAddQQFriend">
             <div class="item-content">
                 <div class="item-logo qq-logo">
-                    <span class="logo-icon">Q</span>
+                    <img src="@/assets/icon/three-part-logo/qq.webp" alt="QQ" style="width: 100%; height: 100%; object-fit: contain;">
                 </div>
                 <div class="item-text">快速添加QQ朋友</div>
             </div>
-            <div class="arrow-icon">›</div>
+            <icon-right theme="outline" size="20" fill="#ffffff" strokeLinejoin="bevel"/>
         </div>
     </div>
 </template>
@@ -46,7 +46,10 @@ export default defineComponent({
 
 <style scoped>
 .friend-three-part {
-    padding: 0 16px 24px;
+    background-color: rgba(31, 47, 44, 0.6);
+    border-radius: 15px;
+    margin-bottom: 15px;
+    margin: 0 15px 15px 15px;
 }
 
 .friend-item {
@@ -54,10 +57,6 @@ export default defineComponent({
     justify-content: space-between;
     align-items: center;
     padding: 16px 10px;
-    margin-bottom: 1px;
-    background-color: #222;
-    border-radius: 8px;
-    margin-bottom: 12px;
 }
 
 .item-content {
@@ -77,13 +76,13 @@ export default defineComponent({
 }
 
 .wechat-logo {
-    background-color: #2dc100;
     color: white;
+    size:30px
 }
 
 .qq-logo {
-    background-color: #12b7f5;
     color: white;
+    size:30px
 }
 
 .logo-icon {
@@ -94,8 +93,4 @@ export default defineComponent({
     font-size: 15px;
 }
 
-.arrow-icon {
-    color: #666;
-    font-size: 20px;
-}
 </style> 

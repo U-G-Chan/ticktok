@@ -2,18 +2,20 @@
     <div class="address-book">
         <div class="profile-image">
             <div class="avatar-circles">
-                <div class="avatar-circle left"></div>
-                <div class="avatar-circle middle">
-                    <div class="avatar-face">
-                        <div class="face-detail"></div>
-                    </div>
+                <div class="avatar-circle left">
+                    <icon-people theme="filled" size="40" fill="#d6a6cb"/>
                 </div>
-                <div class="avatar-circle right"></div>
+                <div class="avatar-circle middle">
+                    <icon-peoples-two theme="multi-color" size="40" :fill="['#333' ,'#ad4ee2' ,'#ffffff' ,'#ffffff']"/>
+                </div>
+                <div class="avatar-circle right">
+                    <icon-people theme="filled" size="40" fill="#d6a6cb"/>
+                </div>
             </div>
         </div>
         <div class="text-container">
             <h3 class="title">发现通讯录朋友</h3>
-            <p class="description">你身边的朋友在用抖音，快去看看吧</p>
+            <p class="description">你身边的朋友在用TickTok，快去看看吧</p>
         </div>
         <button class="view-button" @click="handleViewContacts">查看</button>
     </div>
@@ -64,37 +66,29 @@ export default defineComponent({
     border-radius: 50%;
     background-color: #ffcce5;
     position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .avatar-circle.left {
     left: 0;
     z-index: 1;
+    transform: translateX(-10px);
 }
 
 .avatar-circle.middle {
-    background-color: #333;
+    width: 70px;
+    height: 70px;
+    background-color: rgb(239, 228, 241);
+    transform: translateY(-8px);
     z-index: 3;
 }
 
 .avatar-circle.right {
     right: 0;
     z-index: 1;
-}
-
-.avatar-face {
-    width: 100%;
-    height: 100%;
-    border-radius: 50%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.face-detail {
-    width: 40px;
-    height: 20px;
-    background-color: #ff4081;
-    border-radius: 10px;
+    transform: translateX(10px);
 }
 
 .text-container {
@@ -116,8 +110,8 @@ export default defineComponent({
 
 .view-button {
     width: 80%;
-    padding: 12px 0;
-    background-color: #ff4081;
+    padding: 10px 0;
+    background-color: rgb(255, 69, 69);
     color: white;
     border: none;
     border-radius: 4px;

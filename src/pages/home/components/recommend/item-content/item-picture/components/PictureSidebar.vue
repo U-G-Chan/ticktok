@@ -1,41 +1,46 @@
 <template>
-  <div class="picture-sidebar" :style="{ opacity: opacityStyle }">
+  <div class="video-sidebar" :style="{ opacity: opacityStyle }">
     <div class="sidebar-item avatar-container">
       <div class="avatar">
-        <img :src="getImageUrl(avatar)" alt="avatar" />
+        <img :src="avatar" alt="avatar" />
       </div>
       <div class="follow-btn">+</div>
     </div>
     <div class="sidebar-item">
       <div class="icon like-icon" @click="toggleLike">
-        <i class="iconfont icon-heart" :class="{ active: isLiked }" :style="{ color: isLiked ? '#ff4040' : '#fff' }"></i>
+        <icon-like theme="filled" size="35" :fill="isLiked ? '#ff4040' : '#fff'" :class="{ 'icon-pop': isLikePop }" />
       </div>
       <span class="count">{{ formatCount(likes) }}</span>
     </div>
     <div class="sidebar-item">
       <div class="icon">
-        <i class="iconfont icon-comment"></i>
+        <!-- <icon-message theme="outline" size="35" fill="#ffffff"/> -->
+        <icon-comment theme="filled" size="35" fill="#ffffff"/>
       </div>
       <span class="count">{{ formatCount(comments) }}</span>
     </div>
     <div class="sidebar-item">
-      <div class="icon">
-        <i class="iconfont icon-star"></i>
+      <div class="icon" @click="toggleStar">
+        <icon-star theme="filled" size="35" :fill="isStarred ? '#ffc107' : '#fff'" :class="{ 'icon-pop': isStarPop }" />
       </div>
       <span class="count">{{ formatCount(stars) }}</span>
     </div>
     <div class="sidebar-item">
       <div class="icon">
-        <i class="iconfont icon-forward"></i>
+        <icon-share-two theme="filled" size="35" fill="#ffffff"  strokeLinejoin="bevel"/>
       </div>
       <span class="count">{{ formatCount(forwards) }}</span>
+    </div>
+    <div class="sidebar-item">
+      <div class="icon music-icon">
+        <icon-music theme="outline" size="35" fill="#ffffff"/>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import '@/components/Icon/iconfont.css'
 
 const props = withDefaults(defineProps<{
   avatar: string
@@ -52,16 +57,18 @@ const props = withDefaults(defineProps<{
 })
 
 defineOptions({
-  name: 'PictureSidebar'
+  name: 'VideoSidebar'
 })
 
 const isLiked = ref(false)
+const isStarred = ref(false)
+const isLikePop = ref(false)
+const isStarPop = ref(false)
 
 const opacityStyle = computed(() => {
   if (props.opacity === undefined) return 1
   return Math.max(0.5, props.opacity)
 })
-
 
 const formatCount = (count: number | undefined) => {
   if (count === undefined || count === null) return '0'
@@ -73,22 +80,26 @@ const formatCount = (count: number | undefined) => {
 
 const toggleLike = () => {
   isLiked.value = !isLiked.value
+  isLikePop.value = true
+  setTimeout(() => {
+    isLikePop.value = false
+  }, 300)
 }
 
-// 处理图片路径
-const getImageUrl = (url: string) => {
-  if (!url) return '';
-  
-  // 直接返回原始路径
-  return url;
+const toggleStar = () => {
+  isStarred.value = !isStarred.value
+  isStarPop.value = true
+  setTimeout(() => {
+    isStarPop.value = false
+  }, 300)
 }
 </script>
 
 <style scoped>
-.picture-sidebar {
+.video-sidebar {
   position: absolute;
   right: 12px;
-  bottom: 5%;
+  bottom: 3%;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -143,16 +154,14 @@ const getImageUrl = (url: string) => {
 }
 
 .icon {
-  width: 40px;
-  height: 40px;
-  background-color: rgba(255, 255, 255, 0.1);
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   transition: all 0.2s ease;
-  backdrop-filter: blur(4px);
 }
 
 .icon:active {
@@ -168,13 +177,19 @@ const getImageUrl = (url: string) => {
   text-align: center;
 }
 
-.iconfont {
-  font-size: 24px;
-  color: #fff;
+.icon-pop {
+  animation: pop-effect 0.3s ease;
 }
 
-.icon-heart.active {
-  color: #ff4040;
-  text-shadow: 0 0 8px rgba(255, 64, 64, 0.5);
+@keyframes pop-effect {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.3);
+  }
+  100% {
+    transform: scale(1);
+  }
 }
 </style> 
