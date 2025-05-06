@@ -11,7 +11,7 @@
       <div class="notices-list">
         <div class="notice-item">
           <div class="notice-icon blue">
-            <Icon name="survey" color="#fff" size="18" />
+            <icon-chart-pie theme="filled" size="18" fill="#ffffff"/>
           </div>
           <div class="notice-content">
             <div class="notice-title">用户调研：叮~你的有奖问卷...</div>
@@ -20,7 +20,7 @@
         </div>
         <div class="notice-item">
           <div class="notice-icon orange">
-            <Icon name="wallet" color="#fff" size="18" />
+            <icon-wallet-two theme="filled" size="18" fill="#ffffff"/>
           </div>
           <div class="notice-content">
             <div class="notice-title">钱包服务：14.88元现金待...</div>
@@ -66,7 +66,7 @@ export default defineComponent({
 .title {
   font-size: 16px;
   font-weight: 500;
-  color: #333;
+  color: black;
 }
 
 .nav-link {
@@ -126,16 +126,21 @@ export default defineComponent({
 
 .notice-content {
   flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .notice-title {
   font-size: 14px;
   color: #333;
-  margin-bottom: 4px;
+  margin-bottom: 0;
 }
 
 .notice-time {
   font-size: 12px;
   color: #999;
+  margin-left: 8px;
+  white-space: nowrap;
 }
 </style> 

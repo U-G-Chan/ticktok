@@ -7,15 +7,19 @@
       <div class="tools-grid">
         <div class="tool-item" v-for="(tool, index) in tools" :key="index">
           <div class="tool-icon">
-            <Icon :name="tool.iconName" />
+            <component 
+              :is="'icon-' + tool.iconName" 
+              theme="outline" 
+              size="30" 
+              fill="black"
+            />
           </div>
           <div class="tool-name">{{ tool.name }}</div>
-          <div class="tool-badge" v-if="tool.badge">{{ tool.badge }}</div>
         </div>
       </div>
       <div class="more-tools">
         <div class="more-button">
-          <Icon name="grid" size="16" />
+          <icon-system theme="outline" size="16" fill="black"/>
           <span>更多功能</span>
         </div>
       </div>
@@ -35,13 +39,13 @@ export default defineComponent({
   setup() {
     const tools = ref([
       { name: '观看历史', iconName: 'history' },
-      { name: '我的钱包', iconName: 'wallet', badge: '14.8元待提现' },
-      { name: '离线缓存', iconName: 'download' },
-      { name: '稍后再看', iconName: 'bookmark' },
+      { name: '我的钱包', iconName: 'wallet' },
+      { name: '离线缓存', iconName: 'download-two' },
+      { name: '稍后再看', iconName: 'folder-plus' },
       { name: '打车', iconName: 'car' },
-      { name: '抖音创作者', iconName: 'video' },
-      { name: '直播广场', iconName: 'live' },
-      { name: '附近团购', iconName: 'shop' },
+      { name: '抖音创作者', iconName: 'tips' },
+      { name: '直播广场', iconName: 'monitor' },
+      { name: '附近团购', iconName: 'fork-spoon' },
       { name: '放映厅', iconName: 'movie' }
     ])
     
@@ -69,7 +73,7 @@ export default defineComponent({
 .title {
   font-size: 16px;
   font-weight: 500;
-  color: #333;
+  color: black;
 }
 
 .tools-grid {
@@ -90,30 +94,17 @@ export default defineComponent({
   width: 48px;
   height: 48px;
   border-radius: 12px;
-  background-color: #f5f5f5;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 8px;
 }
 
 .tool-name {
-  font-size: 12px;
-  color: #333;
+  font-size: 14px;
+  color: black;
   text-align: center;
 }
 
-.tool-badge {
-  position: absolute;
-  top: -5px;
-  right: -15px;
-  background-color: #f5f5f5;
-  border-radius: 10px;
-  padding: 2px 6px;
-  font-size: 10px;
-  color: #666;
-  white-space: nowrap;
-}
 
 .more-tools {
   display: flex;
@@ -129,9 +120,7 @@ export default defineComponent({
   justify-content: center;
   padding: 10px;
   border-radius: 8px;
-  background-color: #ffffff;
-  border: 1px solid #e8e8e8;
-  cursor: pointer;
+  border: 2px solid #e8e8e8;
   width: 100%;
   max-width: 220px;
   height: 35px;
@@ -139,7 +128,7 @@ export default defineComponent({
 
 .more-button span {
   font-size: 14px;
-  color: #333;
+  color: black;
   margin-left: 5px;
 }
 </style> 

@@ -6,11 +6,11 @@
     </div>
     <div class="header-actions">
       <div class="action-button capsule">
-        <Icon name="settings" size="16" />
+        <icon-setting theme="outline" size="14" fill="#000000"/>
         <span>设置</span>
       </div>
       <div class="action-button capsule">
-        <Icon name="scan" size="16" />
+        <icon-scan-code theme="outline" size="14" fill="#000000"/>
         <span>扫一扫</span>
       </div>
     </div>
@@ -82,12 +82,12 @@ export default defineComponent({
   flex-direction: row;
   background-color: white;
   border-radius: 20px;
-  padding: 5px 20px;
+  padding: 5px 10px;
 }
 
 .action-button.capsule span {
-  font-size: 12px;
-  color: #333;
+  font-size: 15px;
+  color: black;
   margin-top: 0;
   margin-left: 4px;
 }
