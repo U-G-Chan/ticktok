@@ -17,10 +17,12 @@
     <div class="content-area">
       <div v-if="activeTab === 'works'" class="tab-content works-content">
         <div class="empty-content">
-          <i class="icon-camera"></i>
+          <div class="icon-camera-background">
+            <icon-camera theme="outline" size="35" fill="#000000"/>
+          </div>
           <div class="empty-tip">
             <div class="tip-title">发作品，留下记忆</div>
-            <div class="tip-desc">开始在抖音记录生活</div>
+            <div class="tip-desc">开始在TickTok记录生活</div>
           </div>
           <div class="publish-btn" @click="handlePublish">去发布</div>
         </div>
@@ -158,10 +160,16 @@ export default defineComponent({
   align-items: center;
 }
 
-.icon-camera {
+.icon-camera-background {
   font-size: 40px;
   color: #ddd;
   margin-bottom: 15px;
+  background-color: #f5f5f5;
+  border-radius: 50%;
+  padding: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .empty-tip {

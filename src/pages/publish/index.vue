@@ -7,13 +7,13 @@
         <template v-if="$route.path === '/publish'">
             <!-- 左上角关闭按钮 -->
             <div class="close-btn" @click="handleClose">
-                <i class="icon-close">✕</i>
+                <icon-close theme="outline" size="20" fill="#ffffff"/>
             </div>
 
             <!-- 顶部选择音乐按钮 -->
             <div class="music-select">
-                <i class="icon-music">🎵</i>
-                <span>选择音乐</span>
+                <icon-music theme="outline" size="18" fill="#ffffff"/>
+                <span style="font-size:16px">选择音乐</span>
             </div>
 
             <!-- 主内容容器 -->
@@ -143,5 +143,9 @@ export default defineComponent({
 
 .icon-music {
     margin-right: 5px;
+    display: flex;
+    align-items: center;
 }
+
+
 </style> 

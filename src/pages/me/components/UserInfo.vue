@@ -6,15 +6,14 @@
     <div class="user-info-right">
       <div class="username">
         <span>用户名</span>
-        <i class="arrow-down"></i>
+        <div class="icon-wrapper">
+          <icon-play-one theme="filled" size="14" fill="#ffffff"/>
+        </div>
       </div>
       <div class="user-id">
         <span>抖音号：00000000000</span>
-        <i class="icon-copy"></i>
+        <icon-two-dimensional-code-two theme="outline" size="14" fill="#ffffff"/>
       </div>
-    </div>
-    <div class="qr-code">
-      <i class="icon-qrcode"></i>
     </div>
   </div>
 </template>
@@ -67,6 +66,21 @@ export default defineComponent({
   margin-bottom: 5px;
 }
 
+.icon-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.2);
+  margin-left: 8px;
+}
+
+.icon-wrapper :deep(svg) {
+  transform: rotate(90deg);
+}
+
 .arrow-down {
   display: inline-block;
   width: 0;
@@ -90,19 +104,4 @@ export default defineComponent({
   color: rgba(255, 255, 255, 0.6);
 }
 
-.qr-code {
-  position: absolute;
-  right: 20px;
-  top: 20px;
-  width: 28px;
-  height: 28px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #fff;
-}
-
-.icon-qrcode {
-  font-size: 26px;
-}
 </style> 

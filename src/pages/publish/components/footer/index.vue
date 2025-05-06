@@ -100,7 +100,7 @@ export default defineComponent({
 
 .tab {
     color: rgba(255, 255, 255, 0.5);
-    font-size: 14px;
+    font-size: 16px;
     padding: 10px;
     cursor: pointer;
     transition: all 0.1s ease;

@@ -1,15 +1,15 @@
 <template>
   <div class="chat-header">
     <div class="sidebar-icon" @click="onSidebarClick">
-      <i class="icon-menu"></i>
+      <icon-hamburger-button theme="outline" size="26" fill="#333" strokeLinejoin="bevel"/>
     </div>
     <div class="title">消息</div>
     <div class="header-actions">
       <div class="search-icon" @click="onSearchClick">
-        <i class="icon-search"></i>
+        <icon-search theme="outline" size="22" fill="#333"/>
       </div>
       <div class="more-icon" @click="onMoreClick">
-        <i class="icon-more"></i>
+        <icon-add-one theme="outline" size="22" fill="#333"/>
       </div>
     </div>
   </div>

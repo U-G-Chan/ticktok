@@ -1,7 +1,7 @@
 <template>
   <div class="user-intro" @click="handleEditIntro">
     <div class="intro-text">点击添加介绍，让大家认识你...</div>
-    <i class="icon-edit"></i>
+    <icon-write theme="outline" size="14" fill="#999"/>
   </div>
 </template>
 

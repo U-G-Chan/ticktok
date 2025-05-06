@@ -1,7 +1,7 @@
 <template>
   <div class="user-tags" @click="handleAddTags">
     <div class="add-tag-btn">
-      <i class="icon-plus"></i>
+      <icon-plus theme="outline" size="14" fill="#8e8e8e"/>
       <span>添加所在地、学校等标签</span>
     </div>
   </div>
@@ -36,6 +36,9 @@ export default defineComponent({
   align-items: center;
   color: #999;
   font-size: 13px;
+  background-color: #f5f5f5;
+  border-radius: 4px;
+  padding: 1px 2px;
 }
 
 .icon-plus {

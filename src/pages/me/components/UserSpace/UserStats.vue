@@ -41,6 +41,7 @@ export default defineComponent({
 .user-stats {
   display: flex;
   padding: 5px 15px;
+  font-size: 18px;
 }
 
 .stat-item {
@@ -63,9 +64,8 @@ export default defineComponent({
 }
 
 .stat-label {
-  font-size: 12px;
+  font-size: 14px;
   color: #999;
-  margin-top: 3px;
 }
 
 .edit-profile-btn {
@@ -75,6 +75,7 @@ export default defineComponent({
   padding: 5px 15px;
   border-radius: 4px;
   font-size: 14px;
+  font-weight: bold;
   border: 1px solid #ddd;
   display: flex;
   align-items: center;

@@ -1,23 +1,34 @@
 <template>
   <div class="function-area">
     <div class="function-item" @click="handleFunction('mall')">
-      <i class="icon-shop func-icon"></i>
+      <div class="func-icon">
+        <icon-shopping  theme="outline" size="24" fill="#1e1e1e"/>
+      </div>
       <div class="func-name">抖音商城</div>
     </div>
+    <div class="function-item" @click="handleFunction('history')">
+      <div class="func-icon">
+        <icon-time theme="outline" size="24" fill="#1e1e1e"/>
+      </div>
+      <div class="func-name">观看历史</div>
+    </div>
     <div class="function-item" @click="handleFunction('wallet')">
-      <i class="icon-wallet func-icon"></i>
+      <div class="func-icon">
+        <icon-wallet  theme="outline" size="24" fill="#1e1e1e"/>
+      </div>
       <div class="func-name">我的钱包</div>
     </div>
     <div class="function-item" @click="handleFunction('service')">
-      <i class="icon-service func-icon"></i>
+      <div class="func-icon">
+        <icon-headset-one theme="outline" size="24" fill="#1e1e1e"/>
+      </div>
       <div class="func-name">我的客服</div>
     </div>
-    <div class="function-item" @click="handleFunction('mini-program')">
-      <i class="icon-mini-program func-icon"></i>
-      <div class="func-name">我的小程序</div>
-    </div>
+    
     <div class="function-item" @click="handleFunction('more')">
-      <i class="icon-more func-icon"></i>
+      <div class="func-icon">
+        <icon-system  theme="outline" size="24" fill="#1e1e1e"/>
+      </div>
       <div class="func-name">全部功能</div>
     </div>
   </div>
@@ -54,13 +65,11 @@ export default defineComponent({
 }
 
 .func-icon {
-  font-size: 24px;
-  color: #666;
   margin-bottom: 5px;
 }
 
 .func-name {
   font-size: 12px;
-  color: #666;
+  color: black;
 }
 </style> 

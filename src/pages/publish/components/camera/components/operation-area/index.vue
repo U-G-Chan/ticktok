@@ -14,8 +14,15 @@
             </div>
             
             <!-- 拍照按钮 -->
-            <div class="capture-button" @click="$emit('capture')">
-                <div class="inner-circle"></div>
+            <div 
+                class="capture-button" 
+                @mousedown="handlePressStart"
+                @mouseup="handlePressEnd"
+                @mouseleave="handlePressEnd"
+                @touchstart="handlePressStart"
+                @touchend="handlePressEnd"
+            >
+                <div class="inner-circle" :class="{ 'pressed': isPressed }"></div>
                 <div v-if="noCamera" class="upload-text">选择</div>
             </div>
             
@@ -50,6 +57,7 @@ export default defineComponent({
     setup(_, { emit }) {
         const router = useRouter()
         const activeMode = ref('photo')
+        const isPressed = ref(false)
         
         const handleModeChange = (mode: string) => {
             activeMode.value = mode
@@ -59,11 +67,25 @@ export default defineComponent({
         const navigateToAlbum = () => {
             router.push('/publish/album')
         }
+
+        const handlePressStart = () => {
+            isPressed.value = true
+        }
+
+        const handlePressEnd = () => {
+            if (isPressed.value) {
+                isPressed.value = false
+                emit('capture')
+            }
+        }
         
         return {
             activeMode,
+            isPressed,
             handleModeChange,
-            navigateToAlbum
+            navigateToAlbum,
+            handlePressStart,
+            handlePressEnd
         }
     }
 })
@@ -139,6 +161,8 @@ export default defineComponent({
     box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
     -webkit-tap-highlight-color: transparent;
     outline: none;
+    user-select: none;
+    -webkit-user-select: none;
 }
 
 .inner-circle {
@@ -146,6 +170,11 @@ export default defineComponent({
     height: 60px;
     border-radius: 50%;
     background-color: #fff;
+    transition: transform 0.2s ease;
+}
+
+.inner-circle.pressed {
+    transform: scale(0.8);
 }
 
 .upload-text {

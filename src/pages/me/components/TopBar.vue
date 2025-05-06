@@ -1,18 +1,18 @@
 <template>
   <div class="top-bar">
     <div class="add-friend-btn" @click="handleAddFriend">
-      <i class="icon-user-add"></i>
+      <icon-people-plus theme="outline" size="20" fill="#fff"/>
       <span>添加朋友</span>
     </div>
     <div class="right-actions">
       <div class="icon-btn visitors" @click="handleVisitors">
-        <i class="icon-users"></i>
+        <icon-peoples theme="outline" size="22" fill="#ffffff"/>
       </div>
       <div class="icon-btn search" @click="handleSearch">
-        <i class="icon-search"></i>
+        <icon-search theme="outline" size="22" fill="#ffffff"/>
       </div>
       <div class="icon-btn menu" @click="handleMenu">
-        <i class="icon-menu"></i>
+        <icon-hamburger-button theme="outline" size="22" fill="#ffffff"/>
       </div>
     </div>
   </div>
@@ -66,7 +66,7 @@ export default defineComponent({
 .add-friend-btn {
   display: flex;
   align-items: center;
-  background-color: rgba(255, 255, 255, 0.2);
+  background-color: rgba(50, 50, 50, 0.4);
   border-radius: 20px;
   padding: 5px 15px;
   font-size: 14px;
@@ -86,7 +86,7 @@ export default defineComponent({
 .icon-btn {
   width: 36px;
   height: 36px;
-  background-color: rgba(255, 255, 255, 0.2);
+  background-color: rgba(50, 50, 50, 0.4);
   border-radius: 50%;
   display: flex;
   align-items: center;

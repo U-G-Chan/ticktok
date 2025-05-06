@@ -1,35 +1,50 @@
 <template>
     <div class="camera-tools">
+        <!-- @TODO: 动态icon -->
         <div class="tools-group">
             <div class="tool-item" @click="$emit('flip-camera')">
-                <div class="tool-icon">↺</div>
+                <div class="tool-icon">
+                    <icon-refresh theme="outline" size="30" fill="#ffffff"/>
+                </div>         
                 <div class="tool-text">翻转</div>
             </div>
             <div class="tool-item" @click="toggleFlash">
-                <div class="tool-icon">{{ flashEnabled ? '◉' : '◎' }}</div>
+                <div class="tool-icon">
+                    <icon-flashlamp theme="outline" size="30" fill="#ffffff"/>
+                </div>
                 <div class="tool-text">闪光灯</div>
             </div>
             <div class="tool-item">
-                <div class="tool-icon">⚙</div>
+                <div class="tool-icon">
+                    <icon-setting-two theme="outline" size="30" fill="#ffffff"/>
+                </div>
                 <div class="tool-text">设置</div>
             </div>
         </div>
         <div class="divider"></div>
         <div class="tools-group">
             <div class="tool-item">
-                <div class="tool-icon">❖</div>
+                <div class="tool-icon">
+                    <icon-halo theme="outline" size="30" fill="#ffffff"/>
+                </div>
                 <div class="tool-text">动图</div>
             </div>
             <div class="tool-item">
-                <div class="tool-icon">⏱</div>
+                <div class="tool-icon">
+                    <icon-stopwatch theme="outline" size="30" fill="#ffffff"/>
+                </div>
                 <div class="tool-text">倒计时</div>
             </div>
             <div class="tool-item">
-                <div class="tool-icon">✿</div>
+                <div class="tool-icon">
+                    <icon-magic-wand theme="outline" size="30" fill="#ffffff"/>
+                </div>
                 <div class="tool-text">美颜</div>
             </div>
             <div class="tool-item">
-                <div class="tool-icon">⋯</div>
+                <div class="tool-icon more">
+                    <icon-down theme="outline" size="30" fill="#ffffff"/>
+                </div>
                 <div class="tool-text">更多</div>
             </div>
         </div>
@@ -96,7 +111,6 @@ export default defineComponent({
 .tool-icon {
     width: 40px;
     height: 40px;
-    background-color: rgba(0, 0, 0, 0.4);
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -106,6 +120,13 @@ export default defineComponent({
     -webkit-user-select: none;
     cursor: pointer;
 }
+
+.tool-icon.more {
+    width: 30px;
+    height: 30px;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
 
 .tool-text {
     font-size: 12px;
