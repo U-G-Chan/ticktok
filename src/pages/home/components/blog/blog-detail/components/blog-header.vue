@@ -2,7 +2,7 @@
   <div class="blog-detail-header">
     <div class="left-section">
       <div class="return-btn" @click="goBack">
-        <i class="iconfont icon-arrow-left"></i>
+        <icon-left theme="outline" size="28" fill="#000000"/>
       </div>
       <div class="user-info">
         <img 
@@ -23,7 +23,7 @@
         {{ blog.isFollowing ? '已关注' : '关注' }}
       </div>
       <div class="search-btn" @click="goToSearch">
-        <i class="iconfont icon-search"></i>
+        <icon-search theme="outline" size="28" fill="#000000"/>
       </div>
     </div>
   </div>

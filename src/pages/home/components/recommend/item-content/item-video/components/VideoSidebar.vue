@@ -136,21 +136,18 @@ const toggleStar = () => {
 
 .follow-btn {
   position: absolute;
-  bottom: -6px;
   left: 50%;
   transform: translateX(-50%);
-  width: 20px;
-  height: 20px;
+  min-width: 56px;
+  height: 28px;
   background-color: #ff4040;
-  border-radius: 50%;
+  border-radius: 5px;
   display: flex;
   align-items: center;
   justify-content: center;
   color: #fff;
-  font-size: 16px;
-  line-height: 1;
+  font-size: 14px;
   cursor: pointer;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .icon {

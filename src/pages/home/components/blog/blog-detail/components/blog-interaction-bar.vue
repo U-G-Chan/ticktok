@@ -5,27 +5,19 @@
     </div>
     <div class="interaction-icons">
       <div class="icon-item">
-        <i 
-          class="iconfont icon-like" 
-          :class="{ 'active': isLiked }" 
-          @click="toggleLike"
-        ></i>
+        <icon-like theme="outline" size="28" fill="#666"/>
         <span>{{ formatNumber(blog.likes) }}</span>
       </div>
       <div class="icon-item">
-        <i class="iconfont icon-comment"></i>
+        <icon-comment theme="outline" size="28" fill="#666"/>
         <span>{{ formatNumber(blog.comments.length) }}</span>
       </div>
       <div class="icon-item">
-        <i 
-          class="iconfont icon-star" 
-          :class="{ 'active': isStarred }" 
-          @click="toggleStar"
-        ></i>
+        <icon-star theme="outline" size="28" fill="#666"/>
         <span>{{ formatNumber(blog.stars) }}</span>
       </div>
       <div class="icon-item">
-        <i class="iconfont icon-share"></i>
+        <icon-share-two theme="outline" size="28" fill="#666"/>
         <span>{{ formatNumber(blog.forwards) }}</span>
       </div>
     </div>
@@ -76,7 +68,7 @@ const formatNumber = (num) => {
 .blog-interaction-bar {
   display: flex;
   align-items: center;
-  padding: 10px 16px;
+  padding: 10px 10px;
   background: #fff;
   border-top: 1px solid #f0f0f0;
   position: sticky;
@@ -86,7 +78,7 @@ const formatNumber = (num) => {
 }
 
 .comment-box {
-  flex: 1;
+  flex: 0.3;
   background: #f5f5f5;
   border-radius: 18px;
   padding: 8px 12px;
@@ -102,17 +94,19 @@ const formatNumber = (num) => {
 }
 
 .interaction-icons {
+  flex: 0.7;
   display: flex;
   align-items: center;
+  justify-content: space-between;
 }
 
 .icon-item {
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-left: 16px;
   font-size: 12px;
   color: #666;
+  flex: 1;
 }
 
 .icon-item i {

@@ -34,7 +34,7 @@
           </div>
         </div>
         <div class="comment-likes">
-          <i class="iconfont icon-like"></i>
+          <icon-like theme="outline" size="14" fill="#999"/>
           <span>{{ comment.likes }}</span>
         </div>
       </div>
