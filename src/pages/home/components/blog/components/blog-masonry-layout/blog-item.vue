@@ -15,7 +15,7 @@
         <span class="author-name">{{ blog.authorName }}</span>
       </div>
       <div class="likes-info">
-        <i class="iconfont icon-like"></i>
+        <icon-like theme="outline" size="14" fill="#333"/>
         <span>{{ formatNumber(blog.likes) }}</span>
       </div>
     </div>
@@ -129,12 +129,11 @@ const formatNumber = (num) => {
 .likes-info {
   display: flex;
   align-items: center;
-  color: #ff2442;
-  font-size: 12px;
+  color: #333;
 }
 
-.likes-info i {
-  margin-right: 4px;
-  font-size: 14px;
+.likes-info span{
+  font-size: 12px;
+  padding: 0 2px
 }
 </style> 

@@ -1,7 +1,7 @@
 <template>
   <div class="blog-search-bar" @click="goSearch">
     <div class="search-icon">
-      <i class="iconfont icon-search"></i>
+      <icon-search theme="outline" size="18" fill="#333"/>
     </div>
     <div class="search-input-wrapper">
       <input 
@@ -28,45 +28,65 @@ const goSearch = () => {
 </script>
 
 <style scoped>
+/* 容器样式 */
 .blog-search-bar {
-  width: 100%;
-  padding: 10px 16px;
-  background: #fff;
+  /* 布局 */
   display: flex;
   align-items: center;
-  position: sticky;
-  top: 0;
-  z-index: 10;
+  align-self: center;
+  
+  /* 尺寸 */
+  width: calc(100% - 24px);
+  padding: 2px 16px;
+  margin: 0 12px;
+  
+  /* 外观 */
+  background: white;
+  backdrop-filter: blur(10px);
+  border: 1px solid #333;
+  border-radius: 12px;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
+/* 搜索图标 */
 .search-icon {
   margin-right: 8px;
   color: #666;
   font-size: 18px;
 }
 
+/* 搜索输入框容器 */
 .search-input-wrapper {
+  /* 布局 */
   flex: 1;
-  background: #f5f5f5;
-  border-radius: 16px;
-  padding: 8px 12px;
   display: flex;
   align-items: center;
+  
+  /* 尺寸 */
+  padding: 8px 5px;
+
+  border-right: 1px solid #e0e0e0;
 }
 
+/* 搜索输入框 */
 .search-input {
+  /* 尺寸 */
   width: 100%;
+  
+  /* 外观 */
   border: none;
-  background: transparent;
+  background: white;
   font-size: 14px;
-  outline: none;
   color: #333;
+  
+  /* 交互 */
+  outline: none;
 }
 
+/* 搜索按钮 */
 .search-button {
   margin-left: 10px;
-  color: #ff2442;
+  color: #333;
   font-size: 14px;
   font-weight: 500;
 }

@@ -146,7 +146,7 @@ const handleScroll = () => {
 <style scoped>
 .blog-masonry-layout {
   padding: 8px;
-  background: #fff;
+  background: transparent;
   min-height: 200px;
 }
 

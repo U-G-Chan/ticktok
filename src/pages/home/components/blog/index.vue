@@ -3,18 +3,24 @@
     <!-- 头部占位div，高度与head-nav一致 -->
     <head-nav-placeholder />
     
-    <!-- 搜索栏 -->
-    <blog-search-bar />
-    
-    <!-- 瀑布流布局 -->
-    <blog-masonry-layout />
-    
-    <!-- 子路由 -->
-    <router-view v-slot="{ Component, route }">
-      <transition :name="route.meta.transition || 'fade'">
-        <component :is="Component" />
-      </transition>
-    </router-view>
+    <div class="blog-content">
+      <!-- 搜索栏 -->
+      <div class="blog-search-bar-wrapper">
+        <blog-search-bar />
+      </div>
+      
+      <!-- 瀑布流布局 -->
+      <div class="blog-masonry-wrapper">
+        <blog-masonry-layout />
+      </div>
+      
+      <!-- 子路由 -->
+      <router-view v-slot="{ Component, route }">
+        <transition :name="route.meta.transition || 'fade'">
+          <component :is="Component" />
+        </transition>
+      </router-view>
+    </div>
   </div>
 </template>
 
@@ -28,8 +34,30 @@ import BlogMasonryLayout from './components/blog-masonry-layout'
 .blog {
   width: 100%;
   height: 100%;
-  background: #fff;
+  background: white radial-gradient(circle at 30% 5%, rgb(255, 161, 185) 0%, rgb(255, 255, 255) 50%);
+  overflow: hidden;
   position: relative;
+}
+
+.blog-content {
+  width: 100%;
+  height: calc(100% - 52px);
+  background: transparent;
+  position: relative;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 搜索栏容器 */
+.blog-search-bar-wrapper {
+  padding: 8px 0;
+  background: transparent;
+}
+
+/* 瀑布流容器 */
+.blog-masonry-wrapper {
+  flex: 1;
 }
 
 /* 路由过渡动画 */
