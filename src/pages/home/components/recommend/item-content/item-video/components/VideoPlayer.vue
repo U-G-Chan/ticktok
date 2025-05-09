@@ -6,7 +6,6 @@
       :src="videoUrl"
       :muted="false"
       :loop="true"
-      autoplay
       playsinline
       webkit-playsinline
       x5-video-player-type="h5"
@@ -49,7 +48,7 @@ const progress = ref(0)
 const startX = ref(0)
 const startY = ref(0)
 const isPaused = ref(true)
-const lastStatus = ref(SlideItemStatus.INACTIVE)
+const lastStatus = ref<SlideItemStatus>(SlideItemStatus.INACTIVE)
 const isUserInteracting = ref(false)
 const isUserPaused = ref(false)
 
@@ -58,18 +57,22 @@ watch(() => props.itemStatus, (newStatus, oldStatus) => {
   if (!videoRef.value) return
   
   // 保存上一个状态，便于后续处理
-  lastStatus.value = oldStatus
+  if (oldStatus !== undefined) {
+    lastStatus.value = oldStatus
+  }
 
   if (SlideItemStatusHelper.shouldPlay(newStatus)) {
     // 应该播放的状态
-    videoRef.value.play()
+    videoRef.value.play().catch(err => {
+      console.error("视频播放失败:", err);
+    })
   } else if (SlideItemStatusHelper.isPaused(newStatus)) {
     // 暂停状态
     videoRef.value.pause()
     
     // 如果不应保持状态，则重置
     if (!SlideItemStatusHelper.shouldPreserveState(newStatus) && 
-        !SlideItemStatusHelper.shouldPreserveState(oldStatus)) {
+        !SlideItemStatusHelper.shouldPreserveState(oldStatus || SlideItemStatus.INACTIVE)) {
       videoRef.value.currentTime = 0
       progress.value = 0
     }
@@ -79,7 +82,7 @@ watch(() => props.itemStatus, (newStatus, oldStatus) => {
     videoRef.value.currentTime = 0
     progress.value = 0
   }
-})
+}, { immediate: true }) // 添加immediate:true确保组件创建时就执行一次
 
 const togglePlay = () => {
   if (!videoRef.value) return
@@ -149,6 +152,12 @@ const reset = () => {
 onMounted(() => {
   if (videoRef.value) {
     videoRef.value.muted = false
+    // 根据初始状态决定是否播放
+    if (SlideItemStatusHelper.shouldPlay(props.itemStatus)) {
+      videoRef.value.play().catch(err => {
+        console.error("视频初始播放失败:", err);
+      })
+    }
   }
 })
 
