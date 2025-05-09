@@ -1,10 +1,10 @@
 <template>
   <div class="video-sidebar" :style="{ opacity: opacityStyle }">
     <div class="sidebar-item avatar-container">
-      <div class="avatar">
-        <img :src="avatar" alt="avatar" />
+      <div class="avatar-wrapper">
+        <img :src="avatar" alt="avatar" class="avatar" />
+        <div class="follow-btn">+</div>
       </div>
-      <div class="follow-btn">+</div>
     </div>
     <div class="sidebar-item">
       <div class="icon like-icon" @click="toggleLike">
@@ -119,7 +119,13 @@ const toggleStar = () => {
   margin-bottom: 10px;
 }
 
+.avatar-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
 .avatar {
+  display: block;
   width: 48px;
   height: 48px;
   border-radius: 50%;
@@ -128,20 +134,15 @@ const toggleStar = () => {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
-.avatar img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
 .follow-btn {
   position: absolute;
   left: 50%;
+  bottom: -10px;
   transform: translateX(-50%);
-  min-width: 56px;
-  height: 28px;
-  background-color: #ff4040;
-  border-radius: 5px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #ff4444;
   display: flex;
   align-items: center;
   justify-content: center;
