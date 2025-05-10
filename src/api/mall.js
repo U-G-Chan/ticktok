@@ -9,16 +9,16 @@ const brandLabels = ['品牌正品', '好店合集', '官方旗舰', '优选好�
 
 // 模拟商品图片URL
 const productImages = [
-  'https://picsum.photos/200/300?random=1',
-  'https://picsum.photos/300/200?random=2',
-  'https://picsum.photos/200/400?random=3',
-  'https://picsum.photos/400/200?random=4',
-  'https://picsum.photos/250/250?random=5',
-  'https://picsum.photos/300/300?random=6',
-  'https://picsum.photos/250/350?random=7',
-  'https://picsum.photos/350/250?random=8',
-  'https://picsum.photos/200/200?random=9',
-  'https://picsum.photos/400/400?random=10'
+  '/product/product1.jpg',
+  '/product/product2.jpg',
+  '/product/product3.jpg',
+  '/product/product4.jpg',
+  '/product/product5.jpg',
+  '/product/product6.jpg',
+  '/product/product7.jpg',
+  '/product/product8.jpg',
+  '/product/product9.jpg',
+  '/product/product10.jpg'
 ]
 
 // 生成随机销量 (1k-100k)
@@ -144,6 +144,6 @@ export const getMallProducts = (page = 1, pageSize = 10) => {
         pageSize,
         hasMore: end < productList.value.length
       })
-    }, 300) // 模拟网络延迟
+    }, 100) // 模拟网络延迟
   })
 } 
