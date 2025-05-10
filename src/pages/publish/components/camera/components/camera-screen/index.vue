@@ -25,8 +25,7 @@ import {
 
 export default defineComponent({
     name: 'CameraScreen',
-    emits: ['image-confirmed'],
-    setup(_, { emit }) {
+    setup() {
         const videoEl = ref<HTMLVideoElement | null>(null)
         let mediaStream: MediaStream | null = null
         const captureEffectActive = ref<boolean>(false)
@@ -136,8 +135,6 @@ export default defineComponent({
                                 const imageUrl = reader.result as string
                                 // 播放拍照效果
                                 playCaptureEffect()
-                                // 直接确认图片，无需显示预览
-                                emit('image-confirmed', imageUrl)
                                 resolve(imageUrl)
                             }
                             reader.onerror = reject
@@ -166,9 +163,6 @@ export default defineComponent({
                     
                     // 播放拍照效果
                     playCaptureEffect()
-                    
-                    // 直接确认图片，无需显示预览
-                    emit('image-confirmed', imageUrl)
                     
                     return imageUrl
                 }

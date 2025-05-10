@@ -16,11 +16,12 @@
             <!-- 拍照按钮 -->
             <div 
                 class="capture-button" 
-                @mousedown="handlePressStart"
-                @mouseup="handlePressEnd"
-                @mouseleave="handlePressEnd"
-                @touchstart="handlePressStart"
-                @touchend="handlePressEnd"
+                @click.stop="handleCapture"
+                @mousedown.stop="handlePressStart"
+                @mouseup.stop="handlePressEnd"
+                @mouseleave.stop="handlePressEnd"
+                @touchstart.stop="handlePressStart"
+                @touchend.stop="handlePressEnd"
             >
                 <div class="inner-circle" :class="{ 'pressed': isPressed }"></div>
                 <div v-if="noCamera" class="upload-text">选择</div>
@@ -58,6 +59,7 @@ export default defineComponent({
         const router = useRouter()
         const activeMode = ref('photo')
         const isPressed = ref(false)
+        const isCapturing = ref(false)
         
         const handleModeChange = (mode: string) => {
             activeMode.value = mode
@@ -69,13 +71,25 @@ export default defineComponent({
         }
 
         const handlePressStart = () => {
-            isPressed.value = true
+            if (!isCapturing.value) {
+                isPressed.value = true
+            }
         }
 
         const handlePressEnd = () => {
-            if (isPressed.value) {
+            if (isPressed.value && !isCapturing.value) {
                 isPressed.value = false
+                handleCapture()
+            }
+        }
+
+        const handleCapture = () => {
+            if (!isCapturing.value) {
+                isCapturing.value = true
                 emit('capture')
+                setTimeout(() => {
+                    isCapturing.value = false
+                }, 1000) // 设置1秒的冷却时间
             }
         }
         
@@ -85,7 +99,8 @@ export default defineComponent({
             handleModeChange,
             navigateToAlbum,
             handlePressStart,
-            handlePressEnd
+            handlePressEnd,
+            handleCapture
         }
     }
 })

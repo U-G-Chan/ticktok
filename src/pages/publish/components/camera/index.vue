@@ -100,7 +100,7 @@ export default defineComponent({
                         // 使用自定义相机实现
                         const imageUrl = await cameraScreenRef.value.captureImage()
                         if (imageUrl) {
-                            // 直接保存图片，无需用户确认
+                            // 保存图片
                             await handleImageConfirmed(imageUrl)
                         }
                     } else {
@@ -114,7 +114,9 @@ export default defineComponent({
                             saveToGallery: true
                         })
                         
-                        console.log('照片已拍摄:', image.webPath)
+                        if (image.webPath) {
+                            await handleImageConfirmed(image.webPath)
+                        }
                     }
                 } else if (currentMode.value === 'video') {
                     // 录制视频的实现需要使用其他Capacitor插件
@@ -130,7 +132,6 @@ export default defineComponent({
 
         // 处理图像确认
         const handleImageConfirmed = async (imageUrl: string) => {
-            
             try {
                 // 如果需要存储到设备，可以使用以下代码
                 if (Filesystem.value) {
