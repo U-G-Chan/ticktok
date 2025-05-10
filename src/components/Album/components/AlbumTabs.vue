@@ -1,7 +1,7 @@
 <template>
     <div class="tabs" ref="tabsRef">
         <div 
-            v-for="(tab, idx) in tabs" 
+            v-for="(tab, _) in tabs" 
             :key="tab.value"
             class="tab" 
             :class="{ 'active': modelValue === tab.value }" 
@@ -83,7 +83,7 @@ export default defineComponent({
     transition: color 0.2s;
     letter-spacing: 1px;
     position: relative;
-    padding: 12px 0;
+    padding: 10px 0;
 }
 
 .tab.active {

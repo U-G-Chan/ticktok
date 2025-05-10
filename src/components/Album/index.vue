@@ -212,7 +212,4 @@ export default defineComponent({
     overflow-y: auto;
 }
 
-.content {
-    padding: 16px;
-}
 </style> 

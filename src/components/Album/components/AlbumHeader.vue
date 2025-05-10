@@ -32,7 +32,7 @@ export default defineComponent({
     display: flex;
     align-items: center;
     justify-content: space-between;
-    height: 56px;
+    height: 45px;
     padding: 0 16px;
     background: #fff;
     position: sticky;
