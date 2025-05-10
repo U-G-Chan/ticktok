@@ -3,7 +3,7 @@ import type { SlideItemData } from '@/types/slide'
 import { SlideItemStatus } from '@/types/slide'
 
 // 默认最大数据量
-const MAX_ITEMS_COUNT = 30
+const MAX_ITEMS_COUNT = 15
 
 export const useSlideStore = defineStore('slide', {
   state: () => ({
@@ -11,7 +11,8 @@ export const useSlideStore = defineStore('slide', {
     slideItems: [] as SlideItemData[],
     menuOpen: false,   // 侧边栏是否打开
     systemPaused: false, // 系统暂停（如页面不可见）
-    maxItemsCount: MAX_ITEMS_COUNT // 最大数据量
+    maxItemsCount: MAX_ITEMS_COUNT, // 最大数据量
+    isDataTrimming: false // 是否正在裁剪数据
   }),
   
   getters: {
@@ -88,6 +89,9 @@ export const useSlideStore = defineStore('slide', {
       
       // 如果超过最大数据量，需要裁剪
       if (this.slideItems.length > this.maxItemsCount) {
+        // 标记正在裁剪数据
+        this.isDataTrimming = true
+        
         // 保留当前元素的索引位置
         const currentIndex = this.currentIndex
         
@@ -105,6 +109,11 @@ export const useSlideStore = defineStore('slide', {
         } else {
           this.currentIndex = currentIndex - startIndex
         }
+        
+        // 使用setTimeout确保DOM更新后再清除标记
+        setTimeout(() => {
+          this.isDataTrimming = false
+        }, 50)
       }
     },
     
@@ -113,6 +122,7 @@ export const useSlideStore = defineStore('slide', {
       this.slideItems = []
       this.menuOpen = false
       this.systemPaused = false
+      this.isDataTrimming = false
     }
   }
 }) 

@@ -63,7 +63,7 @@ export default defineComponent({
     slideStore.setCurrentIndex(props.defaultIndex)
     
     // 设置最大缓存数量
-    slideStore.setMaxItemsCount(30)
+    slideStore.setMaxItemsCount(15)
 
     // 获取滑动项数据
     const getSlideItemsData = async (startIndex: number) => {
@@ -92,7 +92,7 @@ export default defineComponent({
 
     const containerStyle = computed(() => ({
       transform: `translateY(${-slideStore.currentIndex * 100 + (isDragging.value ? (currentY.value - startY.value) : 0)}%)`,
-      transition: isDragging.value ? 'none' : 'transform 0.4s cubic-bezier(0.25, 0.1, 0.25, 1)'
+      transition: isDragging.value || slideStore.isDataTrimming ? 'none' : 'transform 0.4s cubic-bezier(0.25, 0.1, 0.25, 1)'
     }))
 
     const getItemStyle = (index: number) => ({
@@ -131,8 +131,12 @@ export default defineComponent({
       return slideStore.slideItems.slice(start, end + 1)
     })
     
-    // 监听currentIndex变化，更新可见区域
-    watch(() => slideStore.currentIndex, (_) => {
+    // 监听当前索引和数据集变化，更新可见区域
+    watch([
+      () => slideStore.currentIndex,
+      () => slideStore.slideItems.length,
+      () => slideStore.isDataTrimming
+    ], () => {
       updateVisibleRange()
     })
 
