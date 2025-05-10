@@ -18,6 +18,8 @@
     "@ffmpeg/ffmpeg": "^0.12.15",
     "@ffmpeg/util": "^0.12.2",
     "@icon-park/vue-next": "^1.4.2",
+    "@types/lodash-es": "^4.17.12",
+    "lodash-es": "^4.17.21",
     "pinia": "^3.0.2",
     "swiper": "^11.2.6",
     "vue": "^3.5.13",

@@ -49,7 +49,6 @@ export default defineComponent({
     
     // 使用Pinia状态管理
     const slideStore = useSlideStore()
-    slideStore.setMaxBufferSize(props.pageSize * 3)
     slideStore.setCurrentIndex(props.defaultIndex)
 
     // 获取滑动项数据

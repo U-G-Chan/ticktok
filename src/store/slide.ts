@@ -6,7 +6,6 @@ export const useSlideStore = defineStore('slide', {
   state: () => ({
     currentIndex: 0,
     slideItems: [] as SlideItemData[],
-    maxBufferSize: 15, // 默认缓冲区大小
     menuOpen: false,   // 侧边栏是否打开
     systemPaused: false // 系统暂停（如页面不可见）
   }),
@@ -46,10 +45,6 @@ export const useSlideStore = defineStore('slide', {
       this.slideItems = items
     },
     
-    setMaxBufferSize(size: number) {
-      this.maxBufferSize = size
-    },
-    
     // 设置菜单开关状态
     setMenuOpen(isOpen: boolean) {
       this.menuOpen = isOpen
@@ -77,18 +72,8 @@ export const useSlideStore = defineStore('slide', {
     },
     
     addItems(items: SlideItemData[]) {
-      // 如果超过最大缓存大小，移除头部数据
-      if (this.slideItems.length + items.length > this.maxBufferSize) {
-        // 计算需要移除的数据量
-        const removeCount = (this.slideItems.length + items.length) - this.maxBufferSize
-        // 移除头部数据
-        this.slideItems = [...this.slideItems.slice(removeCount), ...items]
-        // 保持当前显示位置不变
-        this.currentIndex = Math.max(0, this.currentIndex - removeCount)
-      } else {
-        // 直接追加新数据
-        this.slideItems = [...this.slideItems, ...items]
-      }
+      // 直接追加新数据
+      this.slideItems = [...this.slideItems, ...items]
     },
     
     reset() {
