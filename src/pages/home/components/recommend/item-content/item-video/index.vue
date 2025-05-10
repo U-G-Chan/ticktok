@@ -4,6 +4,7 @@
       ref="videoPlayerRef"
       :video-url="props.data.videoUrl"
       :item-status="props.itemStatus"
+      :is-first-video="isFirstVideo"
       @drag-start="handleDragStart"
       @drag-move="handleDragMove"
       @drag-end="handleDragEnd"
@@ -37,7 +38,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onUnmounted } from 'vue'
+import { ref, onUnmounted, computed } from 'vue'
 import VideoPlayer from './components/VideoPlayer.vue'
 import VideoSidebar from './components/VideoSidebar.vue'
 import VideoFooter from './components/VideoFooter.vue'
@@ -57,6 +58,11 @@ const startY = ref(0)
 const progress = ref(0)
 const isPaused = ref(false)
 const isLiked = ref(false)
+
+// 计算是否是第一个视频
+const isFirstVideo = computed(() => {
+  return props.data.id === '1' // 假设第一个视频的 id 为 '1'
+})
 
 const handleDragStart = (e: TouchEvent) => {
   startY.value = e.touches[0].clientY

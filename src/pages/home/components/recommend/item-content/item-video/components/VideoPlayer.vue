@@ -4,7 +4,7 @@
       ref="videoRef"
       class="video"
       :src="videoUrl"
-      :muted="false"
+      :muted="isMuted"
       :loop="true"
       playsinline
       webkit-playsinline
@@ -21,6 +21,11 @@
     <div class="play-pause-icon" v-if="isPaused && isUserPaused && !isUserInteracting">
       <div class="play-triangle"></div>
     </div>
+    
+    <!-- 静音图标提示 -->
+    <div class="unmute-overlay" v-if="isMuted" @click="unmuteVideo">
+      <icon-volume-mute theme="outline" size="25" fill="#fff"/>
+    </div>
   </div>
 </template>
 
@@ -32,6 +37,7 @@ import { SlideItemStatus, SlideItemStatusHelper } from '@/types/slide'
 const props = defineProps<{
   videoUrl: string
   itemStatus: SlideItemStatus
+  isFirstVideo?: boolean
 }>()
 
 const emit = defineEmits<{
@@ -51,6 +57,19 @@ const isPaused = ref(true)
 const lastStatus = ref<SlideItemStatus>(SlideItemStatus.INACTIVE)
 const isUserInteracting = ref(false)
 const isUserPaused = ref(false)
+const isMuted = ref(props.isFirstVideo) // 初始设置为静音，但仅对第一个视频
+
+// 用户点击取消静音
+const unmuteVideo = () => {
+  if (videoRef.value) {
+    isMuted.value = false
+    if (isPaused.value) {
+      videoRef.value.play().catch(err => {
+        console.error("视频播放失败:", err);
+      })
+    }
+  }
+}
 
 // 监听 itemStatus 变化
 watch(() => props.itemStatus, (newStatus, oldStatus) => {
@@ -93,6 +112,11 @@ const togglePlay = () => {
     videoRef.value.pause()
     isUserPaused.value = true
   }
+  
+  // 在用户交互后取消静音
+  if (isMuted.value) {
+    isMuted.value = false
+  }
 }
 
 const handlePlay = () => {
@@ -118,6 +142,11 @@ const handleTouchStart = (e: TouchEvent) => {
   startY.value = e.touches[0].clientY
   isUserInteracting.value = true
   emit('dragStart', e)
+  
+  // 在用户交互后取消静音
+  if (isMuted.value) {
+    isMuted.value = false
+  }
 }
 
 const handleTouchMove = (e: TouchEvent) => {
@@ -147,11 +176,12 @@ const reset = () => {
   progress.value = 0
   isPaused.value = true
   emit('isPausedChange', true)
+  isMuted.value = props.isFirstVideo // 重置时恢复静音状态
 }
 
 onMounted(() => {
   if (videoRef.value) {
-    videoRef.value.muted = false
+    videoRef.value.muted = props.isFirstVideo // 初始设置为静音，但仅对第一个视频
     // 根据初始状态决定是否播放
     if (SlideItemStatusHelper.shouldPlay(props.itemStatus)) {
       videoRef.value.play().catch(err => {
@@ -213,5 +243,60 @@ defineExpose({
   border-width: 12px 0 12px 20px;
   border-color: transparent transparent transparent rgba(255, 255, 255, 0.8);
   margin-left: 4px;
+}
+
+.unmute-overlay {
+  position: absolute;
+  bottom: 20px;
+  right: 70px;
+  background:transparent;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  z-index: 3;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.unmute-overlay:hover {
+  transform: scale(1.1);
+  background-color: rgba(0, 0, 0, 0.8);
+}
+
+.volume-icon {
+  position: relative;
+  width: 8px;
+  height: 15px;
+  background-color: #fff;
+  border-radius: 2px;
+}
+
+.volume-icon:before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: -7px;
+  transform: translateY(-50%);
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 8px 0 8px 8px;
+  border-color: transparent transparent transparent #fff;
+}
+
+.volume-icon:after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: -10px;
+  transform: translateY(-50%);
+  width: 15px;
+  height: 15px;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  clip-path: polygon(50% 0%, 100% 0%, 100% 100%, 50% 100%);
 }
 </style> 
