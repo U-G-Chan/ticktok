@@ -53,84 +53,118 @@ export const WebCamera = {
   }
 }
 
+// IndexedDB 数据库管理
+const DB_NAME = 'ticktok_album';
+const DB_VERSION = 1;
+const STORE_NAME = 'files';
+
+// 初始化数据库
+const initDB = () => {
+  return new Promise<IDBDatabase>((resolve, reject) => {
+    const request = indexedDB.open(DB_NAME, DB_VERSION);
+    
+    request.onerror = () => reject(request.error);
+    request.onsuccess = () => resolve(request.result);
+    
+    request.onupgradeneeded = (event) => {
+      const db = (event.target as IDBOpenDBRequest).result;
+      if (!db.objectStoreNames.contains(STORE_NAME)) {
+        db.createObjectStore(STORE_NAME, { keyPath: 'path' });
+      }
+    };
+  });
+};
+
 // 模拟Filesystem
 export const WebFilesystem = {
   async writeFile(options: any) {
-    // 在Web环境中，我们可以将文件保存到localStorage或IndexedDB
-    // 这里我们简单地将Base64数据保存到localStorage
     try {
-      const key = `file_${options.path.replace(/\//g, '_')}`
-      localStorage.setItem(key, options.data)
-      return { uri: key }
+      const db = await initDB();
+      const transaction = db.transaction(STORE_NAME, 'readwrite');
+      const store = transaction.objectStore(STORE_NAME);
+      
+      // 保存文件数据
+      await store.put({
+        path: options.path,
+        data: options.data,
+        timestamp: Date.now()
+      });
+      
+      return { uri: options.path };
     } catch (error) {
-      console.error('Error saving file:', error)
-      throw error
+      console.error('Error saving file:', error);
+      throw error;
     }
   },
 
   async readdir(options: any) {
-    // 在Web环境中，模拟目录读取功能
     try {
-      const prefix = `file_${options.path.replace(/\//g, '_')}`
-      const files = []
+      const db = await initDB();
+      const transaction = db.transaction(STORE_NAME, 'readonly');
+      const store = transaction.objectStore(STORE_NAME);
+      const request = store.getAll();
       
-      // 遍历localStorage，查找指定前缀的项
-      for (let i = 0; i < localStorage.length; i++) {
-        const key = localStorage.key(i)
-        if (key && key.startsWith(prefix)) {
-          // 提取文件名
-          const fileName = key.substring(prefix.length + 1) // +1 是为了跳过下划线
-          files.push({
-            name: fileName || `file_${i}.jpeg`, // 提供默认文件名
-            type: 'file',
-            size: localStorage.getItem(key)?.length || 0,
-            uri: key,
-            mtime: Date.now()
-          })
-        }
-      }
-      
-      return { files }
+      return new Promise((resolve, reject) => {
+        request.onsuccess = () => {
+          const files = request.result
+            .filter(file => file.path.startsWith(options.path))
+            .map(file => ({
+              name: file.path.split('/').pop(),
+              type: 'file',
+              size: file.data.length,
+              uri: file.path,
+              mtime: file.timestamp
+            }));
+          resolve({ files });
+        };
+        request.onerror = () => reject(request.error);
+      });
     } catch (error) {
-      console.error('Error reading directory:', error)
-      throw error
+      console.error('Error reading directory:', error);
+      throw error;
     }
   },
 
   async readFile(options: any) {
-    // 从localStorage读取文件
     try {
-      const key = `file_${options.path.replace(/\//g, '_')}`
-      const data = localStorage.getItem(key)
+      const db = await initDB();
+      const transaction = db.transaction(STORE_NAME, 'readonly');
+      const store = transaction.objectStore(STORE_NAME);
+      const request = store.get(options.path);
       
-      if (data === null) {
-        throw new Error('File not found')
-      }
-      
-      return { data }
+      return new Promise((resolve, reject) => {
+        request.onsuccess = () => {
+          if (!request.result) {
+            reject(new Error('File not found'));
+            return;
+          }
+          resolve({ data: request.result.data });
+        };
+        request.onerror = () => reject(request.error);
+      });
     } catch (error) {
-      console.error('Error reading file:', error)
-      throw error
+      console.error('Error reading file:', error);
+      throw error;
     }
   },
 
   async deleteFile(options: any) {
-    // 从localStorage删除文件
     try {
-      const key = `file_${options.path.replace(/\//g, '_')}`
-      localStorage.removeItem(key)
-      return { success: true }
+      const db = await initDB();
+      const transaction = db.transaction(STORE_NAME, 'readwrite');
+      const store = transaction.objectStore(STORE_NAME);
+      await store.delete(options.path);
+      return { success: true };
     } catch (error) {
-      console.error('Error deleting file:', error)
-      throw error
+      console.error('Error deleting file:', error);
+      throw error;
     }
   },
 
   async mkdir(options: any) {
-    // 在Web环境中，目录创建是隐式的，不需要实际操作
-    // 记录尝试创建的目录信息
-    console.log(`Web模拟: 创建目录 ${options.path} 在 ${options.directory}`);
-    return { success: true }
+    // IndexedDB 不需要显式创建目录
+    console.log(`IndexedDB: 创建目录 ${options.path}`);
+    return { success: true };
   }
 }
 
@@ -195,4 +229,66 @@ export const Directory = {
   Cache: 'CACHE',
   External: 'EXTERNAL',
   ExternalStorage: 'EXTERNAL_STORAGE'
-} 
+}
+
+// localStorage 管理工具
+export const StorageManager = {
+  // 获取已使用的存储空间（字节）
+  getUsedSpace(): number {
+    let total = 0;
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key) {
+        const value = localStorage.getItem(key);
+        if (value) {
+          total += key.length + value.length;
+        }
+      }
+    }
+    return total;
+  },
+
+  // 获取剩余可用空间（字节）
+  getRemainingSpace(): number {
+    const maxSize = 5 * 1024 * 1024; // 5MB
+    return Math.max(0, maxSize - this.getUsedSpace());
+  },
+
+  // 检查是否有足够空间存储数据
+  hasEnoughSpace(dataSize: number): boolean {
+    return this.getRemainingSpace() >= dataSize;
+  },
+
+  // 获取所有存储的键
+  getAllKeys(): string[] {
+    return Object.keys(localStorage);
+  },
+
+  // 获取指定前缀的所有键
+  getKeysByPrefix(prefix: string): string[] {
+    return this.getAllKeys().filter(key => key.startsWith(prefix));
+  },
+
+  // 删除指定前缀的所有数据
+  removeByPrefix(prefix: string): void {
+    this.getKeysByPrefix(prefix).forEach(key => {
+      localStorage.removeItem(key);
+    });
+  },
+
+  // 获取存储使用情况
+  getStorageInfo() {
+    const used = this.getUsedSpace();
+    const total = 5 * 1024 * 1024; // 5MB
+    const remaining = this.getRemainingSpace();
+    const usedPercentage = (used / total * 100).toFixed(2);
+
+    return {
+      used,
+      total,
+      remaining,
+      usedPercentage: `${usedPercentage}%`,
+      itemCount: localStorage.length
+    };
+  }
+}; 
