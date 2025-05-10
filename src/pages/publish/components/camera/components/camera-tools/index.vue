@@ -4,7 +4,7 @@
         <div class="tools-group">
             <div class="tool-item" @click="$emit('flip-camera')">
                 <div class="tool-icon">
-                    <icon-refresh theme="outline" size="30" fill="#ffffff"/>
+                    <icon-flip-camera theme="outline" size="30" fill="#ffffff"/>
                 </div>         
                 <div class="tool-text">翻转</div>
             </div>
@@ -83,6 +83,7 @@ export default defineComponent({
     flex-direction: column;
     align-items: center;
     gap: 5px;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
 }
 
 .tools-group {
