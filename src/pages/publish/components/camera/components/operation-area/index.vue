@@ -6,9 +6,9 @@
         <!-- 底部操作按钮 -->
         <div class="action-buttons">
             <!-- 特效按钮 -->
-            <div class="action-button effects">
+            <div class="action-button effects" @click="toggleEffectPanel">
                 <div class="button-icon">
-                    <icon-effects theme="multi-color" size="26" :fill="['#333' ,'#f8e71c' ,'#f8e71c' ,'#f5a623']"/>
+                    <icon-effects theme="multi-color" size="26" :fill="['#333','#f8e71c' ,'#f8e71c' ,'#f5a623']" />
                 </div>
                 <div class="button-text">特效</div>
             </div>
@@ -38,6 +38,7 @@ import { defineComponent, ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import ModeNav from './components/mode-nav/index.vue'
 import { getFilesystem, Directory } from '@/utils/web-capacitor-adapter'
+import { useEffectPanelStore } from '@/store/effectPanel'
 
 interface MediaItem {
     id: string;
@@ -63,13 +64,14 @@ export default defineComponent({
             default: false
         }
     },
-    emits: ['capture', 'mode-change'],
+    emits: ['capture', 'mode-change', 'toggle-effect-panel', 'upload'],
     setup(_, { emit }) {
         const router = useRouter()
         const activeMode = ref('photo')
         const isPressed = ref(false)
         const isCapturing = ref(false)
         const latestPhoto = ref<MediaItem | null>(null)
+        const effectPanelStore = useEffectPanelStore()
 
         const handleModeChange = (mode: string) => {
             activeMode.value = mode
@@ -109,41 +111,41 @@ export default defineComponent({
         const loadLatestPhoto = async () => {
             try {
                 const Filesystem = await getFilesystem() as FilesystemInterface
-                
+
                 // 读取photos目录
                 try {
                     const result = await Filesystem.readdir({
                         path: 'photos',
                         directory: Directory.Data
                     })
-                    
+
                     // 如果没有文件，直接返回
                     if (!result.files || result.files.length === 0) return
-                    
+
                     // 筛选照片文件
                     const photoFiles = result.files.filter(file => {
                         const name = file.name.toLowerCase()
                         return name.endsWith('.jpg') || name.endsWith('.jpeg') || name.endsWith('.png')
                     })
-                    
+
                     // 如果没有照片，直接返回
                     if (photoFiles.length === 0) return
-                    
+
                     // 根据文件名(时间戳)排序，获取最新的照片
                     photoFiles.sort((a, b) => {
                         const timestampA = parseInt(a.name.split('.')[0], 10)
                         const timestampB = parseInt(b.name.split('.')[0], 10)
                         return timestampB - timestampA // 降序排列，最新的在前
                     })
-                    
+
                     const latestFile = photoFiles[0]
-                    
+
                     // 读取文件内容
                     const fileData = await Filesystem.readFile({
                         path: `photos/${latestFile.name}`,
                         directory: Directory.Data
                     })
-                    
+
                     // 创建URL
                     let url = ''
                     if (typeof fileData.data === 'string') {
@@ -151,11 +153,11 @@ export default defineComponent({
                         const mimeType = ext === 'png' ? 'image/png' : 'image/jpeg'
                         url = `data:${mimeType};base64,${fileData.data}`
                     }
-                    
+
                     // 提取时间戳
                     const timestamp = latestFile.name.split('.')[0]
                     const date = new Date(parseInt(timestamp, 10))
-                    
+
                     latestPhoto.value = {
                         id: latestFile.name,
                         type: 'photo',
@@ -171,6 +173,11 @@ export default defineComponent({
             }
         }
 
+        // 打开特效面板
+        const toggleEffectPanel = () => {
+            effectPanelStore.toggle()
+        }
+
         onMounted(() => {
             loadLatestPhoto()
         })
@@ -183,7 +190,8 @@ export default defineComponent({
             navigateToAlbum,
             handlePressStart,
             handlePressEnd,
-            handleCapture
+            handleCapture,
+            toggleEffectPanel
         }
     }
 })
@@ -294,7 +302,6 @@ export default defineComponent({
     transform: translate(-50%, -50%);
     font-size: 12px;
     color: #fff;
-    user-select: none;
-    -webkit-user-select:none;
+    user-select: none;-webkit-user-select:none;
 }
 </style> 

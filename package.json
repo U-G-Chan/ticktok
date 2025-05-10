@@ -19,6 +19,7 @@
     "@ffmpeg/util": "^0.12.2",
     "@icon-park/vue-next": "^1.4.2",
     "@types/lodash-es": "^4.17.12",
+    "face-api.js": "^0.22.2",
     "lodash-es": "^4.17.21",
     "pinia": "^3.0.2",
     "swiper": "^11.2.6",
