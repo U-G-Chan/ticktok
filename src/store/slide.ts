@@ -2,12 +2,16 @@ import { defineStore } from 'pinia'
 import type { SlideItemData } from '@/types/slide'
 import { SlideItemStatus } from '@/types/slide'
 
+// 默认最大数据量
+const MAX_ITEMS_COUNT = 30
+
 export const useSlideStore = defineStore('slide', {
   state: () => ({
     currentIndex: 0,
     slideItems: [] as SlideItemData[],
     menuOpen: false,   // 侧边栏是否打开
-    systemPaused: false // 系统暂停（如页面不可见）
+    systemPaused: false, // 系统暂停（如页面不可见）
+    maxItemsCount: MAX_ITEMS_COUNT // 最大数据量
   }),
   
   getters: {
@@ -45,6 +49,10 @@ export const useSlideStore = defineStore('slide', {
       this.slideItems = items
     },
     
+    setMaxItemsCount(count: number) {
+      this.maxItemsCount = count
+    },
+    
     // 设置菜单开关状态
     setMenuOpen(isOpen: boolean) {
       this.menuOpen = isOpen
@@ -72,8 +80,32 @@ export const useSlideStore = defineStore('slide', {
     },
     
     addItems(items: SlideItemData[]) {
-      // 直接追加新数据
+      // 保存当前项的id
+      const currentItemId = this.slideItems[this.currentIndex]?.id
+      
+      // 追加新数据
       this.slideItems = [...this.slideItems, ...items]
+      
+      // 如果超过最大数据量，需要裁剪
+      if (this.slideItems.length > this.maxItemsCount) {
+        // 保留当前元素的索引位置
+        const currentIndex = this.currentIndex
+        
+        // 计算需要保留的数据起始位置
+        // 保证当前项及其前后都有足够的数据
+        const startIndex = Math.max(0, currentIndex - Math.floor(this.maxItemsCount / 3))
+        
+        // 裁剪数据，保留当前查看区域和未来数据
+        this.slideItems = this.slideItems.slice(startIndex, startIndex + this.maxItemsCount)
+        
+        // 更新当前索引位置
+        if (currentItemId) {
+          const newIndex = this.slideItems.findIndex(item => item.id === currentItemId)
+          this.currentIndex = newIndex !== -1 ? newIndex : currentIndex - startIndex
+        } else {
+          this.currentIndex = currentIndex - startIndex
+        }
+      }
     },
     
     reset() {

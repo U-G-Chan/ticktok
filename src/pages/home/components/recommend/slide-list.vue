@@ -1,8 +1,9 @@
 <template>
   <div class="slide-list" ref="slideListRef">
     <div class="slide-container" :style="containerStyle">
-      <slide-item v-for="(item, index) in slideStore.slideItems" :key="item.id" :content-type="item.contentType"
-        :item-status="slideStore.getItemStatus(index)" :style="getItemStyle(index)">
+      <!-- 只渲染可见区域附近的元素 -->
+      <slide-item v-for="(item, index) in visibleItems" :key="item.id" :content-type="item.contentType"
+        :item-status="slideStore.getItemStatus(visibleStartIndex + index)" :style="getItemStyle(visibleStartIndex + index)">
         <template #default="{ itemStatus }">
           <component :is="getContentComponent(item.contentType)" :data="item" :item-status="itemStatus" />
         </template>
@@ -12,7 +13,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, computed, onMounted, onUnmounted, defineAsyncComponent } from 'vue'
+import { defineComponent, ref, computed, onMounted, onUnmounted, defineAsyncComponent, watch } from 'vue'
 import { getSlideItems } from '@/api/slide'
 import { useSlideStore } from '@/store/slide'
 
@@ -37,6 +38,11 @@ export default defineComponent({
     defaultIndex: {
       type: Number,
       default: 0
+    },
+    // 可视缓冲区大小 (上下各预加载多少个)
+    visibleBuffer: {
+      type: Number,
+      default: 2
     }
   },
   setup(props) {
@@ -47,9 +53,17 @@ export default defineComponent({
     const startX = ref(0)
     const itemHeight = ref(0)
     
+    // 可见区域的开始索引
+    const visibleStartIndex = ref(0)
+    // 可见区域的结束索引
+    const visibleEndIndex = ref(props.pageSize - 1)
+    
     // 使用Pinia状态管理
     const slideStore = useSlideStore()
     slideStore.setCurrentIndex(props.defaultIndex)
+    
+    // 设置最大缓存数量
+    slideStore.setMaxItemsCount(30)
 
     // 获取滑动项数据
     const getSlideItemsData = async (startIndex: number) => {
@@ -61,6 +75,7 @@ export default defineComponent({
       slideStore.reset()
       const items = await getSlideItemsData(0)
       slideStore.setSlideItems(items)
+      updateVisibleRange()
     }
 
     // 获取更多滑动项
@@ -81,7 +96,9 @@ export default defineComponent({
     }))
 
     const getItemStyle = (index: number) => ({
-      transform: `translateY(${index * 100}%)`
+      transform: `translateY(${index * 100}%)`,
+      height: '100%',
+      width: '100%'
     })
 
     const getContentComponent = (type: 'video' | 'picture' | 'advertisement') => {
@@ -96,6 +113,28 @@ export default defineComponent({
           return null
       }
     }
+    
+    // 更新可见区域范围
+    const updateVisibleRange = () => {
+      const currentIndex = slideStore.currentIndex
+      const bufferSize = props.visibleBuffer
+      
+      // 计算可见区域范围
+      visibleStartIndex.value = Math.max(0, currentIndex - bufferSize)
+      visibleEndIndex.value = Math.min(slideStore.slideItems.length - 1, currentIndex + bufferSize)
+    }
+    
+    // 计算可见元素
+    const visibleItems = computed(() => {
+      const start = visibleStartIndex.value
+      const end = visibleEndIndex.value
+      return slideStore.slideItems.slice(start, end + 1)
+    })
+    
+    // 监听currentIndex变化，更新可见区域
+    watch(() => slideStore.currentIndex, (_) => {
+      updateVisibleRange()
+    })
 
     const handleTouchStart = (e: TouchEvent) => {
       isDragging.value = true
@@ -135,6 +174,7 @@ export default defineComponent({
       }
 
       isDragging.value = false
+      updateVisibleRange()
     }
 
     onMounted(() => {
@@ -164,7 +204,9 @@ export default defineComponent({
       containerStyle,
       getItemStyle,
       getContentComponent,
-      slideStore
+      slideStore,
+      visibleItems,
+      visibleStartIndex
     }
   }
 })
@@ -184,5 +226,6 @@ export default defineComponent({
   position: absolute;
   top: 0;
   left: 0;
+  will-change: transform;
 }
 </style>
