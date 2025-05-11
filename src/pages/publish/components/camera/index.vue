@@ -12,6 +12,8 @@
             @mode-change="handleModeChange" 
             :noCamera="cameraScreenRef?.noCamera" 
         />
+        <!-- 特效面板 -->
+        <effect-panel v-if="effectPanelStore.isVisible" />
     </div>
 </template>
 
@@ -24,6 +26,8 @@ import {
 import CameraScreen from './components/camera-screen/index.vue'
 import CameraTools from './components/camera-tools/index.vue'
 import OperationArea from './components/operation-area/index.vue'
+import EffectPanel from './components/effect-panel/index.vue'
+import { useEffectPanelStore } from '@/store/effectPanel'
 import { CaptureEffectType } from './components/camera-screen/captureEffects'
 
 export default defineComponent({
@@ -31,7 +35,8 @@ export default defineComponent({
     components: {
         CameraScreen,
         CameraTools,
-        OperationArea
+        OperationArea,
+        EffectPanel
     },
     setup() {
         const cameraScreenRef = ref<InstanceType<typeof CameraScreen> | null>(null)
@@ -40,6 +45,7 @@ export default defineComponent({
         const flashMode = ref(false)
         const Camera = ref<any>(null)
         const Filesystem = ref<any>(null)
+        const effectPanelStore = useEffectPanelStore()
         
         /**
          * 配置当前使用的拍照效果
@@ -154,7 +160,8 @@ export default defineComponent({
             handleToggleFlash,
             handleModeChange,
             handleCapture,
-            handleImageConfirmed
+            handleImageConfirmed,
+            effectPanelStore
         }
     }
 })

@@ -2,18 +2,12 @@
     <div class="effect-panel" :class="{ 'active': effectPanelStore.isVisible }">
         <div class="panel-header">
             <div class="tab-container">
-                <div 
-                    class="tab-item" 
-                    :class="{ 'active': effectPanelStore.activeTab === 'decoration' }"
-                    @click="effectPanelStore.setActiveTab('decoration')"
-                >
+                <div class="tab-item" :class="{ 'active': effectPanelStore.activeTab === 'decoration' }"
+                    @click="effectPanelStore.setActiveTab('decoration')">
                     装饰
                 </div>
-                <div 
-                    class="tab-item" 
-                    :class="{ 'active': effectPanelStore.activeTab === 'filter' }"
-                    @click="effectPanelStore.setActiveTab('filter')"
-                >
+                <div class="tab-item" :class="{ 'active': effectPanelStore.activeTab === 'filter' }"
+                    @click="effectPanelStore.setActiveTab('filter')">
                     滤镜
                 </div>
             </div>
@@ -21,91 +15,61 @@
                 <i class="close-icon">✕</i>
             </div>
         </div>
-        
+
         <div class="panel-content">
             <!-- 装饰特效选项 -->
             <div v-if="effectPanelStore.activeTab === 'decoration'" class="effect-list">
-                <div 
-                    class="effect-item" 
-                    :class="{ 'active': effectPanelStore.currentDecoration === 'none' }"
-                    @click="selectEffect('none')"
-                >
+                <div class="effect-item" :class="{ 'active': effectPanelStore.currentDecoration === 'none' }"
+                    @click="selectEffect('none')">
                     <div class="effect-icon">🙂</div>
                     <div class="effect-name">无特效</div>
                 </div>
-                <div 
-                    class="effect-item" 
-                    :class="{ 'active': effectPanelStore.currentDecoration === 'sunglasses' }"
-                    @click="selectEffect('sunglasses')"
-                >
+                <div class="effect-item" :class="{ 'active': effectPanelStore.currentDecoration === 'sunglasses' }"
+                    @click="selectEffect('sunglasses')">
                     <div class="effect-icon">😎</div>
                     <div class="effect-name">墨镜</div>
                 </div>
-                <div 
-                    class="effect-item" 
-                    :class="{ 'active': effectPanelStore.currentDecoration === 'cat-ears' }"
-                    @click="selectEffect('cat-ears')"
-                >
+                <div class="effect-item" :class="{ 'active': effectPanelStore.currentDecoration === 'cat-ears' }"
+                    @click="selectEffect('cat-ears')">
                     <div class="effect-icon">😺</div>
                     <div class="effect-name">猫耳</div>
                 </div>
-                <div 
-                    class="effect-item" 
-                    :class="{ 'active': effectPanelStore.currentDecoration === 'mustache' }"
-                    @click="selectEffect('mustache')"
-                >
+                <div class="effect-item" :class="{ 'active': effectPanelStore.currentDecoration === 'mustache' }"
+                    @click="selectEffect('mustache')">
                     <div class="effect-icon">👨</div>
                     <div class="effect-name">胡子</div>
                 </div>
-                <div 
-                    class="effect-item" 
-                    :class="{ 'active': effectPanelStore.currentDecoration === 'hat' }"
-                    @click="selectEffect('hat')"
-                >
+                <div class="effect-item" :class="{ 'active': effectPanelStore.currentDecoration === 'hat' }"
+                    @click="selectEffect('hat')">
                     <div class="effect-icon">🎩</div>
                     <div class="effect-name">帽子</div>
                 </div>
             </div>
-            
+
             <!-- 滤镜特效选项 -->
             <div v-else-if="effectPanelStore.activeTab === 'filter'" class="effect-list">
-                <div 
-                    class="effect-item" 
-                    :class="{ 'active': effectPanelStore.currentFilter === 'none' }"
-                    @click="selectFilter('none')"
-                >
+                <div class="effect-item" :class="{ 'active': effectPanelStore.currentFilter === 'none' }"
+                    @click="selectFilter('none')">
                     <div class="filter-preview normal"></div>
                     <div class="effect-name">原图</div>
                 </div>
-                <div 
-                    class="effect-item" 
-                    :class="{ 'active': effectPanelStore.currentFilter === 'warm' }"
-                    @click="selectFilter('warm')"
-                >
+                <div class="effect-item" :class="{ 'active': effectPanelStore.currentFilter === 'warm' }"
+                    @click="selectFilter('warm')">
                     <div class="filter-preview warm"></div>
                     <div class="effect-name">暖色</div>
                 </div>
-                <div 
-                    class="effect-item" 
-                    :class="{ 'active': effectPanelStore.currentFilter === 'cool' }"
-                    @click="selectFilter('cool')"
-                >
+                <div class="effect-item" :class="{ 'active': effectPanelStore.currentFilter === 'cool' }"
+                    @click="selectFilter('cool')">
                     <div class="filter-preview cool"></div>
                     <div class="effect-name">冷色</div>
                 </div>
-                <div 
-                    class="effect-item" 
-                    :class="{ 'active': effectPanelStore.currentFilter === 'grayscale' }"
-                    @click="selectFilter('grayscale')"
-                >
+                <div class="effect-item" :class="{ 'active': effectPanelStore.currentFilter === 'grayscale' }"
+                    @click="selectFilter('grayscale')">
                     <div class="filter-preview grayscale"></div>
                     <div class="effect-name">黑白</div>
                 </div>
-                <div 
-                    class="effect-item" 
-                    :class="{ 'active': effectPanelStore.currentFilter === 'vintage' }"
-                    @click="selectFilter('vintage')"
-                >
+                <div class="effect-item" :class="{ 'active': effectPanelStore.currentFilter === 'vintage' }"
+                    @click="selectFilter('vintage')">
                     <div class="filter-preview vintage"></div>
                     <div class="effect-name">复古</div>
                 </div>
@@ -117,7 +81,6 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import { useEffectPanelStore } from '@/store/effectPanel'
-import { faceEffectService } from '../face-effect-service'
 
 export default defineComponent({
     name: 'EffectPanel',
@@ -128,14 +91,14 @@ export default defineComponent({
             const effectOption = { type: 'decoration' as const, name: effect }
             effectPanelStore.setEffect(effectOption)
             // 直接调用特效服务应用特效
-            faceEffectService.setEffect(effectOption)
+            // faceEffectService.setEffect(effectOption)
         }
-        
+
         const selectFilter = (filter: string) => {
             const filterOption = { type: 'filter' as const, name: filter }
             effectPanelStore.setEffect(filterOption)
             // 直接调用特效服务应用滤镜
-            faceEffectService.setEffect(filterOption)
+            // faceEffectService.setEffect(filterOption)
         }
 
         return {
