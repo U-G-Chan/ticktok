@@ -81,6 +81,7 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import { useEffectPanelStore } from '@/store/effectPanel'
+import { faceEffectService } from '@/services/faceEffectService'
 
 export default defineComponent({
     name: 'EffectPanel',
@@ -90,15 +91,13 @@ export default defineComponent({
         const selectEffect = (effect: string) => {
             const effectOption = { type: 'decoration' as const, name: effect }
             effectPanelStore.setEffect(effectOption)
-            // 直接调用特效服务应用特效
-            // faceEffectService.setEffect(effectOption)
+            faceEffectService.setEffect(effectOption)
         }
 
         const selectFilter = (filter: string) => {
             const filterOption = { type: 'filter' as const, name: filter }
             effectPanelStore.setEffect(filterOption)
-            // 直接调用特效服务应用滤镜
-            // faceEffectService.setEffect(filterOption)
+            faceEffectService.setEffect(filterOption)
         }
 
         return {

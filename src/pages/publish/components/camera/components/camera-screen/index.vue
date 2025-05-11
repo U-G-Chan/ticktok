@@ -4,6 +4,8 @@
         :class="effectBinding"
     >
         <video ref="videoEl" class="video" autoplay playsinline v-if="!noCamera"></video>
+        <canvas ref="filterCanvasEl" class="canvas filter-canvas" v-if="!noCamera"></canvas>
+        <canvas ref="decorationCanvasEl" class="canvas decoration-canvas" v-if="!noCamera"></canvas>
         <div v-if="noCamera" class="no-camera-message">
             <div class="message-content">
                 <div class="message-icon">📷</div>
@@ -22,14 +24,20 @@ import {
     createEffectClassBinding,
     getEffectDuration
 } from './captureEffects'
+import { faceEffectService } from '@/services/faceEffectService'
 
 export default defineComponent({
     name: 'CameraScreen',
     setup() {
         const videoEl = ref<HTMLVideoElement | null>(null)
+        const filterCanvasEl = ref<HTMLCanvasElement | null>(null)
+        const decorationCanvasEl = ref<HTMLCanvasElement | null>(null)
         let mediaStream: MediaStream | null = null
         const captureEffectActive = ref<boolean>(false)
         const noCamera = ref<boolean>(false)
+        let animationFrameId: number | null = null
+        let lastFrameTime = 0
+        let frameCount = 0
         
         // 当前使用的拍照效果类型
         const captureEffectType = ref<CaptureEffectType>('pulse')
@@ -38,6 +46,24 @@ export default defineComponent({
         const effectBinding = computed(() => 
             createEffectClassBinding(captureEffectType.value, captureEffectActive.value)
         )
+
+        // 性能监控 - 简化版
+        const measurePerformance = (timestamp: number) => {
+            if (!lastFrameTime) {
+                lastFrameTime = timestamp
+                frameCount = 0
+            }
+
+            frameCount++
+            const elapsed = timestamp - lastFrameTime
+
+            if (elapsed >= 1000) {
+                frameCount = 0
+                lastFrameTime = timestamp
+            }
+
+            animationFrameId = requestAnimationFrame(measurePerformance)
+        }
 
         const initializeCamera = async (direction: string = CameraDirection.Rear) => {
             try {
@@ -65,6 +91,46 @@ export default defineComponent({
                 // 设置视频源
                 if (videoEl.value) {
                     videoEl.value.srcObject = mediaStream
+                    
+                    // 等待视频元数据加载完成
+                    await new Promise((resolve) => {
+                        videoEl.value!.onloadedmetadata = () => {
+                            resolve(true)
+                        }
+                    })
+
+                    // 设置Canvas尺寸
+                    if (filterCanvasEl.value && decorationCanvasEl.value) {
+                        const container = filterCanvasEl.value.parentElement
+                        if (container) {
+                            const rect = container.getBoundingClientRect()
+                            const videoRatio = videoEl.value.videoWidth / videoEl.value.videoHeight
+
+                            // 计算Canvas尺寸 - 确保高度适应容器，宽度自适应且居中
+                            let canvasWidth, canvasHeight
+                            
+                            // 始终让高度适应容器
+                            canvasHeight = rect.height 
+                            // 宽度根据视频比例自适应
+                            canvasWidth = canvasHeight * videoRatio
+                            
+                            // 设置Canvas尺寸
+                            filterCanvasEl.value.width = canvasWidth
+                            filterCanvasEl.value.height = canvasHeight
+                            if (decorationCanvasEl.value) {
+                                decorationCanvasEl.value.width = canvasWidth
+                                decorationCanvasEl.value.height = canvasHeight
+                            }
+                        }
+                    }
+                }
+
+                // 开始性能监控
+                animationFrameId = requestAnimationFrame(measurePerformance)
+
+                // 初始化美颜服务，传递两个canvas
+                if (videoEl.value && filterCanvasEl.value) {
+                    await faceEffectService.initialize(videoEl.value, filterCanvasEl.value)
                 }
 
                 // 重置捕获状态
@@ -148,25 +214,16 @@ export default defineComponent({
                 })
             }
             
-            if (!videoEl.value || !mediaStream) return null
+            if (!filterCanvasEl.value) return null
 
             try {
-                // 创建canvas元素
-                const canvas = document.createElement('canvas')
-                canvas.width = videoEl.value.videoWidth
-                canvas.height = videoEl.value.videoHeight
-                const ctx = canvas.getContext('2d')
-                if (ctx) {
-                    ctx.drawImage(videoEl.value, 0, 0)
-                    // 转换为图片URL
-                    const imageUrl = canvas.toDataURL('image/jpeg')
-                    
-                    // 播放拍照效果
-                    playCaptureEffect()
-                    
-                    return imageUrl
-                }
-                return null
+                // 使用canvas获取当前帧
+                const imageUrl = filterCanvasEl.value.toDataURL('image/jpeg')
+                
+                // 播放拍照效果
+                playCaptureEffect()
+                
+                return imageUrl
             } catch (error) {
                 console.error('捕获图像失败:', error)
                 return null
@@ -178,18 +235,53 @@ export default defineComponent({
                 mediaStream.getTracks().forEach(track => track.stop())
                 mediaStream = null
             }
+            faceEffectService.stop()
+        }
+
+        // 添加窗口大小变化监听
+        const handleResize = () => {
+            if (filterCanvasEl.value && videoEl.value) {
+                const container = filterCanvasEl.value.parentElement
+                if (container) {
+                    const rect = container.getBoundingClientRect()
+                    const videoRatio = videoEl.value.videoWidth / videoEl.value.videoHeight
+                    
+                    // 计算Canvas尺寸 - 确保高度适应容器，宽度自适应且居中
+                    let canvasWidth, canvasHeight
+                    
+                    // 始终让高度适应容器
+                    canvasHeight = rect.height 
+                    // 宽度根据视频比例自适应
+                    canvasWidth = canvasHeight * videoRatio
+                    
+                    // 设置Canvas尺寸
+                    filterCanvasEl.value.width = canvasWidth
+                    filterCanvasEl.value.height = canvasHeight
+                    if (decorationCanvasEl.value) {
+                        decorationCanvasEl.value.width = canvasWidth
+                        decorationCanvasEl.value.height = canvasHeight
+                    }
+                }
+            }
         }
 
         onMounted(() => {
             initializeCamera()
+            window.addEventListener('resize', handleResize)
         })
 
         onUnmounted(() => {
             stopCamera()
+            window.removeEventListener('resize', handleResize)
+            if (animationFrameId) {
+                cancelAnimationFrame(animationFrameId)
+            }
         })
 
         return {
             videoEl,
+            filterCanvasEl,
+            decorationCanvasEl,
             captureEffectActive,
             captureEffectType,
             effectBinding,
@@ -336,9 +428,45 @@ export default defineComponent({
 }
 
 .video {
+    position: absolute;
+    top: 0;
+    left: 0;
     width: 100%;
     height: 100%;
     object-fit: cover;
+    opacity: 0;
+}
+
+.canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+.filter-canvas { 
+    z-index: 1; 
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    max-width: none;
+    max-height: 100%;
+    width: auto;
+    height: auto;
+}
+.decoration-canvas { 
+    z-index: 2;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    max-width: none;
+    max-height: 100%;
+    width: auto;
+    height: auto;
 }
 
 .no-camera-message {
