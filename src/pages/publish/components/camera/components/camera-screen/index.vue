@@ -25,6 +25,7 @@ import {
     getEffectDuration
 } from './captureEffects'
 import { faceEffectService } from '@/services/faceEffectService'
+import { decorationEffectService } from '@/services/decorationEffectService'
 
 export default defineComponent({
     name: 'CameraScreen',
@@ -129,8 +130,9 @@ export default defineComponent({
                 animationFrameId = requestAnimationFrame(measurePerformance)
 
                 // 初始化美颜服务，传递两个canvas
-                if (videoEl.value && filterCanvasEl.value) {
+                if (videoEl.value && filterCanvasEl.value && decorationCanvasEl.value) {
                     await faceEffectService.initialize(videoEl.value, filterCanvasEl.value)
+                    await decorationEffectService.initialize(decorationCanvasEl.value)
                 }
 
                 // 重置捕获状态
@@ -252,6 +254,7 @@ export default defineComponent({
                 mediaStream = null
             }
             faceEffectService.stop()
+            decorationEffectService.stop()
         }
 
         // 添加窗口大小变化监听

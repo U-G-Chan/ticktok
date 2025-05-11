@@ -1,5 +1,13 @@
 import { defineStore } from 'pinia'
-import type { EffectOptions } from '@/pages/publish/components/camera/components/face-effect-service'
+import { type EffectOption } from '@/services/faceEffectService'
+import { decorationEffectService } from '@/services/decorationEffectService'
+import { faceEffectService } from '@/services/faceEffectService'
+
+// 定义特效类型接口
+export interface EffectOptions {
+  type: 'decoration' | 'filter'
+  name: string
+}
 
 // 定义特效面板的 store
 export const useEffectPanelStore = defineStore('effectPanel', {
@@ -52,8 +60,25 @@ export const useEffectPanelStore = defineStore('effectPanel', {
     setEffect(options: EffectOptions) {
       if (options.type === 'decoration') {
         this.currentDecoration = options.name
+        // 直接调用装饰服务设置装饰
+        decorationEffectService.setDecoration(options.name === 'none' ? null : options.name)
+        console.log(`设置装饰特效: ${options.name}`)
       } else if (options.type === 'filter') {
         this.currentFilter = options.name
+        // 设置滤镜特效
+        if (options.name === 'none') {
+          // 使用默认滤镜替代null
+          faceEffectService.setEffect({
+            type: 'filter',
+            name: 'none'
+          })
+        } else {
+          faceEffectService.setEffect({
+            type: 'filter',
+            name: options.name
+          })
+        }
+        console.log(`设置滤镜特效: ${options.name}`)
       }
     },
     
@@ -61,6 +86,14 @@ export const useEffectPanelStore = defineStore('effectPanel', {
     resetEffects() {
       this.currentDecoration = 'none'
       this.currentFilter = 'none'
+      // 重置两个服务
+      decorationEffectService.setDecoration(null)
+      // 使用默认滤镜替代null
+      faceEffectService.setEffect({
+        type: 'filter',
+        name: 'none'
+      })
+      console.log('重置所有特效')
     }
   }
 }) 

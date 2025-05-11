@@ -1,9 +1,10 @@
 import { ref } from 'vue'
 import * as faceMesh from '@mediapipe/face_mesh'
 import { Camera } from '@mediapipe/camera_utils'
+import { decorationEffectService } from './decorationEffectService'
 
 export interface EffectOption {
-    type: 'decoration' | 'filter'
+    type: 'filter'
     name: string
 }
 
@@ -21,152 +22,66 @@ export class FaceEffectService {
     private currentFilterName: string = 'none'
 
     constructor() {
-        this.initializeFaceMesh()
+        this.initializeFaceMesh();
     }
 
     private async initializeFaceMesh() {
-        this.faceMesh = new faceMesh.FaceMesh({
-            locateFile: (file) => {
-                return `https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/${file}`
-            }
-        })
-
-        this.faceMesh.setOptions({
-            maxNumFaces: 1,
-            refineLandmarks: true,
-            minDetectionConfidence: 0.5,
-            minTrackingConfidence: 0.5
-        })
-
-        this.faceMesh.onResults(this.onResults.bind(this))
+        try {
+            this.faceMesh = new faceMesh.FaceMesh({
+                locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh@0.4.1633559619/${file}`
+            });
+            this.faceMesh.setOptions({
+                maxNumFaces: 1,
+                refineLandmarks: false,
+                minDetectionConfidence: 0.1,
+                minTrackingConfidence: 0.1
+            });
+            this.faceMesh.onResults(this.onResults.bind(this));
+        } catch (error) {
+            console.error('FaceMesh 初始化失败:', error);
+        }
     }
 
     public async initialize(videoElement: HTMLVideoElement, canvasElement: HTMLCanvasElement) {
-        if (this.isInitialized) return
-
-        this.videoElement = videoElement
-        this.canvasElement = canvasElement
-
-        // 初始化WebGL
-        this.initWebGL(canvasElement)
-
-        this.camera = new Camera(this.videoElement, {
-            onFrame: async () => {
-                if (this.faceMesh && this.videoElement) {
-                    await this.faceMesh.send({ image: this.videoElement })
-                }
-            },
-            width: 1280,
-            height: 720
-        })
-
-        await this.camera.start()
-        this.isInitialized = true
+        if (this.isInitialized) return;
+        this.videoElement = videoElement;
+        this.canvasElement = canvasElement;
+        this.initWebGL(canvasElement);
+        try {
+            this.camera = new Camera(this.videoElement, {
+                onFrame: async () => {
+                    if (this.faceMesh && this.videoElement) {
+                        try {
+                            await this.faceMesh.send({ image: this.videoElement });
+                        } catch (error) {
+                            console.error('发送视频帧到 FaceMesh 失败:', error);
+                        }
+                    }
+                },
+                width: 640,
+                height: 480
+            });
+            await this.camera.start();
+            this.isInitialized = true;
+        } catch (error) {
+            console.error('摄像头启动失败:', error);
+            throw error;
+        }
     }
 
     private onResults(results: faceMesh.Results) {
-        if (!this.canvasElement) return
-
-        // 判断是否为滤镜
+        if (!this.canvasElement) return;
+        if (results.multiFaceLandmarks && results.multiFaceLandmarks.length === 0) {
+            return;
+        }
         if (this.currentEffect.value && this.currentEffect.value.type === 'filter') {
-            this.renderWithWebGL(results.image as any, this.currentEffect.value.name)
+            this.renderWithWebGL(results.image as any, this.currentEffect.value.name);
         } else {
-            // 无滤镜时，仍用WebGL渲染，但使用none滤镜（保持原始图像）
-            this.renderWithWebGL(results.image as any, 'none')
+            this.renderWithWebGL(results.image as any, 'none');
         }
-
-        // 贴纸/装饰效果
-        if (this.currentEffect.value && this.currentEffect.value.type === 'decoration') {
-            // 获取canvas 2D上下文绘制装饰
-            const ctx = this.canvasElement.getContext('2d', {
-                alpha: true,
-                desynchronized: true,
-                willReadFrequently: false
-            })
-            if (!ctx) return
-
-            // 清除画布中的装饰部分（保留图像）
-            ctx.clearRect(0, 0, this.canvasElement.width, this.canvasElement.height)
-            
-            // 应用装饰效果
-            this.applyDecoration(ctx, results, this.currentEffect.value.name)
+        if (results.multiFaceLandmarks && results.multiFaceLandmarks.length > 0) {
+            decorationEffectService.renderDecoration(results.multiFaceLandmarks[0]);
         }
-    }
-
-    private applyDecoration(ctx: CanvasRenderingContext2D, results: faceMesh.Results, decorationName: string) {
-        if (!results.multiFaceLandmarks || results.multiFaceLandmarks.length === 0) return
-
-        const landmarks = results.multiFaceLandmarks[0]
-        
-        switch (decorationName) {
-            case 'sunglasses':
-                this.applySunglasses(ctx, landmarks)
-                break
-            case 'cat-ears':
-                this.applyCatEars(ctx, landmarks)
-                break
-            case 'mustache':
-                this.applyMustache(ctx, landmarks)
-                break
-            case 'hat':
-                this.applyHat(ctx, landmarks)
-                break
-        }
-    }
-
-    // 贴纸应用方法
-    private applySunglasses(ctx: CanvasRenderingContext2D, landmarks: faceMesh.NormalizedLandmark[]) {
-        // 获取眼睛位置
-        const leftEye = landmarks[33]
-        const rightEye = landmarks[263]
-        
-        // 计算墨镜位置和大小
-        const width = Math.abs(rightEye.x - leftEye.x) * this.canvasElement!.width * 2
-        const height = width * 0.3
-        const x = leftEye.x * this.canvasElement!.width - width / 2
-        const y = leftEye.y * this.canvasElement!.height - height / 2
-
-        // 绘制墨镜
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.8)'
-        ctx.fillRect(x, y, width, height)
-    }
-
-    private applyCatEars(ctx: CanvasRenderingContext2D, landmarks: faceMesh.NormalizedLandmark[]) {
-        // 获取头顶位置
-        const top = landmarks[10]
-        
-        // 绘制猫耳
-        ctx.beginPath()
-        ctx.moveTo(top.x * this.canvasElement!.width, top.y * this.canvasElement!.height)
-        ctx.lineTo((top.x - 0.1) * this.canvasElement!.width, (top.y - 0.2) * this.canvasElement!.height)
-        ctx.lineTo((top.x + 0.1) * this.canvasElement!.width, (top.y - 0.2) * this.canvasElement!.height)
-        ctx.closePath()
-        ctx.fillStyle = 'pink'
-        ctx.fill()
-    }
-
-    private applyMustache(ctx: CanvasRenderingContext2D, landmarks: faceMesh.NormalizedLandmark[]) {
-        // 获取鼻子位置
-        const nose = landmarks[1]
-        
-        // 绘制胡子
-        ctx.beginPath()
-        ctx.moveTo((nose.x - 0.1) * this.canvasElement!.width, nose.y * this.canvasElement!.height)
-        ctx.lineTo((nose.x + 0.1) * this.canvasElement!.width, nose.y * this.canvasElement!.height)
-        ctx.strokeStyle = 'black'
-        ctx.lineWidth = 2
-        ctx.stroke()
-    }
-
-    private applyHat(ctx: CanvasRenderingContext2D, landmarks: faceMesh.NormalizedLandmark[]) {
-        // 获取头顶位置
-        const top = landmarks[10]
-        
-        // 绘制帽子
-        ctx.beginPath()
-        ctx.arc(top.x * this.canvasElement!.width, top.y * this.canvasElement!.height, 50, 0, Math.PI * 2)
-        ctx.fillStyle = 'red'
-        ctx.fill()
     }
 
     public setEffect(effect: EffectOption) {

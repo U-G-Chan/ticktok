@@ -12,7 +12,7 @@
                 </div>
             </div>
             <div class="panel-close" @click="effectPanelStore.close()">
-                <i class="close-icon">✕</i>
+                <icon-close theme="outline" size="16" fill="#fff"/>
             </div>
         </div>
 
