@@ -25,7 +25,7 @@
             <div class="action-button album" @click="navigateToAlbum">
                 <div class="button-icon album-preview">
                     <img v-if="latestPhoto" :src="latestPhoto.url" alt="相册" class="album-image" />
-                    <img v-else src="/images/album-icon.png" alt="相册" class="placeholder-icon" />
+                    <icon-picture-one v-else theme="multi-color" size="26" :fill="['#4a90e2' ,'#4a90e2' ,'#4a90e2' ,'#4a90e2']"/>
                 </div>
                 <div class="button-text">相册</div>
             </div>
@@ -233,7 +233,7 @@ export default defineComponent({
 .button-icon {
     width: 50px;
     height: 50px;
-    background-color: rgba(255, 255, 255, 0.2);
+    background-color: rgba(170, 169, 169, 0.2);
     border-radius: 10px;
     display: flex;
     align-items: center;
