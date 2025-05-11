@@ -217,16 +217,32 @@ export default defineComponent({
             if (!filterCanvasEl.value) return null
 
             try {
-                // 使用canvas获取当前帧
-                const imageUrl = filterCanvasEl.value.toDataURL('image/jpeg')
-                
-                // 播放拍照效果
-                playCaptureEffect()
-                
-                return imageUrl
+                const width = filterCanvasEl.value.width;
+                const height = filterCanvasEl.value.height;
+                const tempCanvas = document.createElement('canvas');
+                tempCanvas.width = width;
+                tempCanvas.height = height;
+                const ctx = tempCanvas.getContext('2d');
+
+                // 强制 WebGL flush，确保内容可读
+                const gl = filterCanvasEl.value.getContext('webgl');
+                if (gl && gl.flush) gl.flush();
+
+                // 先绘制滤镜层
+                ctx?.drawImage(filterCanvasEl.value, 0, 0, width, height);
+
+                // 再叠加装饰层
+                if (decorationCanvasEl.value) {
+                    ctx?.drawImage(decorationCanvasEl.value, 0, 0, width, height);
+                }
+
+                // 导出合成后的图片
+                const imageUrl = tempCanvas.toDataURL('image/jpeg');
+                playCaptureEffect();
+                return imageUrl;
             } catch (error) {
-                console.error('捕获图像失败:', error)
-                return null
+                console.error('捕获图像失败:', error);
+                return null;
             }
         }
 
@@ -434,7 +450,6 @@ export default defineComponent({
     width: 100%;
     height: 100%;
     object-fit: cover;
-    opacity: 0;
 }
 
 .canvas {

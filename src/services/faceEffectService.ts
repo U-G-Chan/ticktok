@@ -181,7 +181,7 @@ export class FaceEffectService {
     }
 
     private initWebGL(canvas: HTMLCanvasElement) {
-        this.gl = canvas.getContext('webgl')
+        this.gl = canvas.getContext('webgl', { preserveDrawingBuffer: true })
         if (!this.gl) {
             console.error('WebGL 初始化失败')
             return
