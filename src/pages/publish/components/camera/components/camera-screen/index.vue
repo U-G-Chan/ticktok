@@ -1,11 +1,10 @@
 <template>
-    <div 
-        class="camera-screen" 
-        :class="effectBinding"
-    >
-        <video ref="videoEl" class="video" autoplay playsinline v-if="!noCamera"></video>
-        <canvas ref="filterCanvasEl" class="canvas filter-canvas" v-if="!noCamera"></canvas>
-        <canvas ref="decorationCanvasEl" class="canvas decoration-canvas" v-if="!noCamera"></canvas>
+    <div class="camera-screen" :class="effectBinding">
+        <div class="video-container" v-if="!noCamera">
+            <video ref="videoEl" class="video" autoplay playsinline></video>
+            <canvas ref="filterCanvasEl" class="canvas filter-canvas"></canvas>
+            <canvas ref="decorationCanvasEl" class="canvas decoration-canvas"></canvas>
+        </div>
         <div v-if="noCamera" class="no-camera-message">
             <div class="message-content">
                 <div class="message-icon">📷</div>
@@ -19,8 +18,8 @@
 <script lang="ts">
 import { defineComponent, ref, onMounted, onUnmounted, computed } from 'vue'
 import { CameraDirection } from '@/utils/web-capacitor-adapter'
-import { 
-    CaptureEffectType, 
+import {
+    CaptureEffectType,
     createEffectClassBinding,
     getEffectDuration
 } from './captureEffects'
@@ -39,12 +38,12 @@ export default defineComponent({
         let animationFrameId: number | null = null
         let lastFrameTime = 0
         let frameCount = 0
-        
+
         // 当前使用的拍照效果类型
         const captureEffectType = ref<CaptureEffectType>('pulse')
 
         // 计算当前效果的类绑定
-        const effectBinding = computed(() => 
+        const effectBinding = computed(() =>
             createEffectClassBinding(captureEffectType.value, captureEffectActive.value)
         )
 
@@ -92,7 +91,7 @@ export default defineComponent({
                 // 设置视频源
                 if (videoEl.value) {
                     videoEl.value.srcObject = mediaStream
-                    
+
                     // 等待视频元数据加载完成
                     await new Promise((resolve) => {
                         videoEl.value!.onloadedmetadata = () => {
@@ -102,26 +101,24 @@ export default defineComponent({
 
                     // 设置Canvas尺寸
                     if (filterCanvasEl.value && decorationCanvasEl.value) {
-                        const container = filterCanvasEl.value.parentElement
+                        // 获取容器尺寸
+                        const container = videoEl.value.parentElement;
                         if (container) {
-                            const rect = container.getBoundingClientRect()
-                            const videoRatio = videoEl.value.videoWidth / videoEl.value.videoHeight
+                            const containerWidth = container.clientWidth;
+                            const containerHeight = container.clientHeight;
 
-                            // 计算Canvas尺寸 - 确保高度适应容器，宽度自适应且居中
-                            let canvasWidth, canvasHeight
-                            
-                            // 始终让高度适应容器
-                            canvasHeight = rect.height 
-                            // 宽度根据视频比例自适应
-                            canvasWidth = canvasHeight * videoRatio
-                            
-                            // 设置Canvas尺寸
-                            filterCanvasEl.value.width = canvasWidth
-                            filterCanvasEl.value.height = canvasHeight
-                            if (decorationCanvasEl.value) {
-                                decorationCanvasEl.value.width = canvasWidth
-                                decorationCanvasEl.value.height = canvasHeight
-                            }
+                            // 直接使用容器尺寸，确保填满
+                            filterCanvasEl.value.width = containerWidth;
+                            filterCanvasEl.value.height = containerHeight;
+                            decorationCanvasEl.value.width = containerWidth;
+                            decorationCanvasEl.value.height = containerHeight;
+
+                            console.log('设置 canvas 尺寸:', {
+                                containerWidth,
+                                containerHeight,
+                                videoWidth: videoEl.value.videoWidth,
+                                videoHeight: videoEl.value.videoHeight
+                            });
                         }
                     }
                 }
@@ -167,7 +164,7 @@ export default defineComponent({
                 console.error('控制闪光灯失败:', error)
             }
         }
-        
+
         // 设置拍照效果类型
         const setCaptureEffectType = (type: CaptureEffectType) => {
             captureEffectType.value = type
@@ -177,10 +174,10 @@ export default defineComponent({
         // 播放拍照效果
         const playCaptureEffect = () => {
             captureEffectActive.value = true
-            
+
             // 获取当前效果的持续时间
             const duration = getEffectDuration(captureEffectType.value)
-            
+
             setTimeout(() => {
                 captureEffectActive.value = false
             }, duration)
@@ -193,7 +190,7 @@ export default defineComponent({
                     const input = document.createElement('input')
                     input.type = 'file'
                     input.accept = 'image/*'
-                    
+
                     input.onchange = (e: Event) => {
                         const target = e.target as HTMLInputElement
                         if (target.files && target.files[0]) {
@@ -211,11 +208,11 @@ export default defineComponent({
                             reject(new Error('未选择图片'))
                         }
                     }
-                    
+
                     input.click()
                 })
             }
-            
+
             if (!filterCanvasEl.value) return null
 
             try {
@@ -260,26 +257,25 @@ export default defineComponent({
         // 添加窗口大小变化监听
         const handleResize = () => {
             if (filterCanvasEl.value && videoEl.value) {
-                const container = filterCanvasEl.value.parentElement
+                // 获取容器尺寸
+                const container = videoEl.value.parentElement;
                 if (container) {
-                    const rect = container.getBoundingClientRect()
-                    const videoRatio = videoEl.value.videoWidth / videoEl.value.videoHeight
-                    
-                    // 计算Canvas尺寸 - 确保高度适应容器，宽度自适应且居中
-                    let canvasWidth, canvasHeight
-                    
-                    // 始终让高度适应容器
-                    canvasHeight = rect.height 
-                    // 宽度根据视频比例自适应
-                    canvasWidth = canvasHeight * videoRatio
-                    
-                    // 设置Canvas尺寸
-                    filterCanvasEl.value.width = canvasWidth
-                    filterCanvasEl.value.height = canvasHeight
+                    const containerWidth = container.clientWidth;
+                    const containerHeight = container.clientHeight;
+
+                    // 直接使用容器尺寸
+                    filterCanvasEl.value.width = containerWidth;
+                    filterCanvasEl.value.height = containerHeight;
+
                     if (decorationCanvasEl.value) {
-                        decorationCanvasEl.value.width = canvasWidth
-                        decorationCanvasEl.value.height = canvasHeight
+                        decorationCanvasEl.value.width = containerWidth;
+                        decorationCanvasEl.value.height = containerHeight;
                     }
+
+                    console.log('窗口大小变化，重设 canvas 尺寸:', {
+                        containerWidth,
+                        containerHeight
+                    });
                 }
             }
         }
@@ -326,6 +322,25 @@ export default defineComponent({
     transition: all 0.3s ease;
 }
 
+.video-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #000;
+}
+
+.video,
+.canvas {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
 /* 1. 基础缩放效果 */
 .capture-effect {
     transform: scale(0.95);
@@ -351,8 +366,13 @@ export default defineComponent({
 }
 
 @keyframes flash {
-    from { opacity: 1; }
-    to { opacity: 0; }
+    from {
+        opacity: 1;
+    }
+
+    to {
+        opacity: 0;
+    }
 }
 
 /* 3. 快门效果 */
@@ -361,27 +381,32 @@ export default defineComponent({
 }
 
 @keyframes shutter {
-    0% { 
+    0% {
         clip-path: inset(0% 0% 0% 0%);
         transform: scale(1);
     }
-    15% { 
+
+    15% {
         clip-path: inset(0% 0% 0% 0%);
         transform: scale(0.97);
     }
-    30% { 
+
+    30% {
         clip-path: inset(50% 0% 50% 0%);
         transform: scale(0.9);
     }
-    50% { 
+
+    50% {
         clip-path: inset(50% 50% 50% 50%);
         transform: scale(0.9);
     }
-    80% { 
+
+    80% {
         clip-path: inset(0% 0% 0% 0%);
         transform: scale(0.95);
     }
-    100% { 
+
+    100% {
         clip-path: inset(0% 0% 0% 0%);
         transform: scale(1);
     }
@@ -407,8 +432,13 @@ export default defineComponent({
 }
 
 @keyframes scanLine {
-    from { top: 0; }
-    to { top: 100%; }
+    from {
+        top: 0;
+    }
+
+    to {
+        top: 100%;
+    }
 }
 
 /* 5. 脉冲边框效果 */
@@ -432,59 +462,30 @@ export default defineComponent({
 }
 
 @keyframes pulseBorder {
-    0% { 
+    0% {
         opacity: 1;
         transform: scale(0.95);
     }
-    50% { 
+
+    50% {
         opacity: 0.5;
         transform: scale(1.02);
     }
-    100% { 
+
+    100% {
         opacity: 0;
         transform: scale(1.05);
     }
 }
 
-.video {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-.canvas {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+.filter-canvas {
+    z-index: 1;
     pointer-events: none;
 }
 
-.filter-canvas { 
-    z-index: 1; 
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    max-width: none;
-    max-height: 100%;
-    width: auto;
-    height: auto;
-}
-.decoration-canvas { 
+.decoration-canvas {
     z-index: 2;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    max-width: none;
-    max-height: 100%;
-    width: auto;
-    height: auto;
+    pointer-events: none;
 }
 
 .no-camera-message {

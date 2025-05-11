@@ -107,10 +107,8 @@ export class FaceEffectService {
             attribute vec2 a_texCoord;
             varying vec2 v_texCoord;
             void main() {
-                // 保持顶点坐标原样
-                gl_Position = vec4(a_position.x, a_position.y, 0, 1);
-                // 纹理坐标：x轴镜像，y轴翻转
-                v_texCoord = vec2(1.0 - a_texCoord.x, 1.0 - a_texCoord.y);
+                gl_Position = vec4(a_position, 0.0, 1.0);
+                v_texCoord = a_texCoord;
             }
         `
         const fragmentShaderSource = this.getFragmentShaderSource(this.currentFilterName)
@@ -239,13 +237,54 @@ export class FaceEffectService {
         }
 
         const gl = this.gl
-        gl.viewport(0, 0, this.canvasElement!.width, this.canvasElement!.height)
+        
+        // 获取视频和 canvas 的尺寸
+        const videoWidth = (image as HTMLVideoElement).videoWidth || image.width;
+        const videoHeight = (image as HTMLVideoElement).videoHeight || image.height;
+        const canvasWidth = this.canvasElement!.width;
+        const canvasHeight = this.canvasElement!.height;
+        
+        // 计算视频与 canvas 的宽高比
+        const videoRatio = videoWidth / videoHeight;
+        const canvasRatio = canvasWidth / canvasHeight;
+        
+        // 设置 WebGL 纹理坐标，以保持视频正确的宽高比
+        // 这样即使 canvas 和视频的宽高比不同，视频也能正确显示而不变形
+        let s0 = 0, s1 = 1, t0 = 0, t1 = 1;
+        
+        if (canvasRatio > videoRatio) {
+            // canvas 比视频更宽，需要裁剪纹理的顶部和底部
+            const texHeight = videoWidth / canvasRatio / videoHeight;
+            const offset = (1 - texHeight) / 2;
+            t0 = offset;
+            t1 = 1 - offset;
+        } else {
+            // canvas 比视频更高，需要裁剪纹理的左右两侧
+            const texWidth = videoHeight * canvasRatio / videoWidth;
+            const offset = (1 - texWidth) / 2;
+            s0 = offset;
+            s1 = 1 - offset;
+        }
+                
+        // 设置视口
+        gl.viewport(0, 0, canvasWidth, canvasHeight);
+        gl.clearColor(0, 0, 0, 0) // 设置清除颜色为透明
         gl.clear(gl.COLOR_BUFFER_BIT)
 
         gl.useProgram(this.glProgram)
-
+        
         // 绑定 buffer
         gl.bindBuffer(gl.ARRAY_BUFFER, this.glBuffer)
+        
+        // 使用全屏四边形顶点坐标
+        const vertices = new Float32Array([
+            -1, -1, s0, t0, // 左下
+             1, -1, s1, t0, // 右下
+            -1,  1, s0, t1, // 左上
+             1,  1, s1, t1, // 右上
+        ]);
+        gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
+        
         const a_position = gl.getAttribLocation(this.glProgram, 'a_position')
         const a_texCoord = gl.getAttribLocation(this.glProgram, 'a_texCoord')
         gl.enableVertexAttribArray(a_position)
@@ -256,6 +295,7 @@ export class FaceEffectService {
         // 上传纹理
         gl.activeTexture(gl.TEXTURE0)
         gl.bindTexture(gl.TEXTURE_2D, this.glTexture)
+        gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true)
         gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image)
 
         // 设置 uniform

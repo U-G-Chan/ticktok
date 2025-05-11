@@ -50,10 +50,8 @@ export class FilterEffectService extends BaseEffectService {
             attribute vec2 a_texCoord;
             varying vec2 v_texCoord;
             void main() {
-                // 保持顶点坐标原样
-                gl_Position = vec4(a_position.x, a_position.y, 0, 1);
-                // 纹理坐标：x轴镜像，y轴翻转
-                v_texCoord = vec2(1.0 - a_texCoord.x, 1.0 - a_texCoord.y);
+                gl_Position = vec4(a_position, 0.0, 1.0);
+                v_texCoord = a_texCoord;
             }
         `
     }
@@ -152,7 +150,15 @@ export class FilterEffectService extends BaseEffectService {
             }
 
             const gl = this.gl
+            
+            // 确保尺寸匹配
+            gl.canvas.width = this.canvasElement.width
+            gl.canvas.height = this.canvasElement.height
+            
             gl.viewport(0, 0, this.canvasElement.width, this.canvasElement.height)
+            
+            // 清除画布
+            gl.clearColor(0, 0, 0, 0)
             gl.clear(gl.COLOR_BUFFER_BIT)
 
             gl.useProgram(this.glProgram)
@@ -180,6 +186,7 @@ export class FilterEffectService extends BaseEffectService {
             // 上传纹理
             gl.activeTexture(gl.TEXTURE0)
             gl.bindTexture(gl.TEXTURE_2D, this.glTexture)
+            gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true)
             gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image)
 
             // 设置 uniform 变量

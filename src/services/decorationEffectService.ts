@@ -148,11 +148,12 @@ export class DecorationEffectService extends BaseEffectService {
 
             const gl = this.gl
             
-            // 确保尺寸匹配
-            gl.canvas.width = this.canvasElement.width
-            gl.canvas.height = this.canvasElement.height
+            // 获取 canvas 尺寸
+            const canvasWidth = this.canvasElement.width;
+            const canvasHeight = this.canvasElement.height;
             
-            gl.viewport(0, 0, this.canvasElement.width, this.canvasElement.height)
+            // 设置视口
+            gl.viewport(0, 0, canvasWidth, canvasHeight);
             
             // 清除画布 - 完全透明
             gl.clearColor(0, 0, 0, 0)
@@ -278,6 +279,7 @@ export class DecorationEffectService extends BaseEffectService {
             // 设置纹理
             gl.activeTexture(gl.TEXTURE0)
             gl.bindTexture(gl.TEXTURE_2D, this.glTexture)
+            gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true)
             
             if (useTexture && texture) {
                 // 使用贴图纹理
