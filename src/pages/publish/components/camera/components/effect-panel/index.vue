@@ -81,7 +81,8 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import { useEffectPanelStore } from '@/store/effectPanel'
-import { faceEffectService } from '@/services/faceEffectService'
+import { filterEffectService, type FilterType } from '@/services/filterEffectService'
+import { decorationEffectService } from '@/services/decorationEffectService'
 
 export default defineComponent({
     name: 'EffectPanel',
@@ -89,15 +90,13 @@ export default defineComponent({
         const effectPanelStore = useEffectPanelStore()
 
         const selectEffect = (effect: string) => {
-            const effectOption = { type: 'decoration' as const, name: effect }
-            effectPanelStore.setEffect(effectOption)
-            faceEffectService.setEffect(effectOption)
+            effectPanelStore.setEffect({ type: 'decoration', name: effect })
+            decorationEffectService.setDecoration(effect)
         }
 
-        const selectFilter = (filter: string) => {
-            const filterOption = { type: 'filter' as const, name: filter }
-            effectPanelStore.setEffect(filterOption)
-            faceEffectService.setEffect(filterOption)
+        const selectFilter = (filter: FilterType) => {
+            effectPanelStore.setEffect({ type: 'filter', name: filter })
+            filterEffectService.setFilter({ type: 'filter', name: filter })
         }
 
         return {

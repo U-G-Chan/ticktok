@@ -1,5 +1,4 @@
 import { defineStore } from 'pinia'
-import { type EffectOption } from '@/services/faceEffectService'
 import { decorationEffectService } from '@/services/decorationEffectService'
 import { faceEffectService } from '@/services/faceEffectService'
 
