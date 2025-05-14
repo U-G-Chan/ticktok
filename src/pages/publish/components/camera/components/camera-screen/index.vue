@@ -113,12 +113,12 @@ export default defineComponent({
                             decorationCanvasEl.value.width = containerWidth;
                             decorationCanvasEl.value.height = containerHeight;
 
-                            console.log('设置 canvas 尺寸:', {
-                                containerWidth,
-                                containerHeight,
-                                videoWidth: videoEl.value.videoWidth,
-                                videoHeight: videoEl.value.videoHeight
-                            });
+                            // console.log('设置 canvas 尺寸:', {
+                            //     containerWidth,
+                            //     containerHeight,
+                            //     videoWidth: videoEl.value.videoWidth,
+                            //     videoHeight: videoEl.value.videoHeight
+                            // });
                         }
                     }
                 }

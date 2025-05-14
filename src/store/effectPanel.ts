@@ -14,7 +14,7 @@ export const useEffectPanelStore = defineStore('effectPanel', {
     isVisible: false,
     currentDecoration: 'none',
     currentFilter: 'none',
-    activeTab: 'decoration'
+    activeTab: 'filter'
   }),
   
   getters: {

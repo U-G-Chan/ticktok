@@ -26,7 +26,7 @@ export abstract class BaseEffectService {
                 return;
             }
             
-            console.log('WebGL 上下文获取成功');
+            // console.log('WebGL 上下文获取成功');
 
             // 创建着色器
             const vertexShader = this.createShader(this.gl, this.gl.VERTEX_SHADER, vertexShaderSource)

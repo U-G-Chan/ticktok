@@ -22,7 +22,7 @@ export class FilterEffectService extends BaseEffectService {
     public async initialize(canvasElement: HTMLCanvasElement): Promise<void> {
         if (this.isInitialized) return
 
-        console.log('初始化滤镜效果服务...')
+        // console.log('初始化滤镜效果服务...')
         this.canvasElement = canvasElement
         // 初始化WebGL
         const vertexShaderSource = this.getVertexShaderSource()
@@ -30,14 +30,14 @@ export class FilterEffectService extends BaseEffectService {
         this.initWebGL(canvasElement, vertexShaderSource, fragmentShaderSource)
         
         this.isInitialized = true
-        console.log('滤镜效果服务初始化完成')
+        // console.log('滤镜效果服务初始化完成')
     }
 
     /**
      * 设置滤镜
      */
     public setFilter(filter: FilterOption | null): void {
-        console.log('设置滤镜:', filter?.name || 'none')
+        // console.log('设置滤镜:', filter?.name || 'none')
         this.currentFilter.value = filter
     }
 
@@ -206,7 +206,7 @@ export class FilterEffectService extends BaseEffectService {
     public async stop(): Promise<void> {
         super.stop()
         this.currentFilter.value = null
-        console.log('滤镜效果服务已停止')
+        // console.log('滤镜效果服务已停止')
     }
 }
 

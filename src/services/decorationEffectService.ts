@@ -48,16 +48,16 @@ export class DecorationEffectService extends BaseEffectService {
      * 预加载装饰贴图
      */
     private async preloadTextures() {
-        console.log('开始预加载装饰贴图...')
+        // console.log('开始预加载装饰贴图...')
         for (const decoration of this.decorations) {
-            console.log(`加载贴图: ${decoration.texture}`)
+            // console.log(`加载贴图: ${decoration.texture}`)
             const img = new Image()
             img.crossOrigin = 'anonymous'
             img.src = decoration.texture
             try {
                 await new Promise((resolve, reject) => {
                     img.onload = () => {
-                        console.log(`贴图加载成功: ${decoration.texture}, 尺寸: ${img.width}x${img.height}`)
+                        // console.log(`贴图加载成功: ${decoration.texture}, 尺寸: ${img.width}x${img.height}`)
                         resolve(true)
                     }
                     img.onerror = (e) => {
@@ -70,7 +70,7 @@ export class DecorationEffectService extends BaseEffectService {
                 console.error(`贴图加载失败: ${decoration.texture}`, error)
             }
         }
-        console.log('贴图预加载完成，已加载: ', Array.from(this.decorationTextures.keys()).join(', '))
+        // console.log('贴图预加载完成，已加载: ', Array.from(this.decorationTextures.keys()).join(', '))
     }
 
     /**
@@ -79,7 +79,7 @@ export class DecorationEffectService extends BaseEffectService {
     public async initialize(canvasElement: HTMLCanvasElement): Promise<void> {
         if (this.isInitialized) return
 
-        console.log('初始化装饰特效服务...')
+        // console.log('初始化装饰特效服务...')
         this.canvasElement = canvasElement
         
         // 初始化WebGL
@@ -105,14 +105,14 @@ export class DecorationEffectService extends BaseEffectService {
         this.initWebGL(canvasElement, vertexShaderSource, fragmentShaderSource)
         
         this.isInitialized = true
-        console.log('装饰特效服务初始化完成')
+        // console.log('装饰特效服务初始化完成')
     }
 
     /**
      * 设置装饰
      */
     public setDecoration(decorationName: string | null): void {
-        console.log('设置装饰:', decorationName)
+        // console.log('设置装饰:', decorationName)
         if (!decorationName) {
             this.currentDecoration.value = null
             return
@@ -120,7 +120,7 @@ export class DecorationEffectService extends BaseEffectService {
 
         const decoration = this.decorations.find(d => d.name === decorationName)
         if (decoration) {
-            console.log('找到装饰配置:', decoration)
+            // console.log('找到装饰配置:', decoration)
             this.currentDecoration.value = decoration
         } else {
             console.warn('未找到装饰配置:', decorationName)
@@ -322,7 +322,7 @@ export class DecorationEffectService extends BaseEffectService {
     public async stop(): Promise<void> {
         super.stop()
         this.currentDecoration.value = null
-        console.log('装饰特效服务已停止')
+        // console.log('装饰特效服务已停止')
     }
 }
 
