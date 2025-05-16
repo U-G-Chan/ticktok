@@ -192,7 +192,7 @@ export default defineComponent({
 .chat-window {
   display: flex;
   flex-direction: column;
-  height: 100vh;
+  height: 100%;
   color: #333;
   background-color: white;
   animation: slideIn 0.1s cubic-bezier(0.4, 0, 0.2, 1);
@@ -202,7 +202,6 @@ export default defineComponent({
   position: sticky;
   top: 0;
   z-index: 10;
-
 }
 
 .chat-history {
@@ -217,8 +216,10 @@ export default defineComponent({
   bottom: 0;
   left: 0;
   right: 0;
-  padding: 8px 16px;
+  padding: 5px 10px;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
-  margin-bottom: 50px;
+  margin-bottom: 60px;
+  margin-left: 5px;
+  margin-right: 5px;
 }
 </style> 

@@ -1,7 +1,7 @@
 <template>
   <div class="chat-input">
-    <div class="input-actions">
-      <i class="icon-photo" @click="onPhotoClick"></i>
+    <div class="input-actions-camera">
+      <icon-camera theme="outline" size="22" fill="#fff"/>
     </div>
     <div class="input-field">
       <input 
@@ -12,8 +12,9 @@
       >
     </div>
     <div class="input-actions">
-      <i class="icon-emoji" @click="onEmojiClick"></i>
-      <i class="icon-plus" @click="onPlusClick"></i>
+      <icon-voice-message theme="outline" size="28" fill="#000000"/>
+      <icon-grinning-face-with-open-mouth theme="outline" size="28" fill="#000000"/>
+      <icon-add-one theme="outline" size="28" fill="#000000"/>
     </div>
   </div>
 </template>
@@ -80,32 +81,45 @@ export default defineComponent({
 .chat-input {
   display: flex;
   align-items: center;
-  padding: 10px 16px;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
+  background-color: #e9e9e9;
+  border-radius: 30px;
+  padding: 0 16px;
 }
 
 .input-field {
   flex: 1;
-  margin: 0 10px;
+  padding: 0 12px;
 }
 
 .input-field input {
+  height: 100%;
   width: 100%;
-  padding: 10px 12px;
-  border-radius: 20px;
   border: none;
-  color: #fff;
-  font-size: 16px;
+  color: #000;
+  font-size: 18px;
+  background:transparent;
+}
+
+.input-field input:focus {
+  outline: none;
+  box-shadow: none;
+  border: none;
+}
+
+.input-actions-camera{
+  padding: 5px;
+  display: flex;
+  gap: 10px;
+  background-color: #7cbbff;
+  border-radius: 50%;
 }
 
 .input-actions {
-  display: flex;
-  gap: 16px;
-}
-
-.input-actions i {
   font-size: 22px;
   color: #999;
   cursor: pointer;
+  display: flex;
+  gap: 10px;
 }
 </style> 

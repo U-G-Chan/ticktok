@@ -53,7 +53,7 @@ export default defineComponent({
   align-items: center;
   padding: 12px 16px;
   height: 44px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.8);
 }
 
 .sidebar-icon {
