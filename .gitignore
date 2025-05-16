@@ -25,6 +25,5 @@ dist-ssr
 *.sw?
 
 
-/public/avatar
 /public/media/*
 !/public/media/data.json

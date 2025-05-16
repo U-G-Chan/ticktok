@@ -61,7 +61,6 @@ export default defineComponent({
   padding: 12px 16px;
   background-color: white;
   height: 55px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .back-button {
