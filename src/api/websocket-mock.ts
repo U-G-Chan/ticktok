@@ -112,7 +112,7 @@ class MockWebSocketServer {
     
     // 模拟发送给接收者
     // 在实际应用中，应该根据receiverId找到对应的WebSocket连接
-    // 这里为了简单起见，我们将消息广播给除发送者以外的所有客户端
+
     
     // 模拟网络延迟
     setTimeout(() => {

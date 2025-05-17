@@ -100,6 +100,12 @@ export default defineComponent({
       }
     })
     
+    // 添加深度监听，确保即使数组引用不变但内容变化也能检测到
+    watch(() => [...props.messages], () => {
+      console.log('消息数组内容变化，滚动到底部')
+      scrollToBottom()
+    }, { deep: true })
+    
     onMounted(() => {
       scrollToBottom()
     })

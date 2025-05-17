@@ -33,7 +33,7 @@
 import { defineComponent, ref, computed, watch, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useChatStore } from '@/store/chat'
-import { ChatMessage } from '@/api/chat'
+
 
 // 导入组件
 import ChatWindowHeader from './components/ChatWindowHeader.vue'

@@ -369,14 +369,21 @@ export function sendMessage(message: Omit<ChatMessage, 'id' | 'status'>) {
         id: Date.now(),
         status: 'sent' as const
       }
-      
       // 将新消息添加到聊天记录中
-      if (mockChatHistories[message.receiverId]) {
-        mockChatHistories[message.receiverId].push(newMessage)
+      const senderId = message.senderId;
+      const receiverId = message.receiverId;
+      // 确保消息被添加到接收者的聊天记录中
+      if (mockChatHistories[receiverId]) {
+        mockChatHistories[receiverId].push(newMessage);
       } else {
-        mockChatHistories[message.receiverId] = [newMessage]
+        mockChatHistories[receiverId] = [newMessage];
       }
-      
+      // 同时确保消息被添加到发送者的聊天记录中
+      if (mockChatHistories[senderId]) {
+        mockChatHistories[senderId].push(newMessage);
+      } else {
+        mockChatHistories[senderId] = [newMessage];
+      }
       resolve(newMessage)
     }, 500)
   })

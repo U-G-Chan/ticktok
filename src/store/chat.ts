@@ -60,41 +60,32 @@ export const useChatStore = defineStore('chat', () => {
     return count
   })
 
+  // 计算会话ID的辅助函数，确保一致性
+  function calculateSessionId(uid1: number, uid2: number): string {
+    return `chat_${Math.min(uid1, uid2)}_${Math.max(uid1, uid2)}`;
+  }
+
   // 初始化WebSocket连接
   function initWebSocket() {
     if (ws.value) {
-      ws.value.close()
+      ws.value.close();
     }
-
-    // 连接到WebSocket服务器（实际开发中替换为真实后端地址）
-    ws.value = new WebSocket('ws://localhost:8080/chat')
-
-    ws.value.onopen = () => {
-      console.log('WebSocket连接已建立')
-    }
-
+    ws.value = new WebSocket('ws://localhost:8080/chat');
+    ws.value.onopen = () => {};
     ws.value.onmessage = (event) => {
       try {
-        const data = JSON.parse(event.data)
+        const data = JSON.parse(event.data);
         if (data.type === 'message') {
-          receiveMessage(data.message)
+          receiveMessage(data.message);
         }
-      } catch (error) {
-        console.error('处理WebSocket消息时出错:', error)
-      }
-    }
-
+      } catch (error) {}
+    };
     ws.value.onclose = () => {
-      console.log('WebSocket连接已关闭')
-      // 尝试重新连接
       setTimeout(() => {
-        initWebSocket()
-      }, 3000)
-    }
-
-    ws.value.onerror = (error) => {
-      console.error('WebSocket错误:', error)
-    }
+        initWebSocket();
+      }, 3000);
+    };
+    ws.value.onerror = () => {};
   }
 
   // 设置当前用户信息
@@ -104,42 +95,28 @@ export const useChatStore = defineStore('chat', () => {
 
   // 根据用户ID创建或获取聊天会话
   async function createOrGetSession(peerId: number, peerInfo?: ChatParticipant) {
-    const sessionId = `chat_${Math.min(currentUser.value.uid, peerId)}_${Math.max(currentUser.value.uid, peerId)}`
-    
+    const sessionId = calculateSessionId(currentUser.value.uid, peerId);
     if (!chatSessions.value.has(sessionId)) {
-      // 获取对方用户信息
       try {
-        // 如果提供了peerInfo，则使用它，否则通过API获取用户信息
-        const userInfo = peerInfo || await getUserInfo(peerId)
-        
-        // 创建新会话
+        const userInfo = peerInfo || await getUserInfo(peerId);
         chatSessions.value.set(sessionId, {
           sessionId,
           peer: userInfo,
           messages: [],
           unreadCount: 0
-        })
-        
-        // 加载历史消息
-        await loadChatHistory(sessionId, peerId)
+        });
+        await loadChatHistory(sessionId, peerId);
       } catch (error) {
-        console.error('创建聊天会话失败:', error)
-        throw error
+        throw error;
       }
     }
-    
-    // 设置当前活跃会话
-    activeSessionId.value = sessionId
-    
-    // 标记该会话的消息为已读
-    markSessionAsRead(sessionId)
-    
-    return sessionId
+    activeSessionId.value = sessionId;
+    markSessionAsRead(sessionId);
+    return sessionId;
   }
 
   // 从API获取用户信息
   async function getUserInfo(userId: number): Promise<ChatParticipant> {
-    // 模拟API调用，实际应用中替换为真实API调用
     return new Promise((resolve) => {
       setTimeout(() => {
         resolve({
@@ -154,67 +131,68 @@ export const useChatStore = defineStore('chat', () => {
   // 加载聊天历史记录
   async function loadChatHistory(sessionId: string, peerId: number) {
     try {
-      // 获取历史消息
-      const history = await getChatHistory(peerId)
-      
-      // 更新会话消息
-      const session = chatSessions.value.get(sessionId)
+      let messages = await getChatHistory(peerId);
+      const selfMessages = await getChatHistory(currentUser.value.uid);
+      const allMessages = [...messages, ...selfMessages];
+      const uniqueMessages = Array.from(
+        new Map(allMessages.map(msg => [msg.id, msg])).values()
+      );
+      uniqueMessages.sort((a, b) => a.timestamp - b.timestamp);
+      const session = chatSessions.value.get(sessionId);
       if (session) {
-        session.messages = history
-        
-        // 更新最后一条消息
-        if (history.length > 0) {
-          session.lastMessage = history[history.length - 1]
+        session.messages = uniqueMessages;
+        if (uniqueMessages.length > 0) {
+          session.lastMessage = uniqueMessages[uniqueMessages.length - 1];
         }
       }
     } catch (error) {
-      console.error('加载聊天历史记录失败:', error)
-      throw error
+      throw error;
     }
   }
 
   // 发送消息
   async function sendChatMessage(content: string, type: 'text' | 'voice' | 'image' = 'text') {
-    if (!activeSession.value || !content.trim()) return null
-    
-    const peerId = activeSession.value.peer.uid
-    // 创建消息对象
+    if (!activeSession.value || !content.trim()) return null;
+    const peerId = activeSession.value.peer.uid;
+    const selfId = currentUser.value.uid;
     const newMessage: Omit<ChatMessage, 'id' | 'status'> = {
-      senderId: currentUser.value.uid,
+      senderId: selfId,
       receiverId: peerId,
       isSelf: true,
       type,
       content,
       timestamp: Date.now()
-    }
+    };
     try {
-      // 发送消息到后端（mock API生成id/status）
-      const sentMessage = await sendMessage(newMessage)
-      // 通过WebSocket通知对方（自己也会收到）
+      const sentMessage = await sendMessage(newMessage);
+      if (activeSession.value) {
+        if (!activeSession.value.messages.find(m => m.id === sentMessage.id)) {
+          activeSession.value.messages = [...activeSession.value.messages, sentMessage];
+          activeSession.value.lastMessage = sentMessage;
+        }
+      }
       if (ws.value && ws.value.readyState === WebSocket.OPEN) {
         ws.value.send(JSON.stringify({
           type: 'message',
           message: sentMessage
-        }))
+        }));
       }
-      // 不在这里本地push消息，所有消息都通过receiveMessage统一处理
-      return sentMessage
+      return sentMessage;
     } catch (error) {
-      console.error('发送消息失败:', error)
-      throw error
+      throw error;
     }
   }
 
   // 接收消息
   function receiveMessage(message: ChatMessage) {
-    // 确定会话ID
-    const senderId = message.senderId
-    const receiverId = message.receiverId
-    const selfId = currentUser.value.uid
-    const sessionId = `chat_${Math.min(selfId, senderId === selfId ? receiverId : senderId)}_${Math.max(selfId, senderId === selfId ? receiverId : senderId)}`
-    // 查找或创建会话
+    const senderId = message.senderId;
+    const receiverId = message.receiverId;
+    const selfId = currentUser.value.uid;
+    const sessionId = calculateSessionId(
+      selfId, 
+      senderId === selfId ? receiverId : senderId
+    );
     if (!chatSessions.value.has(sessionId)) {
-      // 异步获取用户信息并创建会话
       getUserInfo(senderId === selfId ? receiverId : senderId).then(peerInfo => {
         chatSessions.value.set(sessionId, {
           sessionId,
@@ -222,18 +200,15 @@ export const useChatStore = defineStore('chat', () => {
           messages: [message],
           unreadCount: message.isSelf ? 0 : 1,
           lastMessage: message
-        })
-      })
+        });
+      });
     } else {
-      // 更新现有会话
-      const session = chatSessions.value.get(sessionId)!
-      // 避免重复添加（根据id去重）
+      const session = chatSessions.value.get(sessionId)!;
       if (!session.messages.find(m => m.id === message.id)) {
-        session.messages.push(message)
-        session.lastMessage = message
-        // 如果不是当前活跃会话，增加未读计数
+        session.messages = [...session.messages, message];
+        session.lastMessage = message;
         if (sessionId !== activeSessionId.value && !message.isSelf) {
-          session.unreadCount++
+          session.unreadCount++;
         }
       }
     }
@@ -244,8 +219,6 @@ export const useChatStore = defineStore('chat', () => {
     const session = chatSessions.value.get(sessionId)
     if (session) {
       session.unreadCount = 0
-      
-      // 如果有最后一条消息且是对方发送的，调用API标记为已读
       if (session.lastMessage && !session.lastMessage.isSelf) {
         markAsRead(session.peer.uid)
       }
