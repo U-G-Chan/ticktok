@@ -60,6 +60,11 @@ export const useChatStore = defineStore('chat', () => {
     return count
   })
 
+  // WebSocket连接状态
+  const isWebSocketConnected = computed(() => {
+    return ws.value !== null && ws.value.readyState === WebSocket.OPEN;
+  });
+
   // 计算会话ID的辅助函数，确保一致性
   function calculateSessionId(uid1: number, uid2: number): string {
     return `chat_${Math.min(uid1, uid2)}_${Math.max(uid1, uid2)}`;
@@ -70,27 +75,73 @@ export const useChatStore = defineStore('chat', () => {
     if (ws.value) {
       ws.value.close();
     }
-    ws.value = new WebSocket('ws://localhost:8080/chat');
-    ws.value.onopen = () => {};
+    
+    // 创建WebSocket连接并添加当前用户ID参数
+    const wsUrl = `ws://localhost:8080/chat?userId=${currentUser.value.uid}`;
+    ws.value = new WebSocket(wsUrl);
+    
+    console.log(`[Chat] 初始化WebSocket连接: ${wsUrl}`);
+    
+    ws.value.onopen = () => {
+      console.log(`[Chat] WebSocket连接已打开, 用户ID=${currentUser.value.uid}`);
+    };
+    
     ws.value.onmessage = (event) => {
       try {
+        console.log(`[Chat] 收到WebSocket消息:`, event.data);
         const data = JSON.parse(event.data);
+        
         if (data.type === 'message') {
           receiveMessage(data.message);
+        } 
+        else if (data.type === 'messageStatus') {
+          // 处理消息状态更新
+          updateMessageStatus(data.messageId, data.status, data.message);
         }
-      } catch (error) {}
+      } catch (error) {
+        console.error('[Chat] 处理WebSocket消息失败:', error);
+      }
     };
+    
     ws.value.onclose = () => {
+      console.log('[Chat] WebSocket连接已关闭，将在3秒后重新连接');
       setTimeout(() => {
         initWebSocket();
       }, 3000);
     };
-    ws.value.onerror = () => {};
+    
+    ws.value.onerror = (error) => {
+      console.error('[Chat] WebSocket连接错误:', error);
+    };
+  }
+
+  // 更新消息状态
+  function updateMessageStatus(messageId: number, status: string, updatedMessage: ChatMessage) {
+    console.log(`[Chat] 更新消息状态: messageId=${messageId}, status=${status}`);
+    
+    // 查找包含该消息的会话
+    for (const session of chatSessions.value.values()) {
+      const messageIndex = session.messages.findIndex(m => m.id === messageId);
+      if (messageIndex !== -1) {
+        // 更新消息状态
+        session.messages[messageIndex] = {
+          ...session.messages[messageIndex],
+          status: updatedMessage.status
+        };
+        console.log(`[Chat] 消息状态已更新: sessionId=${session.sessionId}, messageId=${messageId}, status=${status}`);
+        break;
+      }
+    }
   }
 
   // 设置当前用户信息
   function setCurrentUser(user: ChatParticipant) {
     currentUser.value = user
+    // 用户变更时重新初始化WebSocket连接
+    if (user.uid > 0) {
+      console.log(`[Chat] 用户已设置 uid=${user.uid}，正在重新初始化WebSocket连接`);
+      initWebSocket();
+    }
   }
 
   // 根据用户ID创建或获取聊天会话
@@ -131,21 +182,32 @@ export const useChatStore = defineStore('chat', () => {
   // 加载聊天历史记录
   async function loadChatHistory(sessionId: string, peerId: number) {
     try {
-      let messages = await getChatHistory(peerId);
-      const selfMessages = await getChatHistory(currentUser.value.uid);
-      const allMessages = [...messages, ...selfMessages];
-      const uniqueMessages = Array.from(
-        new Map(allMessages.map(msg => [msg.id, msg])).values()
-      );
-      uniqueMessages.sort((a, b) => a.timestamp - b.timestamp);
+      const selfId = currentUser.value.uid;
+      
+      // 使用修改后的API获取会话消息
+      console.log(`[Chat] 请求会话历史记录: sessionId=${sessionId}, peerId=${peerId}, selfId=${selfId}`);
+      const sessionMessages = await getChatHistory(peerId, selfId);
+      
+      console.log(`[Chat] 加载会话历史记录: sessionId=${sessionId}, 收到${sessionMessages.length}条消息`);
+      
+      // 确保消息按时间排序
+      sessionMessages.sort((a, b) => a.timestamp - b.timestamp);
+      
+      // 处理消息的isSelf标记，确保显示正确
+      const processedMessages = sessionMessages.map(msg => ({
+        ...msg,
+        isSelf: msg.senderId === selfId
+      }));
+      
       const session = chatSessions.value.get(sessionId);
       if (session) {
-        session.messages = uniqueMessages;
-        if (uniqueMessages.length > 0) {
-          session.lastMessage = uniqueMessages[uniqueMessages.length - 1];
+        session.messages = processedMessages;
+        if (processedMessages.length > 0) {
+          session.lastMessage = processedMessages[processedMessages.length - 1];
         }
       }
     } catch (error) {
+      console.error('[Chat] 加载聊天历史记录失败:', error);
       throw error;
     }
   }
@@ -220,7 +282,7 @@ export const useChatStore = defineStore('chat', () => {
     if (session) {
       session.unreadCount = 0
       if (session.lastMessage && !session.lastMessage.isSelf) {
-        markAsRead(session.peer.uid)
+        markAsRead(session.peer.uid, currentUser.value.uid)
       }
     }
   }
@@ -242,6 +304,8 @@ export const useChatStore = defineStore('chat', () => {
     currentPeer,
     currentMessages,
     totalUnreadCount,
+    ws,
+    isWebSocketConnected,
     setCurrentUser,
     createOrGetSession,
     loadChatHistory,
@@ -249,6 +313,7 @@ export const useChatStore = defineStore('chat', () => {
     receiveMessage,
     markSessionAsRead,
     clearChatHistory,
-    initWebSocket
+    initWebSocket,
+    updateMessageStatus
   }
 }) 

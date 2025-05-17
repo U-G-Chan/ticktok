@@ -11,6 +11,8 @@ export class MockWebSocket extends EventTarget {
   readyState: number = MockWebSocket.CONNECTING
   private messageQueue: any[] = []
   private mockServer: MockWebSocketServer
+  // 添加用户ID属性
+  userId: number | null = null
 
   constructor(url: string) {
     super()
@@ -64,7 +66,7 @@ export class MockWebSocket extends EventTarget {
 // 模拟WebSocket服务器
 class MockWebSocketServer {
   private static instance: MockWebSocketServer | null = null
-  private clients: Set<MockWebSocket> = new Set()
+  private clients: Map<number, MockWebSocket> = new Map() // 改为 Map，用户ID作为键
   private messageHistory: Map<string, any[]> = new Map()
 
   static getInstance(): MockWebSocketServer {
@@ -75,17 +77,27 @@ class MockWebSocketServer {
   }
 
   registerClient(client: MockWebSocket): void {
-    this.clients.add(client)
-    console.log(`[MockServer] 客户端已连接: ${client.url}`)
+    // 尝试从URL中提取用户ID
+    try {
+      const urlParams = new URLSearchParams(client.url.split('?')[1]);
+      const userId = parseInt(urlParams.get('userId') || '0', 10);
+      client.userId = userId;
+      this.clients.set(userId, client);
+      console.log(`[MockServer] 客户端已连接: ${client.url}, userId=${userId}`);
+    } catch (error) {
+      console.error(`[MockServer] 从URL解析userId失败: ${client.url}`, error);
+    }
   }
 
   unregisterClient(client: MockWebSocket): void {
-    this.clients.delete(client)
-    console.log(`[MockServer] 客户端已断开连接: ${client.url}`)
+    if (client.userId) {
+      this.clients.delete(client.userId);
+      console.log(`[MockServer] 客户端已断开连接: ${client.url}, userId=${client.userId}`);
+    }
   }
 
   receiveMessage(data: string, sender: MockWebSocket): void {
-    console.log(`[MockServer] 收到消息: ${data}`)
+    console.log(`[MockServer] 收到消息: ${data}`, sender.userId ? `来自用户ID=${sender.userId}` : '未知用户');
     
     try {
       const parsedData = JSON.parse(data)
@@ -103,6 +115,7 @@ class MockWebSocketServer {
   private handleChatMessage(message: ChatMessage, sender: MockWebSocket): void {
     // 根据senderId和receiverId创建会话ID
     const sessionId = `chat_${Math.min(message.senderId, message.receiverId)}_${Math.max(message.senderId, message.receiverId)}`
+    message.sessionId = sessionId; // 添加会话ID到消息
     
     // 存储消息历史
     if (!this.messageHistory.has(sessionId)) {
@@ -110,13 +123,60 @@ class MockWebSocketServer {
     }
     this.messageHistory.get(sessionId)!.push(message)
     
-    // 模拟发送给接收者
-    // 在实际应用中，应该根据receiverId找到对应的WebSocket连接
-
+    // 发送消息给接收者
+    const receiverId = message.receiverId;
+    const receiverClient = this.clients.get(receiverId);
+    
+    console.log(`[MockServer] 发送消息 senderId=${message.senderId} -> receiverId=${receiverId}, sessionId=${sessionId}`);
+    
+    // 1. 发送消息给发送方(确认消息)
+    if (sender.userId && sender.userId === message.senderId) {
+      sender.receiveMessage(JSON.stringify({
+        type: 'message',
+        message: {
+          ...message,
+          isSelf: true, // 确保标记为自己发送的
+          status: 'sent' // 更新状态为已发送
+        }
+      }));
+    }
+    
+    // 2. 发送消息给接收方
+    if (receiverClient) {
+      receiverClient.receiveMessage(JSON.stringify({
+        type: 'message',
+        message: {
+          ...message,
+          isSelf: false // 确保标记为他人发送的
+        }
+      }));
+      // console.log(`[MockServer] 消息已发送给接收者 userId=${receiverId}`);
+      
+      // 模拟消息已读状态更新
+      setTimeout(() => {
+        if (sender.userId && sender.readyState === MockWebSocket.OPEN) {
+          const readStatusMessage = {
+            ...message,
+            status: 'read'
+          };
+          
+          sender.receiveMessage(JSON.stringify({
+            type: 'messageStatus',
+            messageId: message.id,
+            status: 'read',
+            message: readStatusMessage
+          }));
+          
+          // console.log(`[MockServer] 已向发送者 userId=${message.senderId} 发送消息已读状态更新`);
+        }
+      }, 800 + Math.random() * 1500);
+    } else {
+      // console.log(`[MockServer] 接收者不在线 userId=${receiverId}，消息将在下次连接时发送`);
+    }
     
     // 模拟网络延迟
     setTimeout(() => {
-      // 创建一个回复消息(在实际应用中，这应该是真实用户发送的消息)
+      // 创建一个回复消息(模拟自动回复)
       if (message.type === 'text' && Math.random() > 0.5) {
         const replyMessage = {
           ...message,
@@ -126,16 +186,22 @@ class MockWebSocketServer {
           senderId: message.receiverId,
           receiverId: message.senderId,
           timestamp: Date.now(),
-          status: 'sent'
+          status: 'sent',
+          sessionId: sessionId // 保持相同的会话ID
         }
         
-        // 发送自动回复
+        // 发送自动回复给发送方
         setTimeout(() => {
-          for (const client of this.clients) {
-            client.receiveMessage(JSON.stringify({
+          const originalSender = this.clients.get(message.senderId);
+          if (originalSender) {
+            originalSender.receiveMessage(JSON.stringify({
               type: 'message',
-              message: replyMessage
-            }))
+              message: {
+                ...replyMessage,
+                isSelf: false // 确保自动回复标记为他人发送的
+              }
+            }));
+            console.log(`[MockServer] 自动回复已发送给原发送者 userId=${message.senderId}, sessionId=${sessionId}`);
           }
         }, 1000 + Math.random() * 2000)
       }

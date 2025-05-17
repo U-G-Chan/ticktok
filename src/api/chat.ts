@@ -29,6 +29,7 @@ export interface ChatMessage {
   duration?: string;
   caption?: string;
   status: 'sending' | 'sent' | 'read' | 'failed';
+  sessionId?: string;
 }
 
 // 用户信息接口
@@ -139,141 +140,161 @@ export const mockMessages: Message[] = [
   // }
 ]
 
-// 模拟聊天记录数据
-export const mockChatHistories: Record<number, ChatMessage[]> = {
-  // 与何以为家的聊天记录
-  1: [
-    {
-      id: 1,
-      senderId: 1,
-      receiverId: 0,
-      isSelf: false,
-      type: 'text',
-      content: '你看最近抖音上有个挺火的视频',
-      timestamp: Date.now() - 1000 * 60 * 60 * 2,
-      status: 'read'
-    },
-    {
-      id: 2,
-      senderId: 0,
-      receiverId: 1,
-      isSelf: true,
-      type: 'text',
-      content: '哪个视频呀',
-      timestamp: Date.now() - 1000 * 60 * 60 * 1.9,
-      status: 'read'
-    },
-    {
-      id: 3,
-      senderId: 1,
-      receiverId: 0,
-      isSelf: false,
-      type: 'text',
-      content: '就是那个...',
-      timestamp: Date.now() - 1000 * 60 * 60 * 1.8,
-      status: 'read'
-    },
-    {
-      id: 4,
-      senderId: 0,
-      receiverId: 1,
-      isSelf: true,
-      type: 'voice',
-      content: '',
-      duration: '12\'',
-      timestamp: Date.now() - 1000 * 60 * 60 * 1.7,
-      status: 'read'
-    },
-    {
-      id: 5,
-      senderId: 1,
-      receiverId: 0,
-      isSelf: false,
-      type: 'image',
-      content: '/src/assets/images/me-background.jpg',
-      caption: '是这个',
-      timestamp: Date.now() - 1000 * 60 * 60 * 1.6,
-      status: 'read'
-    }
-  ],
-  
-  // 与心之痕的聊天记录
-  3: [
-    {
-      id: 1,
-      senderId: 3,
-      receiverId: 0,
-      isSelf: false,
-      type: 'voice',
-      content: '',
-      timestamp: Date.now() - 1000 * 60 * 5,
-      duration: '5\'',
-      status: 'read'
-    },
-    {
-      id: 2,
-      senderId: 0,
-      receiverId: 3,
-      isSelf: true,
-      type: 'voice',
-      content: '',
-      timestamp: Date.now() - 1000 * 60 * 4,
-      duration: '10\'',
-      status: 'read'
-    },
-    {
-      id: 3,
-      senderId: 0,
-      receiverId: 3,
-      isSelf: true,
-      type: 'text',
-      content: '又在刷抖音',
-      timestamp: Date.now() - 1000 * 60 * 3,
-      status: 'read'
-    },
-    {
-      id: 4,
-      senderId: 0,
-      receiverId: 3,
-      isSelf: true,
-      type: 'text',
-      content: '我昨天@你那个视频发给我下',
-      timestamp: Date.now() - 1000 * 60 * 2,
-      status: 'read'
-    },
-    {
-      id: 5,
-      senderId: 3,
-      receiverId: 0,
-      isSelf: false,
-      type: 'text',
-      content: '我找不到了',
-      timestamp: Date.now() - 1000 * 60 * 1,
-      status: 'read'
-    },
-    {
-      id: 6,
-      senderId: 0,
-      receiverId: 3,
-      isSelf: true,
-      type: 'text',
-      content: '我也找不到了我也找不到了我也找不到了我也找不到了我也找不到了我也找不到了我也找不到了我也找不到了我也找不到了',
-      timestamp: Date.now() - 1000 * 30,
-      status: 'read'
-    },
-    {
-      id: 7,
-      senderId: 3,
-      receiverId: 0,
-      isSelf: false,
-      type: 'image',
-      content: '/src/assets/images/me-background.jpg',
-      caption: '服了asd',
-      timestamp: Date.now(),
-      status: 'sent'
-    }
-  ]
+// 创建会话ID的辅助函数
+export function createSessionId(uid1: number, uid2: number): string {
+  return `chat_${Math.min(uid1, uid2)}_${Math.max(uid1, uid2)}`;
 }
+
+// 修改模拟聊天记录存储结构，从用户ID映射改为会话ID映射
+export const mockChatHistories: Record<string, ChatMessage[]> = {};
+
+// 初始化一些模拟聊天记录
+// 用户0与用户1的会话
+const session_0_1 = createSessionId(0, 1);
+mockChatHistories[session_0_1] = [
+  {
+    id: 1,
+    senderId: 1,
+    receiverId: 0,
+    isSelf: false,
+    type: 'text',
+    content: '你看最近抖音上有个挺火的视频',
+    timestamp: Date.now() - 1000 * 60 * 60 * 2,
+    status: 'read',
+    sessionId: session_0_1
+  },
+  {
+    id: 2,
+    senderId: 0,
+    receiverId: 1,
+    isSelf: true,
+    type: 'text',
+    content: '哪个视频呀',
+    timestamp: Date.now() - 1000 * 60 * 60 * 1.9,
+    status: 'read',
+    sessionId: session_0_1
+  },
+  {
+    id: 3,
+    senderId: 1,
+    receiverId: 0,
+    isSelf: false,
+    type: 'text',
+    content: '就是那个...',
+    timestamp: Date.now() - 1000 * 60 * 60 * 1.8,
+    status: 'read',
+    sessionId: session_0_1
+  },
+  {
+    id: 4,
+    senderId: 0,
+    receiverId: 1,
+    isSelf: true,
+    type: 'voice',
+    content: '',
+    duration: '12\'',
+    timestamp: Date.now() - 1000 * 60 * 60 * 1.7,
+    status: 'read',
+    sessionId: session_0_1
+  },
+  {
+    id: 5,
+    senderId: 1,
+    receiverId: 0,
+    isSelf: false,
+    type: 'image',
+    content: '/src/assets/images/me-background.jpg',
+    caption: '是这个',
+    timestamp: Date.now() - 1000 * 60 * 60 * 1.6,
+    status: 'read',
+    sessionId: session_0_1
+  }
+];
+
+// 用户0与用户3的会话
+const session_0_3 = createSessionId(0, 3);
+mockChatHistories[session_0_3] = [
+  {
+    id: 1,
+    senderId: 3,
+    receiverId: 0,
+    isSelf: false,
+    type: 'voice',
+    content: '',
+    timestamp: Date.now() - 1000 * 60 * 5,
+    duration: '5\'',
+    status: 'read',
+    sessionId: session_0_3
+  },
+  {
+    id: 2,
+    senderId: 0,
+    receiverId: 3,
+    isSelf: true,
+    type: 'voice',
+    content: '',
+    timestamp: Date.now() - 1000 * 60 * 4,
+    duration: '10\'',
+    status: 'read',
+    sessionId: session_0_3
+  },
+  {
+    id: 3,
+    senderId: 0,
+    receiverId: 3,
+    isSelf: true,
+    type: 'text',
+    content: '又在刷抖音',
+    timestamp: Date.now() - 1000 * 60 * 3,
+    status: 'read',
+    sessionId: session_0_3
+  },
+  {
+    id: 4,
+    senderId: 0,
+    receiverId: 3,
+    isSelf: true,
+    type: 'text',
+    content: '我昨天@你那个视频发给我下',
+    timestamp: Date.now() - 1000 * 60 * 2,
+    status: 'read',
+    sessionId: session_0_3
+  },
+  {
+    id: 5,
+    senderId: 3,
+    receiverId: 0,
+    isSelf: false,
+    type: 'text',
+    content: '我找不到了',
+    timestamp: Date.now() - 1000 * 60 * 1,
+    status: 'read',
+    sessionId: session_0_3
+  },
+  {
+    id: 6,
+    senderId: 0,
+    receiverId: 3,
+    isSelf: true,
+    type: 'text',
+    content: '我也找不到了我也找不到了我也找不到了我也找不到了我也找不到了我也找不到了我也找不到了我也找不到了我也找不到了',
+    timestamp: Date.now() - 1000 * 30,
+    status: 'read',
+    sessionId: session_0_3
+  },
+  {
+    id: 7,
+    senderId: 3,
+    receiverId: 0,
+    isSelf: false,
+    type: 'image',
+    content: '/src/assets/images/me-background.jpg',
+    caption: '服了asd',
+    timestamp: Date.now(),
+    status: 'sent',
+    sessionId: session_0_3
+  }
+];
 
 // 模拟用户数据
 export const mockUsers: Record<number, UserInfo> = {
@@ -352,10 +373,18 @@ export function getMessages() {
 }
 
 // API函数：获取与特定用户的聊天记录
-export function getChatHistory(userId: number) {
+export function getChatHistory(userId: number, currentUserId: number = 0) {
   return new Promise<ChatMessage[]>((resolve) => {
     setTimeout(() => {
-      resolve(mockChatHistories[userId] || [])
+      // 计算会话ID
+      const sessionId = createSessionId(userId, currentUserId);
+      // console.log(`[API] 获取聊天历史记录: userId=${userId}, currentUserId=${currentUserId}, sessionId=${sessionId}`);
+      
+      // 返回该会话的所有消息
+      const messages = mockChatHistories[sessionId] || [];
+      // console.log(`[API] 找到${messages.length}条消息`);
+      
+      resolve(messages);
     }, 300)
   })
 }
@@ -364,33 +393,34 @@ export function getChatHistory(userId: number) {
 export function sendMessage(message: Omit<ChatMessage, 'id' | 'status'>) {
   return new Promise<ChatMessage>((resolve) => {
     setTimeout(() => {
+      const senderId = message.senderId;
+      const receiverId = message.receiverId;
+      // 计算会话ID
+      const sessionId = createSessionId(senderId, receiverId);
+      
       const newMessage = {
         ...message,
         id: Date.now(),
-        status: 'sent' as const
+        status: 'sent' as const,
+        sessionId: sessionId
       }
-      // 将新消息添加到聊天记录中
-      const senderId = message.senderId;
-      const receiverId = message.receiverId;
-      // 确保消息被添加到接收者的聊天记录中
-      if (mockChatHistories[receiverId]) {
-        mockChatHistories[receiverId].push(newMessage);
+      
+      // console.log(`[API] 发送消息: senderId=${senderId}, receiverId=${receiverId}, sessionId=${sessionId}`);
+      
+      // 将新消息添加到会话记录中
+      if (mockChatHistories[sessionId]) {
+        mockChatHistories[sessionId].push(newMessage);
       } else {
-        mockChatHistories[receiverId] = [newMessage];
+        mockChatHistories[sessionId] = [newMessage];
       }
-      // 同时确保消息被添加到发送者的聊天记录中
-      if (mockChatHistories[senderId]) {
-        mockChatHistories[senderId].push(newMessage);
-      } else {
-        mockChatHistories[senderId] = [newMessage];
-      }
+      
       resolve(newMessage)
     }, 500)
   })
 }
 
 // API函数：标记消息为已读
-export function markAsRead(userId: number) {
+export function markAsRead(userId: number, currentUserId: number = 0) {
   return new Promise<boolean>((resolve) => {
     setTimeout(() => {
       // 更新消息列表中的未读计数
@@ -400,10 +430,13 @@ export function markAsRead(userId: number) {
         }
       })
       
+      // 计算会话ID
+      const sessionId = createSessionId(userId, currentUserId);
+      
       // 更新聊天记录中的消息状态
-      if (mockChatHistories[userId]) {
-        mockChatHistories[userId].forEach(message => {
-          if (!message.isSelf) {
+      if (mockChatHistories[sessionId]) {
+        mockChatHistories[sessionId].forEach(message => {
+          if (!message.isSelf && message.senderId === userId) {
             message.status = 'read'
           }
         })
