@@ -37,9 +37,9 @@
       </div>
       
       <!-- 时间戳 -->
-      <div class="timestamp">
+      <!-- <div class="timestamp">
         {{ formatTime(message.timestamp) }}
-      </div>
+      </div> -->
     </div>
   </div>
 </template>
