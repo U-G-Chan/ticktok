@@ -61,14 +61,6 @@ export default defineComponent({
         // 初始化WebSocket连接
         chatStore.initWebSocket()
         
-        // 获取当前用户信息 - 当前用户ID为0
-        const currentUser = await getUserInfo(0)
-        chatStore.setCurrentUser({
-          uid: currentUser.uid,
-          nickname: currentUser.nickname,
-          avatar: currentUser.avatar
-        })
-        
         // 并行获取好友列表和消息列表
         const [friendsData, messagesData] = await Promise.all([
           getFriends(),

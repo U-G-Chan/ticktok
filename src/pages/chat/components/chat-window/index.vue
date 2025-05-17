@@ -33,6 +33,7 @@
 import { defineComponent, ref, computed, watch, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useChatStore } from '@/store/chat'
+import { useUserStore } from '@/store/user'
 
 
 // 导入组件
@@ -51,6 +52,7 @@ export default defineComponent({
     const route = useRoute()
     const router = useRouter()
     const chatStore = useChatStore()
+    const userStore = useUserStore()
     const messageInput = ref('')
     const newMessages = ref<Set<number>>(new Set())
     
@@ -68,7 +70,7 @@ export default defineComponent({
     
     // 头像信息
     const peerAvatar = computed(() => peerInfo.value?.avatar || '/avatar/default-avatar.png')
-    const selfAvatar = computed(() => chatStore.currentUser.avatar)
+    const selfAvatar = computed(() => userStore.currentUser.avatar)
     
     // 加载聊天会话
     const loadChatSession = async () => {
@@ -165,49 +167,30 @@ export default defineComponent({
     
     // 确保WebSocket已初始化
     onMounted(() => {
-      // 首先确保当前用户ID已设置
-      if (chatStore.currentUser.uid === 0) {
-        // 为测试设置一个默认用户ID
-        chatStore.setCurrentUser({
-          uid: 10000, // 使用一个固定的ID作为当前用户
-          nickname: '当前用户',
-          avatar: '/avatar/me-avatar.jpg'
-        });
-        console.log(`[ChatWindow] 已设置当前用户ID: ${chatStore.currentUser.uid}`);
+      // 仅在WebSocket未连接时初始化
+      if (!chatStore.isWebSocketConnected && userStore.isLoggedIn) {
+        console.log('[ChatWindow] WebSocket未连接，正在初始化');
+        chatStore.initWebSocket();
       }
       
-      // 等待用户设置完成后再初始化WebSocket
-      setTimeout(() => {
-        if (!chatStore.isWebSocketConnected) {
-          console.log('[ChatWindow] WebSocket未初始化或已关闭，正在重新初始化');
-          chatStore.initWebSocket();
-        } else {
-          console.log('[ChatWindow] WebSocket已连接');
-        }
-        
-        // 添加消息事件监听器，以防主监听器失效
-        if (chatStore.ws) {
-          chatStore.ws.addEventListener('message', (event: MessageEvent) => {
-            try {
-              console.log('[ChatWindow] 通过事件监听器收到消息:', event.data);
-              const data = JSON.parse(event.data);
-              if (data.type === 'message') {
-                // 检查消息是否属于当前会话
-                const msgSessionId = data.message.sessionId || '';
-                const currentSessionId = chatStore.activeSessionId;
-                
-                console.log(`[ChatWindow] 收到消息: sessionId=${msgSessionId}, currentSessionId=${currentSessionId}`);
-                
-                chatStore.receiveMessage(data.message);
-              }
-            } catch (error) {
-              console.error('[ChatWindow] 处理WebSocket事件消息失败:', error);
+      // 添加消息事件监听器，以防主监听器失效
+      if (chatStore.ws) {
+        chatStore.ws.addEventListener('message', (event: MessageEvent) => {
+          try {
+            const data = JSON.parse(event.data);
+            if (data.type === 'message') {
+              const msgSessionId = data.message.sessionId || '';
+              const currentSessionId = chatStore.activeSessionId;
+              console.log(`[ChatWindow] 收到消息: sessionId=${msgSessionId}, currentSessionId=${currentSessionId}`);
+              chatStore.receiveMessage(data.message);
             }
-          });
-        }
-      }, 100);
+          } catch (error) {
+            console.error('[ChatWindow] 处理WebSocket事件消息失败:', error);
+          }
+        });
+      }
       
-      console.log('[ChatWindow] 聊天窗口已加载，当前用户ID:', chatStore.currentUser.uid);
+      console.log('[ChatWindow] 聊天窗口已加载，当前用户ID:', userStore.userId);
     });
     
     return {

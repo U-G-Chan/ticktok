@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import { Friend, Message, ChatMessage, getChatHistory, sendMessage, markAsRead } from '@/api/chat'
+import { ChatMessage, getChatHistory, sendMessage, markAsRead, createSessionId } from '@/api/chat'
+import { useUserStore } from './user'
 
 // 聊天参与者接口
 interface ChatParticipant {
@@ -19,12 +20,8 @@ interface ChatSession {
 }
 
 export const useChatStore = defineStore('chat', () => {
-  // 当前用户信息
-  const currentUser = ref<ChatParticipant>({
-    uid: 0,
-    nickname: '当前用户',
-    avatar: '/avatar/me-avatar.jpg'
-  })
+  // 获取用户存储
+  const userStore = useUserStore()
 
   // 当前选中的聊天会话ID
   const activeSessionId = ref<string>('')
@@ -65,11 +62,6 @@ export const useChatStore = defineStore('chat', () => {
     return ws.value !== null && ws.value.readyState === WebSocket.OPEN;
   });
 
-  // 计算会话ID的辅助函数，确保一致性
-  function calculateSessionId(uid1: number, uid2: number): string {
-    return `chat_${Math.min(uid1, uid2)}_${Math.max(uid1, uid2)}`;
-  }
-
   // 初始化WebSocket连接
   function initWebSocket() {
     if (ws.value) {
@@ -77,13 +69,13 @@ export const useChatStore = defineStore('chat', () => {
     }
     
     // 创建WebSocket连接并添加当前用户ID参数
-    const wsUrl = `ws://localhost:8080/chat?userId=${currentUser.value.uid}`;
+    const wsUrl = `ws://localhost:8080/chat?userId=${userStore.userId}`;
     ws.value = new WebSocket(wsUrl);
     
     console.log(`[Chat] 初始化WebSocket连接: ${wsUrl}`);
     
     ws.value.onopen = () => {
-      console.log(`[Chat] WebSocket连接已打开, 用户ID=${currentUser.value.uid}`);
+      console.log(`[Chat] WebSocket连接已打开, 用户ID=${userStore.userId}`);
     };
     
     ws.value.onmessage = (event) => {
@@ -134,19 +126,11 @@ export const useChatStore = defineStore('chat', () => {
     }
   }
 
-  // 设置当前用户信息
-  function setCurrentUser(user: ChatParticipant) {
-    currentUser.value = user
-    // 用户变更时重新初始化WebSocket连接
-    if (user.uid > 0) {
-      console.log(`[Chat] 用户已设置 uid=${user.uid}，正在重新初始化WebSocket连接`);
-      initWebSocket();
-    }
-  }
-
   // 根据用户ID创建或获取聊天会话
   async function createOrGetSession(peerId: number, peerInfo?: ChatParticipant) {
-    const sessionId = calculateSessionId(currentUser.value.uid, peerId);
+    const selfId = userStore.userId;
+    const sessionId = createSessionId(selfId, peerId);
+    
     if (!chatSessions.value.has(sessionId)) {
       try {
         const userInfo = peerInfo || await getUserInfo(peerId);
@@ -182,7 +166,7 @@ export const useChatStore = defineStore('chat', () => {
   // 加载聊天历史记录
   async function loadChatHistory(sessionId: string, peerId: number) {
     try {
-      const selfId = currentUser.value.uid;
+      const selfId = userStore.userId;
       
       // 使用修改后的API获取会话消息
       console.log(`[Chat] 请求会话历史记录: sessionId=${sessionId}, peerId=${peerId}, selfId=${selfId}`);
@@ -216,7 +200,7 @@ export const useChatStore = defineStore('chat', () => {
   async function sendChatMessage(content: string, type: 'text' | 'voice' | 'image' = 'text') {
     if (!activeSession.value || !content.trim()) return null;
     const peerId = activeSession.value.peer.uid;
-    const selfId = currentUser.value.uid;
+    const selfId = userStore.userId;
     const newMessage: Omit<ChatMessage, 'id' | 'status'> = {
       senderId: selfId,
       receiverId: peerId,
@@ -249,8 +233,8 @@ export const useChatStore = defineStore('chat', () => {
   function receiveMessage(message: ChatMessage) {
     const senderId = message.senderId;
     const receiverId = message.receiverId;
-    const selfId = currentUser.value.uid;
-    const sessionId = calculateSessionId(
+    const selfId = userStore.userId;
+    const sessionId = createSessionId(
       selfId, 
       senderId === selfId ? receiverId : senderId
     );
@@ -282,7 +266,8 @@ export const useChatStore = defineStore('chat', () => {
     if (session) {
       session.unreadCount = 0
       if (session.lastMessage && !session.lastMessage.isSelf) {
-        markAsRead(session.peer.uid, currentUser.value.uid)
+        // 传递当前用户ID
+        markAsRead(session.peer.uid, userStore.userId)
       }
     }
   }
@@ -297,7 +282,6 @@ export const useChatStore = defineStore('chat', () => {
   }
 
   return {
-    currentUser,
     activeSessionId,
     chatSessions,
     activeSession,
@@ -306,7 +290,6 @@ export const useChatStore = defineStore('chat', () => {
     totalUnreadCount,
     ws,
     isWebSocketConnected,
-    setCurrentUser,
     createOrGetSession,
     loadChatHistory,
     sendChatMessage,
