@@ -1,49 +1,57 @@
 <template>
-  <div class="chat-history" ref="chatHistoryRef">
-    <!-- 聊天消息项 -->
-    <div 
-      v-for="(message, index) in chatHistory" 
-      :key="index" 
-      :class="['message-item', message.isSelf ? 'message-self' : 'message-other']"
-    >
-      <!-- 对方消息 - 左侧头像 + 气泡 -->
-      <template v-if="!message.isSelf">
-        <div class="avatar">
-          <img :src="peerAvatar" :alt="peerName">
-        </div>
-        <chat-bubble 
-          :message="message" 
-          :is-self="false" 
-        />
-      </template>
+  <div class="chat-history" ref="historyRef">
+    <div v-for="(message, _) in messages" 
+         :key="message.id" 
+         :class="[
+           'message-item', 
+           {'message-self': message.isSelf, 'message-peer': !message.isSelf},
+           {'new-message': isNewMessage(message)}
+         ]">
+      <!-- 头像 -->
+      <div class="avatar">
+        <img :src="message.isSelf ? selfAvatar : peerAvatar" alt="avatar" />
+      </div>
       
-      <!-- 自己消息 - 气泡 + 右侧头像 -->
-      <template v-else>
-        <chat-bubble 
-          :message="message" 
-          :is-self="true" 
-        />
-        <div class="avatar">
-          <img :src="selfAvatar" alt="我">
-        </div>
-      </template>
+      <!-- 消息内容 -->
+      <div class="message-content" :class="message.type">
+        <!-- 文本消息 -->
+        <template v-if="message.type === 'text'">
+          <div class="text-message">{{ message.content }}</div>
+        </template>
+        
+        <!-- 语音消息 -->
+        <template v-else-if="message.type === 'voice'">
+          <div class="voice-message">
+            <i class="voice-icon">🔊</i>
+            <span>{{ message.duration || '0"' }}</span>
+          </div>
+        </template>
+        
+        <!-- 图片消息 -->
+        <template v-else-if="message.type === 'image'">
+          <div class="image-message">
+            <img :src="message.content" alt="image" />
+            <div v-if="message.caption" class="caption">{{ message.caption }}</div>
+          </div>
+        </template>
+      </div>
+      
+      <!-- 时间戳 -->
+      <div class="timestamp">
+        {{ formatTime(message.timestamp) }}
+      </div>
     </div>
-    
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType, ref, onMounted, watch } from 'vue'
+import { defineComponent, PropType, ref, onMounted, watch, nextTick } from 'vue'
 import { ChatMessage } from '@/api/chat'
-import ChatBubble from './ChatBubble.vue'
 
 export default defineComponent({
   name: 'ChatHistory',
-  components: {
-    ChatBubble
-  },
   props: {
-    chatHistory: {
+    messages: {
       type: Array as PropType<ChatMessage[]>,
       required: true
     },
@@ -51,111 +59,162 @@ export default defineComponent({
       type: String,
       required: true
     },
-    peerName: {
-      type: String,
-      required: true
-    },
     selfAvatar: {
       type: String,
       required: true
     },
-    hasUnreadNotice: {
-      type: Boolean,
-      default: false
+    newMessageIds: {
+      type: Set as PropType<Set<number>>,
+      default: () => new Set<number>()
     }
   },
-  emits: ['call-click'],
-  setup(props, { emit }) {
-    const chatHistoryRef = ref<HTMLElement | null>(null)
+  setup(props) {
+    const historyRef = ref<HTMLElement | null>(null)
+    
+    // 判断是否是新消息
+    const isNewMessage = (message: ChatMessage) => {
+      return props.newMessageIds.has(message.id)
+    }
     
     // 滚动到底部
     const scrollToBottom = () => {
-      if (chatHistoryRef.value) {
-        chatHistoryRef.value.scrollTop = chatHistoryRef.value.scrollHeight
-      }
+      nextTick(() => {
+        if (historyRef.value) {
+          historyRef.value.scrollTop = historyRef.value.scrollHeight
+        }
+      })
     }
     
-    // 监听聊天记录变化，自动滚动到底部
-    watch(() => props.chatHistory.length, () => {
-      setTimeout(scrollToBottom, 50)
+    // 格式化时间戳
+    const formatTime = (timestamp: number) => {
+      const date = new Date(timestamp)
+      const hours = date.getHours().toString().padStart(2, '0')
+      const minutes = date.getMinutes().toString().padStart(2, '0')
+      return `${hours}:${minutes}`
+    }
+    
+    // 监听消息变化，自动滚动到底部
+    watch(() => props.messages.length, (newVal, oldVal) => {
+      if (oldVal !== undefined && newVal > oldVal) {
+        scrollToBottom()
+      }
     })
     
     onMounted(() => {
       scrollToBottom()
     })
     
-    const onCallClick = () => {
-      emit('call-click')
-    }
-    
     return {
-      chatHistoryRef,
-      onCallClick
+      historyRef,
+      isNewMessage,
+      formatTime,
+      scrollToBottom
     }
   }
 })
 </script>
 
 <style scoped>
+@keyframes slideUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
 .chat-history {
   flex: 1;
   overflow-y: auto;
   padding: 16px;
+  padding-bottom: 80px; /* 为底部输入框留出空间 */
   background-color: #f8f8f8;
 }
 
 .message-item {
   display: flex;
   margin-bottom: 16px;
+  max-width: 80%;
   position: relative;
 }
 
+.message-peer {
+  align-self: flex-start;
+}
+
 .message-self {
-  justify-content: flex-end;
+  align-self: flex-end;
+  flex-direction: row-reverse;
+  margin-left: auto;
 }
 
-.message-other {
-  justify-content: flex-start;
+.message-content {
+  margin: 0 12px;
+  padding: 10px 14px;
+  border-radius: 18px;
+  background-color: #f5f5f5;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  position: relative;
 }
 
-.avatar {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  overflow: hidden;
-  flex-shrink: 0;
+.message-self .message-content {
+  background-color: #0084ff;
+  color: white;
 }
 
 .avatar img {
-  width: 100%;
-  height: 100%;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
   object-fit: cover;
 }
 
-/* 未读提示 */
-.unread-notice {
+.timestamp {
+  font-size: 12px;
+  color: #999;
+  margin-top: 4px;
+  position: absolute;
+  bottom: -20px;
+}
+
+.message-self .timestamp {
+  right: 50px;
+}
+
+.message-peer .timestamp {
+  left: 50px;
+}
+
+.text-message {
+  word-break: break-word;
+}
+
+.voice-message {
   display: flex;
-  justify-content: center;
   align-items: center;
-  background-color: #2b5cd9;
-  padding: 12px 16px;
+  padding: 4px 8px;
+}
+
+.voice-icon {
+  margin-right: 8px;
+}
+
+.image-message img {
+  max-width: 200px;
+  max-height: 300px;
   border-radius: 8px;
-  margin: 20px 0;
 }
 
-.notice-content {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.call-button {
-  margin-left: 16px;
-  background-color: #fff;
-  color: #2b5cd9;
-  padding: 4px 12px;
-  border-radius: 16px;
+.caption {
+  margin-top: 4px;
   font-size: 14px;
-  cursor: pointer;
+}
+
+/* 新消息动画 */
+.new-message {
+  animation: slideUp 0.5s ease;
 }
 </style> 

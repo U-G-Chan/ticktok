@@ -4,7 +4,7 @@
       <icon-left theme="outline" size="25" fill="#000000"/>
     </div>
     <div class="avatar">
-      <img src="@/assets/images/avatar.jpg">
+      <img :src="chatStore.currentPeer?.avatar || '@/assets/images/avatar.jpg'">
     </div>
     <div class="chat-title">{{ title }}</div>
     <div class="header-actions">
@@ -17,6 +17,7 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
+import { useChatStore } from '@/store/chat'
 
 export default defineComponent({
   name: 'ChatWindowHeader',
@@ -28,6 +29,8 @@ export default defineComponent({
   },
   emits: ['back-click', 'phone-click', 'video-click', 'more-click'],
   setup(_, { emit }) {
+    const chatStore = useChatStore()
+    
     const onBackClick = () => {
       emit('back-click')
     }
@@ -45,6 +48,7 @@ export default defineComponent({
     }
 
     return {
+      chatStore,
       onBackClick,
       onPhoneClick,
       onVideoClick,

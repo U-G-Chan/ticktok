@@ -1,6 +1,6 @@
 <template>
   <div class="chat-input">
-    <div class="input-actions-camera">
+    <div class="input-actions-camera" @click="onPhotoClick">
       <icon-camera theme="outline" size="22" fill="#fff"/>
     </div>
     <div class="input-field">
@@ -12,9 +12,9 @@
       >
     </div>
     <div class="input-actions">
-      <icon-voice-message theme="outline" size="28" fill="#000000"/>
-      <icon-grinning-face-with-open-mouth theme="outline" size="28" fill="#000000"/>
-      <icon-add-one theme="outline" size="28" fill="#000000"/>
+      <icon-voice-message theme="outline" size="28" fill="#000000" @click="onVoiceClick"/>
+      <icon-grinning-face-with-open-mouth theme="outline" size="28" fill="#000000" @click="onEmojiClick"/>
+      <icon-add-one theme="outline" size="28" fill="#000000" @click="onPlusClick"/>
     </div>
   </div>
 </template>
@@ -30,15 +30,18 @@ export default defineComponent({
       default: ''
     }
   },
-  emits: ['update:value', 'send', 'photo-click', 'emoji-click', 'plus-click'],
+  emits: ['update:value', 'send', 'photo-click', 'emoji-click', 'voice-click', 'plus-click'],
   setup(props, { emit }) {
     const inputValue = ref(props.value)
     
-    // 双向绑定
+    // 单向监听prop变化
     watch(() => props.value, (newVal) => {
-      inputValue.value = newVal
+      if (newVal !== inputValue.value) {
+        inputValue.value = newVal
+      }
     })
     
+    // 向父组件发送更新事件
     watch(inputValue, (newVal) => {
       emit('update:value', newVal)
     })
@@ -47,13 +50,17 @@ export default defineComponent({
     const sendMessage = () => {
       if (inputValue.value.trim()) {
         emit('send', inputValue.value)
-        inputValue.value = ''
       }
     }
     
     // 点击照片图标
     const onPhotoClick = () => {
       emit('photo-click')
+    }
+    
+    // 点击语音图标
+    const onVoiceClick = () => {
+      emit('voice-click')
     }
     
     // 点击表情图标
@@ -70,6 +77,7 @@ export default defineComponent({
       inputValue,
       sendMessage,
       onPhotoClick,
+      onVoiceClick,
       onEmojiClick,
       onPlusClick
     }
@@ -113,6 +121,7 @@ export default defineComponent({
   gap: 10px;
   background-color: #7cbbff;
   border-radius: 50%;
+  cursor: pointer;
 }
 
 .input-actions {
@@ -121,5 +130,9 @@ export default defineComponent({
   cursor: pointer;
   display: flex;
   gap: 10px;
+}
+
+.input-actions > * {
+  cursor: pointer;
 }
 </style> 

@@ -31,6 +31,17 @@ export interface ChatMessage {
   status: 'sending' | 'sent' | 'read' | 'failed';
 }
 
+// 用户信息接口
+export interface UserInfo {
+  id: number;
+  uid: number;
+  nickname: string;
+  avatar: string;
+  status?: 'online' | 'offline' | 'away';
+  lastSeen?: string;
+  signature?: string;
+}
+
 // 模拟好友数据
 export const mockFriends: Friend[] = [
   {
@@ -264,6 +275,64 @@ export const mockChatHistories: Record<number, ChatMessage[]> = {
   ]
 }
 
+// 模拟用户数据
+export const mockUsers: Record<number, UserInfo> = {
+  0: {
+    id: 0,
+    uid: 0,
+    nickname: '测试用户',
+    avatar: '/avatar/me-avatar.jpg',
+    status: 'online',
+    lastSeen: '刚刚',
+    signature: '这是我的个性签名'
+  },
+  1: {
+    id: 1,
+    uid: 1,
+    nickname: '何以为家',
+    avatar: '/avatar/vue-color-avatar-1.png',
+    status: 'online',
+    lastSeen: '刚刚',
+    signature: '相逢的人会再相逢'
+  },
+  2: {
+    id: 2,
+    uid: 2,
+    nickname: '浅唱＼我心',
+    avatar: '/avatar/vue-color-avatar-2.png',
+    status: 'offline',
+    lastSeen: '30分钟前',
+    signature: '此生无悔入四月，来世愿做友人A'
+  },
+  3: {
+    id: 3,
+    uid: 3,
+    nickname: '心 之痕',
+    avatar: '/avatar/vue-color-avatar-3.png',
+    status: 'online',
+    lastSeen: '刚刚',
+    signature: '愿你眼中有星辰，身后有靠山'
+  },
+  4: {
+    id: 4,
+    uid: 4,
+    nickname: '铁 _保镖',
+    avatar: '/avatar/vue-color-avatar-4.png',
+    status: 'offline',
+    lastSeen: '2小时前',
+    signature: '所有的不期而遇，都是命中注定'
+  },
+  5: {
+    id: 5,
+    uid: 5,
+    nickname: '好好先生',
+    avatar: '/avatar/vue-color-avatar-5.png',
+    status: 'online',
+    lastSeen: '刚刚',
+    signature: '我不是不想联系你，只是不知道找什么理由'
+  },
+};
+
 // API函数：获取好友列表
 export function getFriends() {
   return new Promise<Friend[]>((resolve) => {
@@ -336,4 +405,36 @@ export function markAsRead(userId: number) {
       resolve(true)
     }, 200)
   })
+}
+
+/**
+ * 获取用户信息
+ * @param userId 用户ID
+ */
+export function getUserInfo(userId: number): Promise<UserInfo> {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      const user = mockUsers[userId];
+      if (user) {
+        resolve(user);
+      } else {
+        reject(new Error(`用户不存在: ${userId}`));
+      }
+    }, 300);
+  });
+}
+
+/**
+ * 批量获取用户信息
+ * @param userIds 用户ID数组
+ */
+export function getUsersInfo(userIds: number[]): Promise<UserInfo[]> {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      const users = userIds
+        .map(id => mockUsers[id])
+        .filter(user => user) as UserInfo[];
+      resolve(users);
+    }, 500);
+  });
 } 

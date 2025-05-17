@@ -2,7 +2,7 @@
   <div class="chat-window">
     <!-- 聊天窗口头部 -->
     <chat-window-header 
-      :title="chatTitle"
+      :title="peerInfo?.nickname || '聊天'"
       @back-click="goBack"
       @phone-click="handlePhoneClick"
       @video-click="handleVideoClick"
@@ -11,12 +11,10 @@
 
     <!-- 聊天历史记录 -->
     <chat-history 
-      :chat-history="chatHistory"
+      :messages="currentMessages"
       :peer-avatar="peerAvatar"
-      :peer-name="peerName"
       :self-avatar="selfAvatar"
-      :has-unread-notice="hasUnreadNotice"
-      @call-click="handleCallClick"
+      :new-message-ids="newMessages"
     />
 
     <!-- 消息输入区域 -->
@@ -24,6 +22,7 @@
       v-model:value="messageInput"
       @send="handleSendMessage"
       @photo-click="handlePhotoClick"
+      @voice-click="handleVoiceClick"
       @emoji-click="handleEmojiClick"
       @plus-click="handlePlusClick"
     />
@@ -31,9 +30,10 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, computed, watch } from 'vue'
+import { defineComponent, ref, computed, watch, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { ChatMessage, getChatHistory, sendMessage, markAsRead } from '@/api/chat'
+import { useChatStore } from '@/store/chat'
+import { ChatMessage } from '@/api/chat'
 
 // 导入组件
 import ChatWindowHeader from './components/ChatWindowHeader.vue'
@@ -50,62 +50,58 @@ export default defineComponent({
   setup() {
     const route = useRoute()
     const router = useRouter()
-
+    const chatStore = useChatStore()
+    const messageInput = ref('')
+    const newMessages = ref<Set<number>>(new Set())
+    
     // 获取用户ID
     const userId = computed(() => {
       const id = route.params.id
       return typeof id === 'string' ? parseInt(id, 10) : 0
     })
 
-    // 聊天标题 (对方昵称)
-    const chatTitle = computed(() => {
-      return route.query.userName as string || '聊天'
-    })
-
-    // 模拟数据
-    const peerName = computed(() => route.query.userName as string || '未知用户')
-    const peerAvatar = ref('/src/assets/images/avatar.jpg')
-    const selfAvatar = ref('/src/assets/images/avatar.jpg')
-    const hasUnreadNotice = ref(true)
-    const chatHistory = ref<ChatMessage[]>([])
-    const messageInput = ref('')
-    const loading = ref(true)
+    // 从store获取当前消息
+    const currentMessages = computed(() => chatStore.currentMessages)
     
-    // 加载聊天记录
-    const loadChatHistory = async () => {
+    // 当前聊天对象信息
+    const peerInfo = computed(() => chatStore.currentPeer)
+    
+    // 头像信息
+    const peerAvatar = computed(() => peerInfo.value?.avatar || '/avatar/default-avatar.png')
+    const selfAvatar = computed(() => chatStore.currentUser.avatar)
+    
+    // 加载聊天会话
+    const loadChatSession = async () => {
       if (userId.value > 0) {
         try {
-          loading.value = true
-          const history = await getChatHistory(userId.value)
-          chatHistory.value = history
-          
-          // 标记消息为已读
-          await markAsRead(userId.value)
+          await chatStore.createOrGetSession(userId.value)
         } catch (error) {
-          console.error('获取聊天记录失败:', error)
-        } finally {
-          loading.value = false
+          console.error('加载聊天会话失败:', error)
         }
       }
+    }
+    
+    // 标记新消息
+    const markNewMessage = (messageId: number) => {
+      newMessages.value.add(messageId)
+      // 3秒后移除新消息标记
+      setTimeout(() => {
+        newMessages.value.delete(messageId)
+      }, 3000)
     }
     
     // 发送消息
     const handleSendMessage = async (text: string) => {
       if (!text.trim() || userId.value <= 0) return
       
-      // 创建本地消息对象
-      const newMessage: Omit<ChatMessage, 'id' | 'status'> = {
-        senderId: 0, // 当前用户ID
-        receiverId: userId.value,
-        isSelf: true,
-        type: 'text',
-        content: text,
-        timestamp: Date.now()
-      }
-      
       try {
-        // 发送消息
-        await sendMessage(newMessage)
+        // 先清空输入，避免重复发送
+        messageInput.value = ''
+        
+        const message = await chatStore.sendChatMessage(text)
+        if (message) {
+          markNewMessage(message.id)
+        }
       } catch (error) {
         console.error('发送消息失败:', error)
       }
@@ -131,12 +127,6 @@ export default defineComponent({
       console.log('点击更多按钮')
     }
     
-    // 处理拨打电话点击
-    const handleCallClick = () => {
-      console.log('点击拨打电话按钮')
-      hasUnreadNotice.value = false
-    }
-    
     // 处理照片点击
     const handlePhotoClick = () => {
       console.log('点击照片按钮')
@@ -152,40 +142,56 @@ export default defineComponent({
       console.log('点击更多功能按钮')
     }
     
-    // 监听用户ID变化，重新加载聊天记录
+    // 处理语音点击
+    const handleVoiceClick = () => {
+      console.log('点击语音按钮')
+    }
+    
+    // 监听当前消息变化，标记新消息
+    watch(currentMessages, (newVal, oldVal) => {
+      if (oldVal && newVal.length > oldVal.length) {
+        // 找出新增的消息
+        const lastMessage = newVal[newVal.length - 1]
+        if (lastMessage) {
+          markNewMessage(lastMessage.id)
+        }
+      }
+    })
+    
+    // 监听用户ID变化，加载聊天会话
     watch(userId, () => {
-      loadChatHistory()
+      loadChatSession()
     }, { immediate: true })
     
     return {
-      chatTitle,
-      chatHistory,
-      messageInput,
-      peerName,
+      userId,
+      currentMessages,
+      peerInfo,
       peerAvatar,
       selfAvatar,
-      hasUnreadNotice,
+      messageInput,
+      newMessages,
       goBack,
       handleSendMessage,
       handlePhoneClick,
       handleVideoClick,
       handleMoreClick,
-      handleCallClick,
       handlePhotoClick,
       handleEmojiClick,
-      handlePlusClick
+      handlePlusClick,
+      handleVoiceClick
     }
   }
 })
 </script>
 
 <style scoped>
-@keyframes slideIn {
+@keyframes fadeIn {
   from {
-    transform: translateX(100%);
+    opacity: 0;
   }
   to {
-    transform: translateX(0);
+    opacity: 1;
   }
 }
 
@@ -195,7 +201,7 @@ export default defineComponent({
   height: 100%;
   color: #333;
   background-color: white;
-  animation: slideIn 0.1s cubic-bezier(0.4, 0, 0.2, 1);
+  animation: fadeIn 0.3s ease;
 }
 
 .chat-window-header {
