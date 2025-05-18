@@ -1,41 +1,24 @@
 <template>
-  <div class="chat-history" ref="historyRef">
-    <div v-for="(message, _) in messages" 
-         :key="message.id" 
-         :class="[
-           'message-item', 
-           {'message-self': message.isSelf, 'message-peer': !message.isSelf},
-           {'new-message': isNewMessage(message)}
-         ]">
+  <div class="chat-history" ref="historyRef" :class="{ 'ai-generating': isAIGenerating }">
+    <div v-for="(message, _) in messages" :key="message.id" :class="[
+      'message-item',
+      { 'message-self': message.isSelf, 'message-peer': !message.isSelf },
+      { 'new-message': isNewMessage(message) }
+    ]">
       <!-- 头像 -->
       <div class="avatar">
         <img :src="message.isSelf ? selfAvatar : peerAvatar" alt="avatar" />
       </div>
-      
+
       <!-- 消息内容 -->
-      <div class="message-content" :class="message.type">
-        <!-- 文本消息 -->
-        <template v-if="message.type === 'text'">
-          <div class="text-message">{{ message.content }}</div>
-        </template>
-        
-        <!-- 语音消息 -->
-        <template v-else-if="message.type === 'voice'">
-          <div class="voice-message">
-            <i class="voice-icon">🔊</i>
-            <span>{{ message.duration || '0"' }}</span>
-          </div>
-        </template>
-        
-        <!-- 图片消息 -->
-        <template v-else-if="message.type === 'image'">
-          <div class="image-message">
-            <img :src="message.content" alt="image" />
-            <div v-if="message.caption" class="caption">{{ message.caption }}</div>
-          </div>
-        </template>
+       
+      <div v-if="!isAIChat">
+        <ChatBubble :message="message" :is-self="message.isSelf" @image-click="$emit('image-click', $event)" />
       </div>
-      
+      <div v-else>
+        <AIChatBubble :message="message" :is-self="message.isSelf" @image-click="$emit('image-click', $event)" />
+      </div>
+
       <!-- 时间戳 -->
       <!-- <div class="timestamp">
         {{ formatTime(message.timestamp) }}
@@ -45,11 +28,18 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType, ref, onMounted, watch, nextTick } from 'vue'
-import { ChatMessage } from '@/api/chat'
+import { defineComponent, PropType, ref, computed, onMounted, watch, nextTick } from 'vue'
+import { ChatMessage, FriendType } from '@/api/chat'
+import { useAIChatStore } from '@/store/aiChat'
+import ChatBubble from './ChatBubble.vue'
+import AIChatBubble from './AIChatBubble.vue'
 
 export default defineComponent({
   name: 'ChatHistory',
+  components: {
+    ChatBubble,
+    AIChatBubble
+  },
   props: {
     messages: {
       type: Array as PropType<ChatMessage[]>,
@@ -66,16 +56,32 @@ export default defineComponent({
     newMessageIds: {
       type: Set as PropType<Set<number>>,
       default: () => new Set<number>()
+    },
+    peerType: {
+      type: String as PropType<FriendType>,
+      default: FriendType.NORMAL
     }
   },
+  emits: ['image-click'],
   setup(props) {
     const historyRef = ref<HTMLElement | null>(null)
-    
+    const aiChatStore = useAIChatStore()
+
+    // 判断是否是AI聊天
+    const isAIChat = computed(() => {
+      return props.peerType === FriendType.AIBOT;
+    });
+
+    // 判断AI是否正在生成回复
+    const isAIGenerating = computed(() => {
+      return isAIChat.value && aiChatStore.isGenerating;
+    });
+
     // 判断是否是新消息
     const isNewMessage = (message: ChatMessage) => {
       return props.newMessageIds.has(message.id)
     }
-    
+
     // 滚动到底部
     const scrollToBottom = () => {
       nextTick(() => {
@@ -84,7 +90,7 @@ export default defineComponent({
         }
       })
     }
-    
+
     // 格式化时间戳
     const formatTime = (timestamp: number) => {
       const date = new Date(timestamp)
@@ -92,29 +98,35 @@ export default defineComponent({
       const minutes = date.getMinutes().toString().padStart(2, '0')
       return `${hours}:${minutes}`
     }
-    
+
     // 监听消息变化，自动滚动到底部
     watch(() => props.messages.length, (newVal, oldVal) => {
       if (oldVal !== undefined && newVal > oldVal) {
         scrollToBottom()
       }
     })
-    
+
     // 添加深度监听，确保即使数组引用不变但内容变化也能检测到
     watch(() => [...props.messages], () => {
-      console.log('消息数组内容变化，滚动到底部')
       scrollToBottom()
     }, { deep: true })
-    
+
+    // 监听AI生成状态变化
+    watch(() => aiChatStore.streamingText, () => {
+      scrollToBottom()
+    })
+
     onMounted(() => {
       scrollToBottom()
     })
-    
+
     return {
       historyRef,
       isNewMessage,
       formatTime,
-      scrollToBottom
+      scrollToBottom,
+      isAIChat,
+      isAIGenerating
     }
   }
 })
@@ -126,6 +138,7 @@ export default defineComponent({
     transform: translateY(20px);
     opacity: 0;
   }
+
   to {
     transform: translateY(0);
     opacity: 1;
@@ -136,8 +149,15 @@ export default defineComponent({
   flex: 1;
   overflow-y: auto;
   padding: 16px;
-  padding-bottom: 80px; /* 为底部输入框留出空间 */
+  padding-bottom: 80px;
+  /* 为底部输入框留出空间 */
   background-color: #f8f8f8;
+  transition: background-color 0.3s ease;
+}
+
+/* AI生成时的背景效果 */
+.chat-history.ai-generating {
+  background-color: rgba(78, 149, 243, 0.05);
 }
 
 .message-item {
@@ -155,20 +175,6 @@ export default defineComponent({
   align-self: flex-end;
   flex-direction: row-reverse;
   margin-left: auto;
-}
-
-.message-content {
-  margin: 0 12px;
-  padding: 10px 14px;
-  border-radius: 18px;
-  background-color: #f5f5f5;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-  position: relative;
-}
-
-.message-self .message-content {
-  background-color: #0084ff;
-  color: white;
 }
 
 .avatar img {
@@ -194,33 +200,8 @@ export default defineComponent({
   left: 50px;
 }
 
-.text-message {
-  word-break: break-word;
-}
-
-.voice-message {
-  display: flex;
-  align-items: center;
-  padding: 4px 8px;
-}
-
-.voice-icon {
-  margin-right: 8px;
-}
-
-.image-message img {
-  max-width: 200px;
-  max-height: 300px;
-  border-radius: 8px;
-}
-
-.caption {
-  margin-top: 4px;
-  font-size: 14px;
-}
-
 /* 新消息动画 */
 .new-message {
   animation: slideUp 0.5s ease;
 }
-</style> 
+</style>

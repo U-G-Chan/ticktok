@@ -197,14 +197,14 @@ export const useChatStore = defineStore('chat', () => {
   }
 
   // 发送消息
-  async function sendChatMessage(content: string, type: 'text' | 'voice' | 'image' = 'text') {
+  async function sendChatMessage(content: string, type: 'text' | 'voice' | 'image' = 'text', isSelf: boolean = true) {
     if (!activeSession.value || !content.trim()) return null;
     const peerId = activeSession.value.peer.uid;
     const selfId = userStore.userId;
     const newMessage: Omit<ChatMessage, 'id' | 'status'> = {
-      senderId: selfId,
-      receiverId: peerId,
-      isSelf: true,
+      senderId: isSelf ? selfId : peerId,
+      receiverId: isSelf ? peerId : selfId,
+      isSelf,
       type,
       content,
       timestamp: Date.now()

@@ -9,12 +9,16 @@
       @more-click="handleMoreClick"
     />
 
+    <!-- AI模型选择器（仅在AI聊天时显示） -->
+    <model-selector v-if="isAIChat" />
+
     <!-- 聊天历史记录 -->
     <chat-history 
       :messages="currentMessages"
       :peer-avatar="peerAvatar"
       :self-avatar="selfAvatar"
       :new-message-ids="newMessages"
+      :peer-type="friendType"
     />
 
     <!-- 消息输入区域 -->
@@ -34,25 +38,30 @@ import { defineComponent, ref, computed, watch, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useChatStore } from '@/store/chat'
 import { useUserStore } from '@/store/user'
+import { useAIChatStore } from '@/store/aiChat'
+import { FriendType } from '@/api/chat'
 
 
 // 导入组件
 import ChatWindowHeader from './components/ChatWindowHeader.vue'
 import ChatHistory from './components/ChatHistory.vue'
 import ChatInput from './components/ChatInput.vue'
+import ModelSelector from './components/ModelSelector.vue'
 
 export default defineComponent({
   name: 'ChatWindow',
   components: {
     ChatWindowHeader,
     ChatHistory,
-    ChatInput
+    ChatInput,
+    ModelSelector
   },
   setup() {
     const route = useRoute()
     const router = useRouter()
     const chatStore = useChatStore()
     const userStore = useUserStore()
+    const aiChatStore = useAIChatStore()
     const messageInput = ref('')
     const newMessages = ref<Set<number>>(new Set())
     
@@ -71,6 +80,22 @@ export default defineComponent({
     // 头像信息
     const peerAvatar = computed(() => peerInfo.value?.avatar || '/avatar/default-avatar.png')
     const selfAvatar = computed(() => userStore.currentUser.avatar)
+    
+    // 判断好友类型
+    const friendType = computed(() => {
+      // 通过ID 6判断是AI助手，可以根据实际情况调整
+      if (userId.value === 6) {
+        return FriendType.AIBOT;
+      } else if (userId.value === 7) {
+        return FriendType.SYSTEM;
+      }
+      return FriendType.NORMAL;
+    });
+    
+    // 是否是AI聊天
+    const isAIChat = computed(() => {
+      return friendType.value === FriendType.AIBOT;
+    });
     
     // 加载聊天会话
     const loadChatSession = async () => {
@@ -100,9 +125,35 @@ export default defineComponent({
         // 先清空输入，避免重复发送
         messageInput.value = ''
         
-        const message = await chatStore.sendChatMessage(text)
-        if (message) {
-          markNewMessage(message.id)
+        // 如果是AI聊天，使用AI聊天逻辑
+        if (isAIChat.value) {
+          // 先发送用户消息
+          const message = await chatStore.sendChatMessage(text)
+          if (message) {
+            markNewMessage(message.id)
+            
+            // 使用AI模型生成回复
+            await aiChatStore.sendMessage(text)
+            
+            // 添加AI回复到聊天窗口
+            if (aiChatStore.chatHistory.length > 1) {
+              const aiReply = aiChatStore.chatHistory[aiChatStore.chatHistory.length - 1].content
+              
+              // 创建AI回复消息
+              setTimeout(async () => {
+                const replyMessage = await chatStore.sendChatMessage(aiReply, 'text', false)
+                if (replyMessage) {
+                  markNewMessage(replyMessage.id)
+                }
+              }, 500); // 小延迟，模拟网络请求
+            }
+          }
+        } else {
+          // 普通聊天逻辑
+          const message = await chatStore.sendChatMessage(text)
+          if (message) {
+            markNewMessage(message.id)
+          }
         }
       } catch (error) {
         console.error('发送消息失败:', error)
@@ -163,6 +214,11 @@ export default defineComponent({
     // 监听用户ID变化，加载聊天会话
     watch(userId, () => {
       loadChatSession()
+      
+      // 如果是AI聊天，初始化AI聊天历史
+      if (isAIChat.value) {
+        aiChatStore.clearChat();
+      }
     }, { immediate: true })
     
     // 确保WebSocket已初始化
@@ -201,6 +257,8 @@ export default defineComponent({
       selfAvatar,
       messageInput,
       newMessages,
+      friendType,
+      isAIChat,
       goBack,
       handleSendMessage,
       handlePhoneClick,

@@ -1,3 +1,10 @@
+// 好友类型枚举
+export enum FriendType {
+  NORMAL = 'normal',    // 普通好友
+  AIBOT = 'aibot',      // AI助手
+  SYSTEM = 'system'     // 系统通知
+}
+
 // 好友接口定义
 export interface Friend {
   id: number;
@@ -6,6 +13,7 @@ export interface Friend {
   online: boolean;
   isOfficial?: boolean;
   lastActive?: string;
+  friendType?: FriendType; // 添加好友类型字段
 }
 
 // 消息接口定义
@@ -50,35 +58,55 @@ export const mockFriends: Friend[] = [
     name: '何以为家',
     avatar: '/avatar/vue-color-avatar-1.png',
     online: true,
-    lastActive: '刚刚'
+    lastActive: '刚刚',
+    friendType: FriendType.NORMAL
   },
   {
     id: 2,
     name: '浅唱＼我心',
     avatar: '/avatar/vue-color-avatar-2.png',
     online: false,
-    lastActive: '30分钟前'
+    lastActive: '30分钟前',
+    friendType: FriendType.NORMAL
   },
   {
     id: 3,
     name: '心 之痕',
     avatar: '/avatar/vue-color-avatar-3.png',
     online: true,
-    lastActive: '刚刚'
+    lastActive: '刚刚',
+    friendType: FriendType.NORMAL
   },
   {
     id: 4,
     name: '铁 _保镖',
     avatar: '/avatar/vue-color-avatar-4.png',
     online: false,
-    lastActive: '2小时前'
+    lastActive: '2小时前',
+    friendType: FriendType.NORMAL
   },
   {
     id: 5,
     name: '好好先生',
     avatar: '/avatar/vue-color-avatar-5.png',
     online: true,
-    lastActive: '刚刚'
+    lastActive: '刚刚',
+    friendType: FriendType.NORMAL
+  },
+  {
+    id: 6,
+    name: 'AI小助手',
+    avatar: '/avatar/AI-Bot-Avatar.jpg',
+    online: false,
+    isOfficial: true,
+    friendType: FriendType.AIBOT
+  },
+  {
+    id: 7,
+    name: '系统通知',
+    avatar: '/avatar/notices-avatar.png',
+    online: false,
+    isOfficial: true,
   }
 ]
 
@@ -86,16 +114,10 @@ export const mockFriends: Friend[] = [
 export const mockMessages: Message[] = [
   {
     id: 3,
-    sender: {
-      id: 6,
-      name: 'AI小助手',
-      avatar: '/avatar/AI-Bot-Avatar.jpg',
-      online: false,
-      isOfficial: true
-    },
-    text: '#今天谁请客呢 · 星期四',
+    sender: mockFriends[5],
+    text: '你的AI小助手',
     time: '09-21',
-    unread: 1
+    unread: 0
   },
   {
     id: 1,
@@ -113,13 +135,7 @@ export const mockMessages: Message[] = [
   },
   {
     id: 4,
-    sender: {
-      id: 7,
-      name: '系统通知',
-      avatar: '/avatar/notices-avatar.png',
-      online: false,
-      isOfficial: true
-    },
+    sender: mockFriends[6],
     text: '协议修订通知 · 08-31',
     time: '08-31',
     unread: 1
@@ -129,7 +145,6 @@ export const mockMessages: Message[] = [
   //   sender: {
   //     id: 8,
   //     name: '请求更新',
-  //     avatar: '/avatar/update-avatar.png',
       
   //     online: false,
   //     isOfficial: true
@@ -351,6 +366,20 @@ export const mockUsers: Record<number, UserInfo> = {
     status: 'online',
     lastSeen: '刚刚',
     signature: '我不是不想联系你，只是不知道找什么理由'
+  },
+  6: {
+    id: 6,
+    uid: 6,
+    nickname: 'AI小助手',
+    avatar: '/avatar/AI-Bot-Avatar.jpg',
+    status: 'online',
+  },
+  7: {
+    id: 7,
+    uid: 7,
+    nickname: '系统通知',
+    avatar: '/avatar/notices-avatar.png',
+    status: 'online',
   },
 };
 
