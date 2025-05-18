@@ -97,7 +97,7 @@ export default defineComponent({
 <style scoped>
 .model-selector {
   position: absolute;
-  top: 10px;
+  top: 6px;
   right: 15px;
   z-index: 10;
 }
@@ -169,4 +169,13 @@ export default defineComponent({
   background-color: #e6f0ff;
   font-weight: 500;
 }
+
+.model-item span {
+  font-size: 15px;
+}
+
+.current-model span {
+  font-size: 15px;
+}
+
 </style>
