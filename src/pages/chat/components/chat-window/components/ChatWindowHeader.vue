@@ -63,7 +63,6 @@ export default defineComponent({
   display: flex;
   align-items: center;
   padding: 12px 16px;
-  background-color: white;
   height: 55px;
 }
 

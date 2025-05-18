@@ -159,7 +159,7 @@ export class LLMService {
     const words = demoResponse.split(' ');
     
     for (const word of words) {
-      await new Promise(resolve => setTimeout(resolve, 100)); // 模拟延迟
+      // 移除模拟延迟
       sentText += word + ' ';
       yield sentText.trim();
     }
@@ -174,8 +174,7 @@ export class LLMService {
     // 生成演示回复
     const demoResponse = `这是演示模式的回复。由于未设置API密钥，我无法连接到${this.config.name}。您的输入是：${userContent}`;
     
-    // 模拟延迟
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    // 移除模拟延迟
     
     return { content: demoResponse };
   }

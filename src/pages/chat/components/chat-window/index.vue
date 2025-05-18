@@ -30,6 +30,14 @@
       @emoji-click="handleEmojiClick"
       @plus-click="handlePlusClick"
     />
+    
+    <!-- 生成状态遮罩 - 使用视频背景 -->
+    <!-- <div class="generating-overlay" v-if="isAIChat"> -->
+    <div class="generating-overlay" v-if="isAIChat && aiChatStore.isGenerating">
+      <video class="background-video" autoplay loop muted playsinline>
+        <source src="@/assets/video/galaxy-meme.mp4" type="video/mp4">
+      </video>
+    </div>
   </div>
 </template>
 
@@ -269,6 +277,7 @@ export default defineComponent({
       newMessages,
       friendType,
       isAIChat,
+      aiChatStore,
       goBack,
       handleSendMessage,
       handlePhoneClick,
@@ -300,6 +309,7 @@ export default defineComponent({
   color: #333;
   background-color: white;
   animation: fadeIn 0.3s ease;
+  position: relative; /* 添加相对定位 */
 }
 
 .chat-window-header {
@@ -325,5 +335,31 @@ export default defineComponent({
   margin-bottom: 60px;
   margin-left: 5px;
   margin-right: 5px;
+}
+
+/* 生成状态遮罩样式 */
+.generating-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none; /* 允许点击穿透 */
+  z-index: 5; /* 确保在聊天记录上方，但在输入框下方 */
+  overflow: hidden;
+}
+
+/* 视频背景样式 */
+.background-video {
+  position: absolute;
+  min-width: 100%;
+  min-height: 100%;
+  width: auto;
+  height: auto;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  opacity: 0.1; /* 控制透明度 */
+  object-fit: cover;
 }
 </style> 

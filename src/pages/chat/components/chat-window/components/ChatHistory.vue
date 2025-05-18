@@ -173,7 +173,6 @@ export default defineComponent({
   padding: 16px;
   padding-bottom: 80px;
   /* 为底部输入框留出空间 */
-  background-color: #f8f8f8;
   transition: background-color 0.3s ease;
 }
 
