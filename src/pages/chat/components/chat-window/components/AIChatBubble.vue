@@ -1,6 +1,6 @@
 <template>
   <div class="ai-message-container" :class="{ self: isSelf }">
-    <div class="ai-message-bubble" :class="{ self: isSelf, 'typing-effect': isGenerating }">
+    <div class="ai-message-bubble" :class="{ self: isSelf, 'typing-effect': isGenerating || message.status === 'sending' }">
       <div class="ai-message-text" v-html="formattedContent"></div>
       <div class="ai-message-status" v-if="isSelf">
         <icon-loading-one v-if="message.status === 'sending'" theme="outline" size="2" fill="#000000"/>
@@ -31,6 +31,10 @@ export default defineComponent({
     streamingText: {
       type: String,
       default: ''
+    },
+    isLatestMessage: {
+      type: Boolean,
+      default: false
     }
   },
   emits: ['image-click'],
@@ -39,15 +43,14 @@ export default defineComponent({
 
     // 判断是否正在生成回复
     const isGenerating = computed(() => {
-      return aiChatStore.isGenerating && !props.isSelf;
+      return aiChatStore.isGenerating && !props.isSelf && props.isLatestMessage;
     });
 
     // 格式化消息内容，处理换行和链接
     const formattedContent = computed(() => {
-      // 如果是AI回复并且正在生成中，使用流式内容
-      let content = isGenerating.value && !props.isSelf 
-        ? aiChatStore.streamingText 
-        : props.message.content;
+      // 使用消息自己的内容，不再使用aiChatStore中的内容
+      // isGenerating只用于样式，不再影响内容显示
+      let content = props.message.content;
 
       // 处理换行
       content = content.replace(/\n/g, '<br>');

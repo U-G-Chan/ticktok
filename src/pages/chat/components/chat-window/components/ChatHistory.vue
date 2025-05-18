@@ -1,6 +1,6 @@
 <template>
   <div class="chat-history" ref="historyRef" :class="{ 'ai-generating': isAIGenerating }">
-    <div v-for="(message, _) in messages" :key="message.id" :class="[
+    <div v-for="(message, index) in messages" :key="message.id" :class="[
       'message-item',
       { 'message-self': message.isSelf, 'message-peer': !message.isSelf },
       { 'new-message': isNewMessage(message) }
@@ -16,7 +16,12 @@
         <ChatBubble :message="message" :is-self="message.isSelf" @image-click="$emit('image-click', $event)" />
       </div>
       <div v-else>
-        <AIChatBubble :message="message" :is-self="message.isSelf" @image-click="$emit('image-click', $event)" />
+        <AIChatBubble 
+          :message="message" 
+          :is-self="message.isSelf" 
+          :is-latest-message="isLatestAIMessage(message, index)"
+          @image-click="$emit('image-click', $event)" 
+        />
       </div>
 
       <!-- 时间戳 -->
@@ -82,6 +87,22 @@ export default defineComponent({
       return props.newMessageIds.has(message.id)
     }
 
+    // 判断是否是最新的AI消息
+    const isLatestAIMessage = (message: ChatMessage, index: number) => {
+      // 只有非用户发送的消息才能是AI消息
+      if (message.isSelf) return false;
+      
+      // 如果是最后一条消息，则它是最新的AI消息
+      if (index === props.messages.length - 1) return true;
+      
+      // 如果后面还有消息但当前是最后一条AI发送的消息，也认为是最新的AI消息
+      for (let i = index + 1; i < props.messages.length; i++) {
+        if (!props.messages[i].isSelf) return false;
+      }
+      
+      return true;
+    }
+
     // 滚动到底部
     const scrollToBottom = () => {
       nextTick(() => {
@@ -123,6 +144,7 @@ export default defineComponent({
     return {
       historyRef,
       isNewMessage,
+      isLatestAIMessage,
       formatTime,
       scrollToBottom,
       isAIChat,

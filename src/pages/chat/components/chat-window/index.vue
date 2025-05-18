@@ -83,6 +83,7 @@ export default defineComponent({
     
     // 判断好友类型
     const friendType = computed(() => {
+      //@ TODO
       // 通过ID 6判断是AI助手，可以根据实际情况调整
       if (userId.value === 6) {
         return FriendType.AIBOT;
@@ -132,20 +133,29 @@ export default defineComponent({
           if (message) {
             markNewMessage(message.id)
             
+            // 创建一个临时AI回复消息，立即显示在聊天窗口
+            const tempMessage = chatStore.createTempAIMessage(userId.value)
+            if (tempMessage) {
+              markNewMessage(tempMessage.id)
+            }
+            
+            // 设置监听器，在生成过程中更新临时消息内容
+            const unwatch = watch(() => aiChatStore.streamingText, (newText) => {
+              if (newText && tempMessage) {
+                chatStore.updateTempAIMessage(newText)
+              }
+            })
+            
             // 使用AI模型生成回复
             await aiChatStore.sendMessage(text)
             
-            // 添加AI回复到聊天窗口
+            // 停止监听
+            unwatch()
+            
+            // 生成完成后，完成临时消息或用完整回复替换它
             if (aiChatStore.chatHistory.length > 1) {
               const aiReply = aiChatStore.chatHistory[aiChatStore.chatHistory.length - 1].content
-              
-              // 创建AI回复消息
-              setTimeout(async () => {
-                const replyMessage = await chatStore.sendChatMessage(aiReply, 'text', false)
-                if (replyMessage) {
-                  markNewMessage(replyMessage.id)
-                }
-              }, 500); // 小延迟，模拟网络请求
+              chatStore.completeTempAIMessage(aiReply)
             }
           }
         } else {

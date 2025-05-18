@@ -281,22 +281,88 @@ export const useChatStore = defineStore('chat', () => {
     }
   }
 
+  // 创建临时AI回复消息（用于显示生成中的内容）
+  function createTempAIMessage(receiverId: number) {
+    if (!activeSessionId.value) return null;
+    
+    const session = chatSessions.value.get(activeSessionId.value);
+    if (!session) return null;
+    
+    const selfId = userStore.userId;
+    
+    // 创建一个临时消息对象
+    const tempMessage: ChatMessage = {
+      id: Date.now(), // 临时ID
+      senderId: receiverId,
+      receiverId: selfId,
+      isSelf: false,
+      type: 'text',
+      content: '', // 初始内容为空
+      timestamp: Date.now(),
+      status: 'sending', // 初始状态为发送中
+      sessionId: activeSessionId.value
+    };
+    
+    // 添加到当前会话
+    session.messages.push(tempMessage);
+    
+    // 更新最后一条消息
+    session.lastMessage = tempMessage;
+    
+    return tempMessage;
+  }
+
+  // 更新临时AI回复消息内容
+  function updateTempAIMessage(content: string) {
+    if (!activeSessionId.value) return;
+    
+    const session = chatSessions.value.get(activeSessionId.value);
+    if (!session || session.messages.length === 0) return;
+    
+    // 获取最后一条消息
+    const lastMessage = session.messages[session.messages.length - 1];
+    
+    // 如果最后一条消息是接收者发送的且状态为sending，则更新内容
+    if (!lastMessage.isSelf && lastMessage.status === 'sending') {
+      lastMessage.content = content;
+    }
+  }
+
+  // 完成临时AI回复消息
+  function completeTempAIMessage(content: string) {
+    if (!activeSessionId.value) return;
+    
+    const session = chatSessions.value.get(activeSessionId.value);
+    if (!session || session.messages.length === 0) return;
+    
+    // 获取最后一条消息
+    const lastMessage = session.messages[session.messages.length - 1];
+    
+    // 如果最后一条消息是接收者发送的且状态为sending，则更新内容和状态
+    if (!lastMessage.isSelf && lastMessage.status === 'sending') {
+      lastMessage.content = content;
+      lastMessage.status = 'sent';
+    }
+  }
+
   return {
     activeSessionId,
     chatSessions,
+    ws,
     activeSession,
     currentPeer,
     currentMessages,
     totalUnreadCount,
-    ws,
     isWebSocketConnected,
+    initWebSocket,
     createOrGetSession,
-    loadChatHistory,
     sendChatMessage,
     receiveMessage,
     markSessionAsRead,
     clearChatHistory,
-    initWebSocket,
+    createTempAIMessage,
+    updateTempAIMessage,
+    completeTempAIMessage,
     updateMessageStatus
   }
 }) 
