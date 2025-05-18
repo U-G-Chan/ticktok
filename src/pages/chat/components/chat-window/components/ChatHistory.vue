@@ -163,7 +163,7 @@ export default defineComponent({
 .message-item {
   display: flex;
   margin-bottom: 16px;
-  max-width: 80%;
+  max-width: 90%;
   position: relative;
 }
 

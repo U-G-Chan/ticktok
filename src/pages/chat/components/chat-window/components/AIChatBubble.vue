@@ -1,11 +1,13 @@
 <template>
-  <div class="ai-message-bubble" :class="{ self: isSelf, 'typing-effect': isGenerating }">
-    <div class="ai-message-text" v-html="formattedContent"></div>
-    <div class="ai-message-status" v-if="isSelf">
-      <i v-if="message.status === 'sending'" class="icon-sending"></i>
-      <i v-else-if="message.status === 'sent'" class="icon-sent"></i>
-      <i v-else-if="message.status === 'read'" class="icon-read"></i>
-      <i v-else-if="message.status === 'failed'" class="icon-failed"></i>
+  <div class="ai-message-container" :class="{ self: isSelf }">
+    <div class="ai-message-bubble" :class="{ self: isSelf, 'typing-effect': isGenerating }">
+      <div class="ai-message-text" v-html="formattedContent"></div>
+      <div class="ai-message-status" v-if="isSelf">
+        <i v-if="message.status === 'sending'" class="icon-sending"></i>
+        <i v-else-if="message.status === 'sent'" class="icon-sent"></i>
+        <i v-else-if="message.status === 'read'" class="icon-read"></i>
+        <i v-else-if="message.status === 'failed'" class="icon-failed"></i>
+      </div>
     </div>
   </div>
 </template>
@@ -76,9 +78,23 @@ export default defineComponent({
 </script>
 
 <style scoped>
+.ai-message-container {
+  display: flex;
+  width: 100%;
+  margin: 8px 0;
+  padding: 0 10px;
+  box-sizing: border-box;
+}
+
+.ai-message-container.self {
+  justify-content: flex-end;
+}
+
+.ai-message-container:not(.self) {
+  justify-content: flex-start;
+}
+
 .ai-message-bubble {
-  max-width: 70%;
-  margin: 0 12px;
   padding: 10px 12px;
   border-radius: 18px;
   position: relative;
