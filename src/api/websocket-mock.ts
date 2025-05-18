@@ -1,4 +1,4 @@
-import { ChatMessage } from './chat'
+import { ChatMessage, FriendType, mockFriends } from './chat'
 
 // 模拟WebSocket类
 export class MockWebSocket extends EventTarget {
@@ -174,10 +174,14 @@ class MockWebSocketServer {
       // console.log(`[MockServer] 接收者不在线 userId=${receiverId}，消息将在下次连接时发送`);
     }
     
-    // 模拟网络延迟
+    // 检查接收者是否是AI机器人
+    const receiverFriend = mockFriends.find(friend => friend.id === receiverId);
+    const isAIBot = receiverFriend?.friendType === FriendType.AIBOT;
+    
+    // 模拟网络延迟，但仅在非AI机器人对话时自动回复
     setTimeout(() => {
-      // 创建一个回复消息(模拟自动回复)
-      if (message.type === 'text' && Math.random() > 0.5) {
+      // 如果接收者是AI机器人，则不使用自动回复
+      if (!isAIBot && message.type === 'text' && Math.random() > 0.5) {
         const replyMessage = {
           ...message,
           id: Date.now(),

@@ -3,10 +3,10 @@
     <div class="ai-message-bubble" :class="{ self: isSelf, 'typing-effect': isGenerating }">
       <div class="ai-message-text" v-html="formattedContent"></div>
       <div class="ai-message-status" v-if="isSelf">
-        <i v-if="message.status === 'sending'" class="icon-sending"></i>
-        <i v-else-if="message.status === 'sent'" class="icon-sent"></i>
-        <i v-else-if="message.status === 'read'" class="icon-read"></i>
-        <i v-else-if="message.status === 'failed'" class="icon-failed"></i>
+        <icon-loading-one v-if="message.status === 'sending'" theme="outline" size="2" fill="#000000"/>
+        <icon-check-one v-else-if="message.status === 'sent'" theme="outline" size="2" fill="#000000"/>
+        <icon-search v-else-if="message.status === 'read'" theme="outline" size="2" fill="#000000"/>
+        <icon-error v-else-if="message.status === 'failed'" theme="outline" size="2" fill="red"/>
       </div>
     </div>
   </div>

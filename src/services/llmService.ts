@@ -4,7 +4,6 @@ import { ChatAnthropic } from "@langchain/anthropic";
 import { ChatGoogleGenerativeAI } from "@langchain/google-genai";
 import { HumanMessage, AIMessage, SystemMessage } from "@langchain/core/messages";
 import { StringOutputParser } from "@langchain/core/output_parsers";
-import { RunnableSequence } from "@langchain/core/runnables";
 
 // 聊天消息类型
 export type ChatRole = 'system' | 'user' | 'assistant';
@@ -81,14 +80,44 @@ export class LLMService {
           });
           break;
         case LLMModelType.QIANWEN:
-          // 使用替代模型，避免报错
-          console.warn("千问模型暂不可用，启用演示模式");
-          this.useMockModel();
+          // 检查API密钥是否存在
+          if (!this.config.apiKey) {
+            console.warn('千问API密钥未设置，使用演示模式');
+            // 在演示模式下使用模拟实现
+            this.useMockModel();
+            return;
+          }
+          
+          // 使用与其他模型类似的初始化方式
+          this.model = new ChatOpenAI({
+            openAIApiKey: this.config.apiKey,
+            modelName: this.config.modelVersion,
+            maxTokens: this.config.maxTokens,
+            temperature: this.config.temperature,
+            configuration: {
+              baseURL: this.config.baseUrl
+            }
+          });
           break;
         case LLMModelType.DEEPSEEK:
-          // 使用替代模型，避免报错
-          console.warn("DeepSeek模型暂不可用，启用演示模式");
-          this.useMockModel();
+          // 检查API密钥是否存在
+          if (!this.config.apiKey) {
+            console.warn('DeepSeek API密钥未设置，使用演示模式');
+            // 在演示模式下使用模拟实现
+            this.useMockModel();
+            return;
+          }
+          
+          // 使用与其他模型类似的初始化方式
+          this.model = new ChatOpenAI({
+            openAIApiKey: this.config.apiKey,
+            modelName: this.config.modelVersion,
+            maxTokens: this.config.maxTokens,
+            temperature: this.config.temperature,
+            configuration: {
+              baseURL: this.config.baseUrl
+            }
+          });
           break;
         default:
           throw new Error(`不支持的模型类型: ${this.modelType}`);

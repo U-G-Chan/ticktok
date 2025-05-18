@@ -29,7 +29,7 @@ export const defaultLLMConfig: Record<LLMModelType, LLMModelConfig> = {
     modelVersion: 'gpt-3.5-turbo',
     maxTokens: 500,
     temperature: 0.7,
-    icon: '/images/gpt-icon.png',
+    icon: '/images/llm-icon/gpt-icon.png',
     available: true
   },
   [LLMModelType.CLAUDE]: {
@@ -39,7 +39,7 @@ export const defaultLLMConfig: Record<LLMModelType, LLMModelConfig> = {
     modelVersion: 'claude-3-sonnet-20240229',
     maxTokens: 500,
     temperature: 0.7,
-    icon: '/images/claude-icon.png',
+    icon: '/images/llm-icon/claude-icon.png',
     available: true
   },
   [LLMModelType.GEMINI]: {
@@ -49,18 +49,18 @@ export const defaultLLMConfig: Record<LLMModelType, LLMModelConfig> = {
     modelVersion: 'gemini-pro',
     maxTokens: 500,
     temperature: 0.7,
-    icon: '/images/gemini-icon.png',
+    icon: '/images/llm-icon/gemini-icon.png',
     available: true
   },
   [LLMModelType.QIANWEN]: {
     name: '阿里千问',
-    apiKey: import.meta.env.VITE_QIANWEN_API_KEY || '',
-    baseUrl: 'https://dashscope.aliyuncs.com/api/v1',
+    apiKey: 'sk-ec6393dfd40143d6b3d64b1c66a55c4e',
+    baseUrl: 'https://dashscope.aliyuncs.com/compatible-mode/v1',
     modelVersion: 'qwen-max',
     maxTokens: 500,
     temperature: 0.7,
-    icon: '/images/qianwen-icon.png',
-    available: false  // 暂不可用
+    icon: '/images/llm-icon/qwen-icon.png',
+    available: true  
   },
   [LLMModelType.DEEPSEEK]: {
     name: 'DeepSeek',
@@ -69,7 +69,7 @@ export const defaultLLMConfig: Record<LLMModelType, LLMModelConfig> = {
     modelVersion: 'deepseek-chat',
     maxTokens: 500,
     temperature: 0.7,
-    icon: '/images/deepseek-icon.png',
-    available: false  // 暂不可用
+    icon: '/images/llm-icon/deepseek-icon.png',
+    available: true  
   }
 }; 
