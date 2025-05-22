@@ -5,28 +5,31 @@
       <icon-left theme="outline" size="28" fill="#000000"/>
     </div>
     
-    <!-- 媒体预览区域 -->
-    <MediaPreviewer 
-      :mediaList="mediaItems"
-    />
-    
-    <!-- 信息编辑区域 -->
-    <InfoEditor
-      :initialTitle="formData.title"
-      :initialDescription="formData.description"
-      :initialTopics="formData.topics"
-      :initialMentions="formData.mentions"
-      :initialLocation="formData.location"
-      :initialTags="formData.tags"
-      :initialVisibility="formData.visibility"
-      @update:title="formData.title = $event"
-      @update:description="formData.description = $event"
-      @update:topics="formData.topics = $event"
-      @update:mentions="formData.mentions = $event"
-      @update:location="formData.location = $event"
-      @update:tags="formData.tags = $event"
-      @update:visibility="formData.visibility = $event"
-    />
+    <!-- 内容滚动区域 -->
+    <div class="scrollable-content">
+      <!-- 媒体预览区域 -->
+      <MediaPreviewer 
+        :mediaList="mediaItems"
+      />
+      
+      <!-- 信息编辑区域 -->
+      <InfoEditor
+        :initialTitle="formData.title"
+        :initialDescription="formData.description"
+        :initialTopics="formData.topics"
+        :initialMentions="formData.mentions"
+        :initialLocation="formData.location"
+        :initialTags="formData.tags"
+        :initialVisibility="formData.visibility"
+        @update:title="formData.title = $event"
+        @update:description="formData.description = $event"
+        @update:topics="formData.topics = $event"
+        @update:mentions="formData.mentions = $event"
+        @update:location="formData.location = $event"
+        @update:tags="formData.tags = $event"
+        @update:visibility="formData.visibility = $event"
+      />
+    </div>
     
     <!-- 底部按钮区域 -->
     <EditorFooter
@@ -294,19 +297,33 @@ export default defineComponent({
 <style scoped>
 .editor-container {
   width: 100%;
-  min-height: 100vh; /* 使用视口高度确保填满整个屏幕 */
+  height: 100vh; /* 使用视口高度确保填满整个屏幕 */
   display: flex;
   flex-direction: column;
   background-color: #fff;
   position: relative;
   overflow: hidden; /* 防止内容溢出 */
-  padding-bottom: 70px; /* 为底部固定的EditorFooter留出空间 */
 }
 
-/* InfoEditor 将自动扩展占用剩余空间 */
-.editor-container :deep(.info-editor) {
+/* 滚动内容区域 */
+.scrollable-content {
   flex: 1;
   overflow-y: auto; /* 允许内容过多时滚动 */
+  overflow-x: hidden;
+  padding-bottom: 15px; /* 为底部留出一些空间 */
+  -webkit-overflow-scrolling: touch; /* 提供惯性滚动 */
+  position: relative; /* 确保子元素相对于这个容器定位 */
+}
+
+/* EditorFooter 固定在底部 */
+.editor-container :deep(.editor-footer) {
+  position: sticky;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 10;
+  background-color: #fff;
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
 }
 
 /* 返回按钮样式 */
