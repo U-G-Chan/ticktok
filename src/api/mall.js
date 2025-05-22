@@ -146,4 +146,7 @@ export const getMallProducts = (page = 1, pageSize = 10) => {
       })
     }, 100) // 模拟网络延迟
   })
-} 
+}
+
+// 导出生成商品列表函数，供脚本使用
+export { generateProductList } 

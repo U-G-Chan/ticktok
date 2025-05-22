@@ -38,7 +38,7 @@
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import GoodsItem from './goods-item.vue'
-import { getMallProducts } from '@/api/mall'
+import { getProducts } from '@/api/modules/mall'
 
 // 商品数据
 const products = ref([])
@@ -65,7 +65,7 @@ const fetchProducts = async () => {
   loading.value = true
   try {
     // 延迟300ms，模拟网络请求
-    const res = await getMallProducts(currentPage.value, pageSize.value)
+    const res = await getProducts(currentPage.value, pageSize.value)
     products.value = [...products.value, ...res.list]
     hasMore.value = res.hasMore
     

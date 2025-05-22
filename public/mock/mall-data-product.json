@@ -1,0 +1,735 @@
+[
+  {
+    "id": 1,
+    "image": "/product/product10.jpg",
+    "title": "高颜值 咔咔护肤品",
+    "headLabel": "品牌正品",
+    "labels": [
+      "次日达",
+      "品牌"
+    ],
+    "originalPrice": "124.71",
+    "price": "85.43",
+    "shopInfo": {
+      "name": "品悦时尚坊",
+      "sales": "23万"
+    }
+  },
+  {
+    "id": 2,
+    "image": "/product/product2.jpg",
+    "title": "百搭 乐享面包",
+    "headLabel": "优选好物",
+    "labels": [
+      "品牌",
+      "特价"
+    ],
+    "originalPrice": "275.28",
+    "price": "70.98",
+    "shopInfo": {
+      "name": "乐活专卖店",
+      "sales": "80万"
+    }
+  },
+  {
+    "id": 3,
+    "image": "/product/product6.jpg",
+    "title": "超值 咔咔背包",
+    "headLabel": "",
+    "labels": [],
+    "originalPrice": "19.68",
+    "price": "12.42",
+    "shopInfo": {
+      "name": "优衣旗舰店",
+      "sales": "67万"
+    }
+  },
+  {
+    "id": 4,
+    "image": "/product/product3.jpg",
+    "title": "时尚 悦臻背包",
+    "headLabel": "好店合集",
+    "labels": [],
+    "originalPrice": "452.77",
+    "price": "390.53",
+    "shopInfo": {
+      "name": "乐享时尚坊",
+      "sales": "8.5万"
+    }
+  },
+  {
+    "id": 5,
+    "image": "/product/product4.jpg",
+    "title": "精选 品悦水果",
+    "headLabel": "",
+    "labels": [
+      "品牌",
+      "满减"
+    ],
+    "originalPrice": "813.86",
+    "price": "646.69",
+    "shopInfo": {
+      "name": "品质优旗舰店",
+      "sales": "95万"
+    }
+  },
+  {
+    "id": 6,
+    "image": "/product/product6.jpg",
+    "title": "独家 乐享短裤",
+    "headLabel": "",
+    "labels": [],
+    "originalPrice": "84.90",
+    "price": "21.73",
+    "shopInfo": {
+      "name": "悦臻家居馆",
+      "sales": "85万"
+    }
+  },
+  {
+    "id": 7,
+    "image": "/product/product8.jpg",
+    "title": "新款 优优零食",
+    "headLabel": "",
+    "labels": [
+      "好店",
+      "新品"
+    ],
+    "originalPrice": "726.67",
+    "price": "532.76",
+    "shopInfo": {
+      "name": "优选精品店",
+      "sales": "87万"
+    }
+  },
+  {
+    "id": 8,
+    "image": "/product/product6.jpg",
+    "title": "新款 乐享洗发水",
+    "headLabel": "",
+    "labels": [],
+    "originalPrice": "35.68",
+    "price": "10.26",
+    "shopInfo": {
+      "name": "乐享时尚坊",
+      "sales": "68万"
+    }
+  },
+  {
+    "id": 9,
+    "image": "/product/product4.jpg",
+    "title": "时尚 品悦零食",
+    "headLabel": "",
+    "labels": [
+      "特价"
+    ],
+    "originalPrice": "796.04",
+    "price": "296.66",
+    "shopInfo": {
+      "name": "七彩优选店",
+      "sales": "58万"
+    }
+  },
+  {
+    "id": 10,
+    "image": "/product/product8.jpg",
+    "title": "热卖 锐步手表",
+    "headLabel": "官方旗舰",
+    "labels": [],
+    "originalPrice": "164.83",
+    "price": "74.40",
+    "shopInfo": {
+      "name": "尚品折扣店",
+      "sales": "41万"
+    }
+  },
+  {
+    "id": 11,
+    "image": "/product/product4.jpg",
+    "title": "独家 优优沐浴露",
+    "headLabel": "品牌正品",
+    "labels": [
+      "次日达",
+      "好店"
+    ],
+    "originalPrice": "632.60",
+    "price": "557.35",
+    "shopInfo": {
+      "name": "乐活旗舰店",
+      "sales": "75万"
+    }
+  },
+  {
+    "id": 12,
+    "image": "/product/product7.jpg",
+    "title": "爆款 优选蓝牙耳机",
+    "headLabel": "品牌正品",
+    "labels": [
+      "品牌"
+    ],
+    "originalPrice": "493.00",
+    "price": "71.14",
+    "shopInfo": {
+      "name": "简约旗舰店",
+      "sales": "94万"
+    }
+  },
+  {
+    "id": 13,
+    "image": "/product/product8.jpg",
+    "title": "复古 优优太阳镜",
+    "headLabel": "好店合集",
+    "labels": [],
+    "originalPrice": "484.30",
+    "price": "422.58",
+    "shopInfo": {
+      "name": "七彩折扣店",
+      "sales": "58万"
+    }
+  },
+  {
+    "id": 14,
+    "image": "/product/product10.jpg",
+    "title": "爆款 臻美饼干",
+    "headLabel": "好店合集",
+    "labels": [],
+    "originalPrice": "433.79",
+    "price": "269.60",
+    "shopInfo": {
+      "name": "尚品直营店",
+      "sales": "63万"
+    }
+  },
+  {
+    "id": 15,
+    "image": "/product/product4.jpg",
+    "title": "百搭 美丽说休闲鞋",
+    "headLabel": "",
+    "labels": [
+      "次日达"
+    ],
+    "originalPrice": "882.86",
+    "price": "422.02",
+    "shopInfo": {
+      "name": "臻美品牌店",
+      "sales": "62万"
+    }
+  },
+  {
+    "id": 16,
+    "image": "/product/product9.jpg",
+    "title": "舒适 雅致卫衣",
+    "headLabel": "优选好物",
+    "labels": [
+      "新品"
+    ],
+    "originalPrice": "287.06",
+    "price": "242.54",
+    "shopInfo": {
+      "name": "简约优品汇",
+      "sales": "51万"
+    }
+  },
+  {
+    "id": 17,
+    "image": "/product/product2.jpg",
+    "title": "轻薄 悦臻护肤品",
+    "headLabel": "优选好物",
+    "labels": [],
+    "originalPrice": "740.16",
+    "price": "643.12",
+    "shopInfo": {
+      "name": "优优优选店",
+      "sales": "15万"
+    }
+  },
+  {
+    "id": 18,
+    "image": "/product/product5.jpg",
+    "title": "高端 品悦夹克",
+    "headLabel": "",
+    "labels": [
+      "满200减20",
+      "好店"
+    ],
+    "originalPrice": "641.04",
+    "price": "534.43",
+    "shopInfo": {
+      "name": "臻美生活馆",
+      "sales": "20万"
+    }
+  },
+  {
+    "id": 19,
+    "image": "/product/product2.jpg",
+    "title": "爆款 雅致沐浴露",
+    "headLabel": "",
+    "labels": [],
+    "originalPrice": "289.23",
+    "price": "218.13",
+    "shopInfo": {
+      "name": "品悦旗舰店",
+      "sales": "18万"
+    }
+  },
+  {
+    "id": 20,
+    "image": "/product/product1.jpg",
+    "title": "爆款 优优运动鞋",
+    "headLabel": "优选好物",
+    "labels": [],
+    "originalPrice": "62.77",
+    "price": "41.14",
+    "shopInfo": {
+      "name": "雅致家居馆",
+      "sales": "27万"
+    }
+  },
+  {
+    "id": 21,
+    "image": "/product/product10.jpg",
+    "title": "韩版 星光坚果",
+    "headLabel": "",
+    "labels": [
+      "特价",
+      "好店"
+    ],
+    "originalPrice": "992.25",
+    "price": "381.13",
+    "shopInfo": {
+      "name": "品悦进口店",
+      "sales": "6.1万"
+    }
+  },
+  {
+    "id": 22,
+    "image": "/product/product6.jpg",
+    "title": "高端 优衣连衣裙",
+    "headLabel": "",
+    "labels": [
+      "品牌",
+      "特价"
+    ],
+    "originalPrice": "681.57",
+    "price": "251.35",
+    "shopInfo": {
+      "name": "悦臻直营店",
+      "sales": "70万"
+    }
+  },
+  {
+    "id": 23,
+    "image": "/product/product9.jpg",
+    "title": "ins风 简约太阳镜",
+    "headLabel": "",
+    "labels": [
+      "品牌"
+    ],
+    "originalPrice": "449.00",
+    "price": "350.99",
+    "shopInfo": {
+      "name": "千寻生活馆",
+      "sales": "7.6万"
+    }
+  },
+  {
+    "id": 24,
+    "image": "/product/product1.jpg",
+    "title": "高颜值 美丽说帽子",
+    "headLabel": "品牌正品",
+    "labels": [
+      "立减券",
+      "好店"
+    ],
+    "originalPrice": "351.35",
+    "price": "64.56",
+    "shopInfo": {
+      "name": "星光品牌店",
+      "sales": "14万"
+    }
+  },
+  {
+    "id": 25,
+    "image": "/product/product2.jpg",
+    "title": "高颜值 尚品高跟鞋",
+    "headLabel": "官方旗舰",
+    "labels": [],
+    "originalPrice": "533.47",
+    "price": "122.13",
+    "shopInfo": {
+      "name": "乐活专卖店",
+      "sales": "73万"
+    }
+  },
+  {
+    "id": 26,
+    "image": "/product/product7.jpg",
+    "title": "韩版 雅致钱包",
+    "headLabel": "",
+    "labels": [],
+    "originalPrice": "714.15",
+    "price": "578.26",
+    "shopInfo": {
+      "name": "乐享时尚坊",
+      "sales": "20万"
+    }
+  },
+  {
+    "id": 27,
+    "image": "/product/product7.jpg",
+    "title": "高端 咔咔水果",
+    "headLabel": "",
+    "labels": [
+      "立减券"
+    ],
+    "originalPrice": "442.22",
+    "price": "341.43",
+    "shopInfo": {
+      "name": "花漾精品店",
+      "sales": "81万"
+    }
+  },
+  {
+    "id": 28,
+    "image": "/product/product2.jpg",
+    "title": "高端 花漾坚果",
+    "headLabel": "品牌正品",
+    "labels": [],
+    "originalPrice": "616.45",
+    "price": "516.04",
+    "shopInfo": {
+      "name": "星光家居馆",
+      "sales": "42万"
+    }
+  },
+  {
+    "id": 29,
+    "image": "/product/product5.jpg",
+    "title": "复古 乐活蓝牙耳机",
+    "headLabel": "",
+    "labels": [],
+    "originalPrice": "791.57",
+    "price": "273.90",
+    "shopInfo": {
+      "name": "优选时尚坊",
+      "sales": "85万"
+    }
+  },
+  {
+    "id": 30,
+    "image": "/product/product4.jpg",
+    "title": "舒适 臻美牛仔裤",
+    "headLabel": "",
+    "labels": [
+      "立减"
+    ],
+    "originalPrice": "849.94",
+    "price": "462.32",
+    "shopInfo": {
+      "name": "咔咔家居馆",
+      "sales": "40万"
+    }
+  },
+  {
+    "id": 31,
+    "image": "/product/product1.jpg",
+    "title": "新款 七彩智能手表",
+    "headLabel": "优选好物",
+    "labels": [
+      "包邮",
+      "立减"
+    ],
+    "originalPrice": "206.10",
+    "price": "75.23",
+    "shopInfo": {
+      "name": "花漾优品汇",
+      "sales": "47万"
+    }
+  },
+  {
+    "id": 32,
+    "image": "/product/product4.jpg",
+    "title": "限量版 简约面膜",
+    "headLabel": "官方旗舰",
+    "labels": [],
+    "originalPrice": "800.89",
+    "price": "501.67",
+    "shopInfo": {
+      "name": "优优精品店",
+      "sales": "9.7万"
+    }
+  },
+  {
+    "id": 33,
+    "image": "/product/product5.jpg",
+    "title": "超值 简约高跟鞋",
+    "headLabel": "",
+    "labels": [
+      "品牌"
+    ],
+    "originalPrice": "546.79",
+    "price": "467.55",
+    "shopInfo": {
+      "name": "悦臻品牌店",
+      "sales": "4.2万"
+    }
+  },
+  {
+    "id": 34,
+    "image": "/product/product5.jpg",
+    "title": "爆款 千寻帽子",
+    "headLabel": "",
+    "labels": [
+      "满200减20",
+      "新品"
+    ],
+    "originalPrice": "480.85",
+    "price": "186.38",
+    "shopInfo": {
+      "name": "优衣旗舰店",
+      "sales": "24万"
+    }
+  },
+  {
+    "id": 35,
+    "image": "/product/product9.jpg",
+    "title": "超值 百丽拖鞋",
+    "headLabel": "好店合集",
+    "labels": [],
+    "originalPrice": "502.54",
+    "price": "384.73",
+    "shopInfo": {
+      "name": "美丽说进口店",
+      "sales": "84万"
+    }
+  },
+  {
+    "id": 36,
+    "image": "/product/product9.jpg",
+    "title": "精选 百丽连衣裙",
+    "headLabel": "官方旗舰",
+    "labels": [
+      "新品"
+    ],
+    "originalPrice": "778.54",
+    "price": "453.43",
+    "shopInfo": {
+      "name": "优优折扣店",
+      "sales": "26万"
+    }
+  },
+  {
+    "id": 37,
+    "image": "/product/product10.jpg",
+    "title": "ins风 花漾太阳镜",
+    "headLabel": "",
+    "labels": [
+      "满200减20"
+    ],
+    "originalPrice": "883.97",
+    "price": "575.95",
+    "shopInfo": {
+      "name": "乐活直营店",
+      "sales": "28万"
+    }
+  },
+  {
+    "id": 38,
+    "image": "/product/product10.jpg",
+    "title": "新款 百丽洗发水",
+    "headLabel": "",
+    "labels": [
+      "满减"
+    ],
+    "originalPrice": "8.51",
+    "price": "2.61",
+    "shopInfo": {
+      "name": "舒适家精品店",
+      "sales": "28万"
+    }
+  },
+  {
+    "id": 39,
+    "image": "/product/product3.jpg",
+    "title": "精选 品悦帽子",
+    "headLabel": "",
+    "labels": [
+      "次日达",
+      "立减券"
+    ],
+    "originalPrice": "607.98",
+    "price": "425.76",
+    "shopInfo": {
+      "name": "贝壳直营店",
+      "sales": "3.5万"
+    }
+  },
+  {
+    "id": 40,
+    "image": "/product/product5.jpg",
+    "title": "日系 千寻T恤",
+    "headLabel": "",
+    "labels": [
+      "特价"
+    ],
+    "originalPrice": "543.14",
+    "price": "70.54",
+    "shopInfo": {
+      "name": "宜家折扣店",
+      "sales": "72万"
+    }
+  },
+  {
+    "id": 41,
+    "image": "/product/product3.jpg",
+    "title": "新款 咔咔太阳镜",
+    "headLabel": "官方旗舰",
+    "labels": [
+      "新品"
+    ],
+    "originalPrice": "737.40",
+    "price": "384.55",
+    "shopInfo": {
+      "name": "花漾进口店",
+      "sales": "11万"
+    }
+  },
+  {
+    "id": 42,
+    "image": "/product/product5.jpg",
+    "title": "复古 艾米衬衫",
+    "headLabel": "优选好物",
+    "labels": [
+      "好店",
+      "立减"
+    ],
+    "originalPrice": "51.82",
+    "price": "42.01",
+    "shopInfo": {
+      "name": "乐享折扣店",
+      "sales": "19万"
+    }
+  },
+  {
+    "id": 43,
+    "image": "/product/product9.jpg",
+    "title": "轻薄 雅致帽子",
+    "headLabel": "优选好物",
+    "labels": [
+      "特价",
+      "满减"
+    ],
+    "originalPrice": "219.93",
+    "price": "135.83",
+    "shopInfo": {
+      "name": "优选专卖店",
+      "sales": "85万"
+    }
+  },
+  {
+    "id": 44,
+    "image": "/product/product1.jpg",
+    "title": "简约 臻美夹克",
+    "headLabel": "优选好物",
+    "labels": [
+      "好店"
+    ],
+    "originalPrice": "66.55",
+    "price": "49.61",
+    "shopInfo": {
+      "name": "悦臻家居馆",
+      "sales": "71万"
+    }
+  },
+  {
+    "id": 45,
+    "image": "/product/product4.jpg",
+    "title": "复古 臻美面包",
+    "headLabel": "",
+    "labels": [
+      "好店",
+      "立减"
+    ],
+    "originalPrice": "941.18",
+    "price": "292.29",
+    "shopInfo": {
+      "name": "咔咔精品店",
+      "sales": "80万"
+    }
+  },
+  {
+    "id": 46,
+    "image": "/product/product5.jpg",
+    "title": "简约 臻美零食",
+    "headLabel": "",
+    "labels": [
+      "满200减20"
+    ],
+    "originalPrice": "252.45",
+    "price": "165.20",
+    "shopInfo": {
+      "name": "优衣时尚坊",
+      "sales": "88万"
+    }
+  },
+  {
+    "id": 47,
+    "image": "/product/product4.jpg",
+    "title": "日系 舒适家平板电脑",
+    "headLabel": "",
+    "labels": [
+      "满减"
+    ],
+    "originalPrice": "121.57",
+    "price": "108.75",
+    "shopInfo": {
+      "name": "乐享旗舰店",
+      "sales": "74万"
+    }
+  },
+  {
+    "id": 48,
+    "image": "/product/product9.jpg",
+    "title": "超值 千寻水果",
+    "headLabel": "优选好物",
+    "labels": [
+      "满200减20"
+    ],
+    "originalPrice": "642.66",
+    "price": "567.21",
+    "shopInfo": {
+      "name": "咔咔直营店",
+      "sales": "71万"
+    }
+  },
+  {
+    "id": 49,
+    "image": "/product/product6.jpg",
+    "title": "日系 简约零食",
+    "headLabel": "",
+    "labels": [
+      "满减"
+    ],
+    "originalPrice": "316.96",
+    "price": "136.39",
+    "shopInfo": {
+      "name": "星光家居馆",
+      "sales": "52万"
+    }
+  },
+  {
+    "id": 50,
+    "image": "/product/product5.jpg",
+    "title": "爆款 锐步钱包",
+    "headLabel": "官方旗舰",
+    "labels": [
+      "好店"
+    ],
+    "originalPrice": "792.55",
+    "price": "116.16",
+    "shopInfo": {
+      "name": "优优旗舰店",
+      "sales": "36万"
+    }
+  }
+]
