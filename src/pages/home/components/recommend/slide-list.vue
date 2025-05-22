@@ -14,7 +14,7 @@
 
 <script lang="ts">
 import { defineComponent, ref, computed, onMounted, onUnmounted, defineAsyncComponent, watch } from 'vue'
-import { getSlideItems } from '@/api/slide'
+import { getSlideItems } from '@/api/modules/slide'
 import { useSlideStore } from '@/store/slide'
 
 const SlideItem = defineAsyncComponent(() => import('./slide-item.vue'))
@@ -67,7 +67,7 @@ export default defineComponent({
 
     // 获取滑动项数据
     const getSlideItemsData = async (startIndex: number) => {
-      return await getSlideItems(startIndex, props.pageSize)
+      return await getSlideItems({startIndex, pageSize: props.pageSize})
     }
 
     // 刷新滑动列表
