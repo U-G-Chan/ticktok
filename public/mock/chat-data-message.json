@@ -1,0 +1,57 @@
+[
+  {
+    "id": 3,
+    "sender": {
+      "id": 6,
+      "name": "AI小助手",
+      "avatar": "/avatar/AI-Bot-Avatar.jpg",
+      "online": false,
+      "isOfficial": true,
+      "friendType": "aibot"
+    },
+    "text": "你的AI小助手",
+    "time": "09-21",
+    "unread": 0
+  },
+  {
+    "id": 1,
+    "sender": {
+      "id": 1,
+      "name": "何以为家",
+      "avatar": "/avatar/vue-color-avatar-1.png",
+      "online": true,
+      "lastActive": "刚刚",
+      "friendType": "normal"
+    },
+    "text": "你好",
+    "time": "10-10",
+    "unread": 0
+  },
+  {
+    "id": 2,
+    "sender": {
+      "id": 3,
+      "name": "心 之痕",
+      "avatar": "/avatar/vue-color-avatar-3.png",
+      "online": true,
+      "lastActive": "刚刚",
+      "friendType": "normal"
+    },
+    "text": "我找不到了",
+    "time": "10-10",
+    "unread": 2
+  },
+  {
+    "id": 4,
+    "sender": {
+      "id": 7,
+      "name": "系统通知",
+      "avatar": "/avatar/notices-avatar.png",
+      "online": false,
+      "isOfficial": true
+    },
+    "text": "协议修订通知 · 08-31",
+    "time": "08-31",
+    "unread": 1
+  }
+]

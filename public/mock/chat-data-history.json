@@ -1,0 +1,143 @@
+{
+  "chat_0_1": [
+    {
+      "id": 1,
+      "senderId": 1,
+      "receiverId": 0,
+      "isSelf": false,
+      "type": "text",
+      "content": "你看最近抖音上有个挺火的视频",
+      "timestamp": 1686412800000,
+      "status": "read",
+      "sessionId": "chat_0_1"
+    },
+    {
+      "id": 2,
+      "senderId": 0,
+      "receiverId": 1,
+      "isSelf": true,
+      "type": "text",
+      "content": "哪个视频呀",
+      "timestamp": 1686414600000,
+      "status": "read",
+      "sessionId": "chat_0_1"
+    },
+    {
+      "id": 3,
+      "senderId": 1,
+      "receiverId": 0,
+      "isSelf": false,
+      "type": "text",
+      "content": "就是那个...",
+      "timestamp": 1686416400000,
+      "status": "read",
+      "sessionId": "chat_0_1"
+    },
+    {
+      "id": 4,
+      "senderId": 0,
+      "receiverId": 1,
+      "isSelf": true,
+      "type": "voice",
+      "content": "",
+      "duration": "12\"",
+      "timestamp": 1686418200000,
+      "status": "read",
+      "sessionId": "chat_0_1"
+    },
+    {
+      "id": 5,
+      "senderId": 1,
+      "receiverId": 0,
+      "isSelf": false,
+      "type": "image",
+      "content": "/src/assets/images/me-background.jpg",
+      "caption": "是这个",
+      "timestamp": 1686420000000,
+      "status": "read",
+      "sessionId": "chat_0_1"
+    }
+  ],
+  "chat_0_3": [
+    {
+      "id": 1,
+      "senderId": 3,
+      "receiverId": 0,
+      "isSelf": false,
+      "type": "voice",
+      "content": "",
+      "timestamp": 1686580800000,
+      "duration": "5\"",
+      "status": "read",
+      "sessionId": "chat_0_3"
+    },
+    {
+      "id": 2,
+      "senderId": 0,
+      "receiverId": 3,
+      "isSelf": true,
+      "type": "voice",
+      "content": "",
+      "timestamp": 1686582600000,
+      "duration": "10\"",
+      "status": "read",
+      "sessionId": "chat_0_3"
+    },
+    {
+      "id": 3,
+      "senderId": 0,
+      "receiverId": 3,
+      "isSelf": true,
+      "type": "text",
+      "content": "又在刷抖音",
+      "timestamp": 1686584400000,
+      "status": "read",
+      "sessionId": "chat_0_3"
+    },
+    {
+      "id": 4,
+      "senderId": 0,
+      "receiverId": 3,
+      "isSelf": true,
+      "type": "text",
+      "content": "我昨天@你那个视频发给我下",
+      "timestamp": 1686586200000,
+      "status": "read",
+      "sessionId": "chat_0_3"
+    },
+    {
+      "id": 5,
+      "senderId": 3,
+      "receiverId": 0,
+      "isSelf": false,
+      "type": "text",
+      "content": "我找不到了",
+      "timestamp": 1686588000000,
+      "status": "read",
+      "sessionId": "chat_0_3"
+    },
+    {
+      "id": 6,
+      "senderId": 0,
+      "receiverId": 3,
+      "isSelf": true,
+      "type": "text",
+      "content": "我也找不到了我也找不到了我也找不到了我也找不到了我也找不到了我也找不到了我也找不到了我也找不到了我也找不到了",
+      "timestamp": 1686589800000,
+      "status": "read",
+      "sessionId": "chat_0_3"
+    },
+    {
+      "id": 7,
+      "senderId": 3,
+      "receiverId": 0,
+      "isSelf": false,
+      "type": "image",
+      "content": "/src/assets/images/me-background.jpg",
+      "caption": "服了asd",
+      "timestamp": 1686591600000,
+      "status": "sent",
+      "sessionId": "chat_0_3"
+    }
+  ]
+}

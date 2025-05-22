@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import { ChatMessage, getChatHistory, sendMessage, markAsRead, createSessionId } from '@/api/chat'
+import { ChatMessage, getChatHistory, markAsRead, createSessionId } from '@/api/chat'
+import {sendMessage} from '@/api/modules/chat'
 import { useUserStore } from './user'
 
 // 聊天参与者接口

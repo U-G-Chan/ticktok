@@ -1,5 +1,5 @@
 import { get, post, put } from '@/utils/http';
-
+import { createSessionId } from '@/utils/api-tools';
 // 好友类型枚举
 export enum FriendType {
   NORMAL = 'normal',    // 普通好友
@@ -47,6 +47,17 @@ export interface ChatMessage {
  * @returns 好友列表
  */
 export const getFriends = (): Promise<Friend[]> => {
+  //===============================<Mock>=========================================
+  if (import.meta.env.DEV) {
+    return new Promise<Friend[]>((resolve) => {
+      fetch('/mock/chat-data-friend.json')
+        .then(response => response.json())
+        .then(data => {
+          resolve(data as Friend[]);
+        });
+    });
+  }
+  //===============================</Mock>=========================================
   return get<Friend[]>('/chat/friends');
 };
 
@@ -55,6 +66,17 @@ export const getFriends = (): Promise<Friend[]> => {
  * @returns 消息列表
  */
 export const getMessages = (): Promise<Message[]> => {
+  //===============================<Mock>=========================================
+  if (import.meta.env.DEV) {
+    return new Promise<Message[]>((resolve) => {
+      fetch('/mock/chat-data-message.json')
+        .then(response => response.json())
+        .then(data => {
+          resolve(data as Message[]);
+        });
+    });
+  }
+  //===============================</Mock>=========================================
   return get<Message[]>('/chat/messages');
 };
 
@@ -65,6 +87,19 @@ export const getMessages = (): Promise<Message[]> => {
  * @returns 聊天历史记录
  */
 export const getChatHistory = (userId: number, currentUserId: number = 0): Promise<ChatMessage[]> => {
+  //===============================<Mock>=========================================
+  if (import.meta.env.DEV) {
+    return new Promise<ChatMessage[]>((resolve) => {
+      fetch('/mock/chat-data-history.json')
+        .then(response => response.json())
+        .then(data => {
+          const sessionId = createSessionId(userId, currentUserId);
+          resolve(data[sessionId]);
+        });
+    });
+  }
+  //===============================</Mock>=========================================
+  
   return get<ChatMessage[]>('/chat/history', { userId, currentUserId });
 };
 
@@ -74,6 +109,36 @@ export const getChatHistory = (userId: number, currentUserId: number = 0): Promi
  * @returns 发送的消息
  */
 export const sendMessage = (message: Omit<ChatMessage, 'id' | 'status'>): Promise<ChatMessage> => {
+  //===============================<Mock>=========================================
+  if (import.meta.env.DEV) {
+    return new Promise<ChatMessage>((resolve) => {
+      fetch('/mock/chat-data-history.json')
+      .then(response => response.json())
+      .then(data => {
+        // 计算会话ID
+        const senderId = message.senderId;
+        const receiverId = message.receiverId;
+        const sessionId = createSessionId(senderId, receiverId);
+        // 创建新消息
+        const newMessage = {
+          ...message,
+          id: Date.now(),
+          status: 'sent' as const,
+          sessionId: sessionId
+        }
+        if (data[sessionId]) {
+          data[sessionId].push(newMessage);
+        } else {
+          data[sessionId] = [newMessage];
+        }
+        
+
+        resolve(newMessage);
+      });
+    });
+  }
+
+  //===============================</Mock>=========================================
   return post<ChatMessage>('/chat/send', message);
 };
 

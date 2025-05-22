@@ -1,0 +1,57 @@
+[
+    {
+      "id": 1,
+      "name": "何以为家",
+      "avatar": "/avatar/vue-color-avatar-1.png",
+      "online": true,
+      "lastActive": "刚刚",
+      "friendType": "normal"
+    },
+    {
+      "id": 2,
+      "name": "浅唱＼我心",
+      "avatar": "/avatar/vue-color-avatar-2.png",
+      "online": false,
+      "lastActive": "30分钟前",
+      "friendType": "normal"
+    },
+    {
+      "id": 3,
+      "name": "心 之痕",
+      "avatar": "/avatar/vue-color-avatar-3.png",
+      "online": true,
+      "lastActive": "刚刚",
+      "friendType": "normal"
+    },
+    {
+      "id": 4,
+      "name": "铁 _保镖",
+      "avatar": "/avatar/vue-color-avatar-4.png",
+      "online": false,
+      "lastActive": "2小时前",
+      "friendType": "normal"
+    },
+    {
+      "id": 5,
+      "name": "好好先生",
+      "avatar": "/avatar/vue-color-avatar-5.png",
+      "online": true,
+      "lastActive": "刚刚",
+      "friendType": "normal"
+    },
+    {
+      "id": 6,
+      "name": "AI小助手",
+      "avatar": "/avatar/AI-Bot-Avatar.jpg",
+      "online": false,
+      "isOfficial": true,
+      "friendType": "aibot"
+    },
+    {
+      "id": 7,
+      "name": "系统通知",
+      "avatar": "/avatar/notices-avatar.png",
+      "online": false,
+      "isOfficial": true
+    }
+  ]
