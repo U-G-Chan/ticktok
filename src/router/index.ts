@@ -82,6 +82,14 @@ const router = createRouter({
           meta: {
             fullscreen: true
           }
+        },
+        {
+          path: "editor",
+          name: "PublishEditor",
+          component: () => import("@/pages/publish/components/editor"),
+          meta: {
+            fullscreen: true
+          }
         }
       ]
     },

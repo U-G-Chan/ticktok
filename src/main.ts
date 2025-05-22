@@ -3,7 +3,6 @@ import { createPinia } from "pinia";
 import "./style.css";
 import App from "./App.vue";
 import router from "./router";
-import "./assets/iconfont.css";
 import '@icon-park/vue-next/styles/index.css';
 import { install } from '@icon-park/vue-next/es/all';
 import { setupMockWebSocket } from './api/websocket-mock';
