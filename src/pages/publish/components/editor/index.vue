@@ -47,7 +47,7 @@ import MediaPreviewer from './components/MediaPreviewer.vue';
 import InfoEditor from './components/InfoEditor.vue';
 import EditorFooter from './components/EditorFooter.vue';
 import { saveDraft, publishContent } from '@/api/modules/publish';
-import { uploadMultipleFiles } from '@/utils/upload';
+import { uploadMultipleFiles, uploadFile } from '@/utils/upload';
 
 // 导入或定义类型
 interface MediaItem {
@@ -210,8 +210,65 @@ export default defineComponent({
         // 更新时间戳
         formData.updatedAt = Date.now();
         
+        // 收集需要上传的媒体文件
+        const mediaFilesToUpload: { index: number; file: File }[] = [];
+        
+        // 为每个媒体项准备文件
+        for (let i = 0; i < formData.mediaItems.length; i++) {
+          const item = formData.mediaItems[i];
+          // 如果URL是data:开头，说明是base64数据，需要上传
+          if (item.url.startsWith('data:')) {
+            try {
+              const response = await fetch(item.url);
+              const blob = await response.blob();
+              const extension = item.type === 'photo' ? 'jpg' : 'mp4';
+              const file = new File([blob], `file-${item.id}.${extension}`, { 
+                type: item.type === 'photo' ? 'image/jpeg' : 'video/mp4' 
+              });
+              mediaFilesToUpload.push({ index: i, file });
+            } catch (error) {
+              console.error('处理媒体文件失败:', error);
+            }
+          }
+        }
+        
+        // 上传所有媒体文件
+        if (mediaFilesToUpload.length > 0) {
+          try {
+            // 逐个上传文件以获取路径
+            for (const { index, file } of mediaFilesToUpload) {
+              const mediaType = formData.mediaItems[index].type as 'photo' | 'video';
+              // 上传文件并获取路径
+              const uploadedPath = await uploadFile(file, mediaType);
+              
+              // 更新媒体项，使用路径替代base64数据
+              formData.mediaItems[index] = {
+                ...formData.mediaItems[index],
+                url: uploadedPath, // 替换为服务器路径
+                path: uploadedPath // 更新路径
+              };
+            }
+            
+            console.log('所有媒体文件已上传');
+          } catch (uploadError) {
+            console.error('上传媒体文件失败:', uploadError);
+            // 继续保存草稿，但内容可能包含base64数据
+          }
+        }
+        
+        // 准备提交的数据，只包含必要字段
+        const draftData = {
+          ...formData,
+          mediaItems: formData.mediaItems.map(item => ({
+            id: item.id,
+            type: item.type,
+            url: item.url, // 此时url应已替换为服务器路径
+            path: item.path,
+          }))
+        };
+        
         // 调用API保存草稿
-        const result = await saveDraft(formData);
+        const result = await saveDraft(draftData);
         
         if (result.success) {
           console.log('草稿保存成功:', result.draftId);

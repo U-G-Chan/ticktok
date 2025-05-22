@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { Message } from '@/types/publish';
+import { post } from '@/utils/http';
 
 // 模拟API基础URL
 const API_BASE_URL = '/mock/publish';
@@ -7,10 +8,23 @@ const API_BASE_URL = '/mock/publish';
 // 保存草稿
 export const saveDraft = async (data: Message): Promise<{ success: boolean; draftId?: string }> => {
   try {
-    // 在实际环境中会使用axios发送请求
-    // 这里我们模拟将数据写入到public/mock/publish/drafts.json
-    const response = await axios.post(`${API_BASE_URL}/drafts`, data);
-    return { success: true, draftId: response.data.draftId };
+    // 确保只提交路径而非资源本身
+    const submissionData = {
+      ...data,
+      mediaItems: data.mediaItems.map(item => ({
+        id: item.id,
+        type: item.type,
+        path: item.path, // 只提交服务器路径
+        url: item.url     // url已经替换为服务器路径
+      }))
+    };
+
+    // 调用API保存草稿
+    const response = await post<{ success: boolean; draftId: string }>('/publish/drafts', submissionData);
+    return {
+      success: true,
+      draftId: response.draftId
+    };
   } catch (error) {
     console.error('保存草稿失败:', error);
     return { success: false };

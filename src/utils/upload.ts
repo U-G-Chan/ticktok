@@ -1,3 +1,4 @@
+import http from './http';
 
 /**
  * 文件上传函数
@@ -5,30 +6,25 @@
  * @param type 文件类型，用于确定上传路径
  * @returns 上传后的文件URL
  */
-export const uploadFile = async (file: File, _: 'photo' | 'video'): Promise<string> => {
+export const uploadFile = async (file: File, type: 'photo' | 'video'): Promise<string> => {
   try {
-    // 实际环境中这里会使用FormData上传文件
-    // 这里我们模拟上传成功，返回一个模拟的URL
+    // 创建FormData对象
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('type', type);
     
-    // 创建一个随机ID作为文件名
-    const fileId = Math.random().toString(36).substring(2, 15);
-    const fileName = file.name;
-    // const fileExt = fileName.split('.').pop();
+    // 设置请求配置，允许发送FormData
+    const config = {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    };
     
-    // 模拟上传路径
-    const uploadPath = `/media/${fileId}/${fileName}`;
+    // 发送文件上传请求
+    const response = await http.post('/upload/media', formData, config);
     
-    // 在实际环境中，这里会发送文件到服务器
-    // const formData = new FormData();
-    // formData.append('file', file);
-    // const response = await axios.post('/api/upload', formData);
-    // return response.data.url;
-    
-    // 模拟上传成功后返回路径
-    console.log(`模拟上传文件: ${fileName} 到 ${uploadPath}`);
-    
-    // 返回模拟的URL
-    return uploadPath;
+    // 返回服务器响应的文件路径
+    return response.data.path;
   } catch (error) {
     console.error('文件上传失败:', error);
     throw new Error('文件上传失败');
