@@ -3,6 +3,7 @@ import { ref, computed } from 'vue'
 import { ChatMessage, getChatHistory, markAsRead, createSessionId } from '@/api/chat'
 import {sendMessage} from '@/api/modules/chat'
 import { useUserStore } from './user'
+import { getUserInfo } from '@/api/modules/user'
 
 // 聊天参与者接口
 interface ChatParticipant {
@@ -149,19 +150,6 @@ export const useChatStore = defineStore('chat', () => {
     activeSessionId.value = sessionId;
     markSessionAsRead(sessionId);
     return sessionId;
-  }
-
-  // 从API获取用户信息
-  async function getUserInfo(userId: number): Promise<ChatParticipant> {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve({
-          uid: userId,
-          nickname: `用户${userId}`,
-          avatar: `/avatar/vue-color-avatar-${userId % 5 + 1}.png`
-        })
-      }, 200)
-    })
   }
 
   // 加载聊天历史记录

@@ -27,8 +27,9 @@
 <script lang="ts">
 import { defineComponent, ref, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
-import { Friend, Message, getUserInfo } from '@/api/chat'
+import { Friend, Message,  } from '@/api/chat'
 import { getFriends, getMessages } from '@/api/modules/chat'
+import { getUserInfo} from '@/api/modules/user'
 import { useChatStore } from '@/store/chat'
 import { setupMockWebSocket } from '@/api/websocket-mock'
 

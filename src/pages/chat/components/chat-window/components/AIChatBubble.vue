@@ -6,7 +6,7 @@
       <div v-if="!isSelf && message.status !== 'sending'" class="copy-button" @click="copyContent" title="复制内容">
         <icon-copy theme="outline" size="18" fill="#000000"/>
       </div>
-      <div class="ai-message-status" v-if="!isSelf && message.status !== 'sending'">
+      <div class="ai-message-status" v-if="!isSelf">
         <icon-loading-one v-if="message.status === 'sending'" theme="outline" size="20" fill="#000000" />
         <icon-check-one v-else-if="message.status === 'sent'" theme="outline" size="20" fill="#000000" />
         <icon-search v-else-if="message.status === 'read'" theme="outline" size="20" fill="#000000" />

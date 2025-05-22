@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import { UserInfo, getUserInfo } from '@/api/chat'
+import { UserInfo, getUserInfo } from '@/api/modules/user'
+
 
 // 用户状态存储
 export const useUserStore = defineStore('user', () => {
@@ -8,7 +9,8 @@ export const useUserStore = defineStore('user', () => {
   const currentUser = ref<UserInfo>({
     id: 0,
     uid: 0,
-    nickname: '测试用户',
+    username: '测试用户',
+    nickname: '测试用户', 
     avatar: '/avatar/me-avatar.jpg',
     status: 'offline'
   })
@@ -40,6 +42,7 @@ export const useUserStore = defineStore('user', () => {
     currentUser.value = {
       id: 0,
       uid: 0,
+      username: '未登录用户',
       nickname: '未登录用户',
       avatar: '/avatar/default-avatar.png',
       status: 'offline'

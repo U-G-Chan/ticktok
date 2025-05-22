@@ -1,0 +1,70 @@
+{
+  "0": {
+    "id": 0,
+    "uid": 0,
+    "nickname": "测试用户",
+    "avatar": "/avatar/me-avatar.jpg",
+    "status": "online",
+    "lastSeen": "刚刚",
+    "signature": "这是我的个性签名"
+  },
+  "1": {
+    "id": 1,
+    "uid": 1,
+    "nickname": "何以为家",
+    "avatar": "/avatar/vue-color-avatar-1.png",
+    "status": "online",
+    "lastSeen": "刚刚",
+    "signature": "相逢的人会再相逢"
+  },
+  "2": {
+    "id": 2,
+    "uid": 2,
+    "nickname": "浅唱＼我心",
+    "avatar": "/avatar/vue-color-avatar-2.png",
+    "status": "offline",
+    "lastSeen": "30分钟前",
+    "signature": "此生无悔入四月，来世愿做友人A"
+  },
+  "3": {
+    "id": 3,
+    "uid": 3,
+    "nickname": "心 之痕",
+    "avatar": "/avatar/vue-color-avatar-3.png",
+    "status": "online",
+    "lastSeen": "刚刚",
+    "signature": "愿你眼中有星辰，身后有靠山"
+  },
+  "4": {
+    "id": 4,
+    "uid": 4,
+    "nickname": "铁 _保镖",
+    "avatar": "/avatar/vue-color-avatar-4.png",
+    "status": "offline",
+    "lastSeen": "2小时前",
+    "signature": "所有的不期而遇，都是命中注定"
+  },
+  "5": {
+    "id": 5,
+    "uid": 5,
+    "nickname": "好好先生",
+    "avatar": "/avatar/vue-color-avatar-5.png",
+    "status": "online",
+    "lastSeen": "刚刚",
+    "signature": "我不是不想联系你，只是不知道找什么理由"
+  },
+  "6": {
+    "id": 6,
+    "uid": 6,
+    "nickname": "AI小助手",
+    "avatar": "/avatar/AI-Bot-Avatar.jpg",
+    "status": "online"
+  },
+  "7": {
+    "id": 7,
+    "uid": 7,
+    "nickname": "系统通知",
+    "avatar": "/avatar/notices-avatar.png",
+    "status": "online"
+  }
+}

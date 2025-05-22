@@ -4,28 +4,21 @@
       <div v-if="message.type === 'text'" class="message-text">{{ message.content }}</div>
       <div v-else-if="message.type === 'voice'" class="message-voice">
         <template v-if="!isSelf">
-          <i class="icon-voice"></i>
           <span>{{ message.duration }}</span>
         </template>
         <template v-else>
           <span>{{ message.duration }}</span>
-          <i class="icon-voice"></i>
         </template>
       </div>
       <div v-else-if="message.type === 'image'" class="message-image">
         <img :src="message.content" alt="图片消息" @click="onImageClick">
         <div class="image-caption" v-if="message.caption">{{ message.caption }}</div>
       </div>
-      
-      <div class="message-status" v-if="isSelf">
-        <i v-if="message.status === 'sending'" class="icon-sending"></i>
-        <i v-else-if="message.status === 'sent'" class="icon-sent"></i>
-        <i v-else-if="message.status === 'read'" class="icon-read"></i>
-        <i v-else-if="message.status === 'failed'" class="icon-failed"></i>
-      </div>
     </div>
   </div>
 </template>
+
+
 
 <script lang="ts">
 import { defineComponent, PropType } from 'vue'
@@ -48,7 +41,7 @@ export default defineComponent({
     const onImageClick = () => {
       emit('image-click', props.message)
     }
-    
+
     return {
       onImageClick
     }
@@ -61,7 +54,7 @@ export default defineComponent({
   display: flex;
   width: 100%;
   margin: 8px 0;
-  padding: 0 10px; 
+  padding: 0 10px;
   box-sizing: border-box;
 }
 
@@ -74,15 +67,16 @@ export default defineComponent({
 }
 
 .message-bubble {
-  /* max-width: 70%; */
   padding: 10px 12px;
   border-radius: 18px;
   position: relative;
-  background-color: white;
+  background-color: #f0f0f0;
+  transition: background-color 0.3s ease;
 }
 
 .message-bubble.self {
-  background-color: #4e95f3; /* 蓝色 */
+  background-color: #4e95f3;
+  /* 蓝色 */
   color: white;
   border-bottom-right-radius: 4px;
 }
@@ -128,4 +122,4 @@ export default defineComponent({
   font-size: 12px;
   color: #999;
 }
-</style> 
+</style>
