@@ -9,7 +9,7 @@ interface ApiConfig {
 
 // 开发环境API配置
 const devConfig: ApiConfig = {
-  baseURL: 'http://localhost:3000/api',
+  baseURL: 'http://localhost:8080/api',
   timeout: 10000,
 };
 

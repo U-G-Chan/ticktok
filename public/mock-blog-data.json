@@ -1,0 +1,54 @@
+{
+  "id": 2,
+  "authorId": "user_95",
+  "authorName": "时光旅行者",
+  "authorAvatar": "https://picsum.photos/seed/author_2/200/200",
+  "title": "城市漫步的收获",
+  "coverImg": "https://picsum.photos/seed/2_0/400/600",
+  "images": [
+    "https://picsum.photos/seed/2_0/400/600",
+    "https://picsum.photos/seed/2_1/400/600"
+  ],
+  "content": "慢下来，才能发现身边的美好。",
+  "tags": [
+    "#生活",
+    "#护肤"
+  ],
+  "createdAt": "07-26",
+  "likes": 923,
+  "comments": [
+    {
+      "id": "comment_1747874860513_0",
+      "authorId": "user_774",
+      "authorName": "大海",
+      "authorAvatar": "https://picsum.photos/seed/0.09092179950014301/100/100",
+      "content": "太美了，很喜欢这种风格！",
+      "createdAt": "06-14",
+      "location": "西安",
+      "likes": 1
+    },
+    {
+      "id": "comment_1747874860513_1",
+      "authorId": "user_289",
+      "authorName": "小明",
+      "authorAvatar": "https://picsum.photos/seed/0.4178222690812954/100/100",
+      "content": "喜欢这种氛围感，拍得真好",
+      "createdAt": "06-15",
+      "location": "北京",
+      "likes": 9
+    },
+    {
+      "id": "comment_1747874860513_2",
+      "authorId": "user_12",
+      "authorName": "山川",
+      "authorAvatar": "https://picsum.photos/seed/0.06502588277966237/100/100",
+      "content": "已经保存下来了，下次我也要去！",
+      "createdAt": "06-26",
+      "location": "北京",
+      "likes": 9
+    }
+  ],
+  "forwards": 19,
+  "stars": 187,
+  "isFollowing": false
+}

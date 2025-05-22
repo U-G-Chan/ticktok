@@ -40,7 +40,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { getBlogDetail } from '@/api/blog'
+import { getBlogDetail } from '@/api/modules/blog'
 
 // 导入组件
 import BlogHeader from './components/blog-header.vue'

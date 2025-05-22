@@ -53,14 +53,59 @@ export interface Comment {
   replyCount: number;
   replies?: Comment[];
 }
+//===============================<Mock>=========================================
+// 初始化为空数组
+const blogList: Blog[] = [];
 
+// 加载blog-posts.json数据
+async function loadBlogData() {
+  try {
+    const response = await fetch('/mock/blog-data.json');
+    const data = await response.json();
+    
+    // 如果是单个博客对象，将其加入数组
+    if (data && !Array.isArray(data) && data.id) {
+      blogList.push(data);
+    } 
+    // 如果是数组，直接添加
+    else if (Array.isArray(data)) {
+      blogList.push(...data);
+    }
+    // 如果有list属性（分页数据格式）
+    else if (data && Array.isArray(data.list)) {
+      blogList.push(...data.list);
+    }
+    
+    console.log('已加载博客数据:', blogList.length, '条');
+  } catch (error) {
+    console.error('加载博客数据失败:', error);
+  }
+}
+
+// 立即加载数据
+loadBlogData();
+//===============================</Mock>========================================
 /**
  * 获取博客文章列表
  * @param params 查询参数
  * @returns 文章分页数据
  */
 export const getBlogs = (params: BlogQueryParams = {}): Promise<PageData<Blog>> => {
-  return get<PageData<Blog>>('/blog/articles', params);
+  //===============================<Mock>=========================================
+  const page = params.page || 1;
+  const pageSize = params.pageSize || 10;
+  const start = (page - 1) * pageSize;
+  const end = start + pageSize;
+  const pageBlogs = blogList.slice(start, end);
+  return Promise.resolve({
+    list: pageBlogs,
+    total: blogList.length,
+    page,
+    pageSize,
+    hasMore: end < blogList.length
+  });
+  //===============================</Mock>========================================
+  // return get<PageData<Blog>>('/blog/articles', params);
 };
 
 /**
@@ -69,6 +114,14 @@ export const getBlogs = (params: BlogQueryParams = {}): Promise<PageData<Blog>> 
  * @returns 文章详情
  */
 export const getBlogDetail = (id: number): Promise<Blog> => {
+  //===============================<Mock>========================================
+  // 如果blogList已经加载并且包含该ID的博客
+  const blog = blogList.find(item => item.id === id);
+  if (blog) {
+    return Promise.resolve(blog);
+  }
+  //===============================</Mock>========================================
+  // 回退到API请求
   return get<Blog>(`/blog/articles/${id}`);
 };
 

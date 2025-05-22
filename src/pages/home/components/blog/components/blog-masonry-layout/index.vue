@@ -41,8 +41,7 @@
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import BlogItem from './blog-item.vue'
-import { getBlogPosts } from '@/api/blog'
-
+import { getBlogs } from '@/api/modules/blog'
 // 路由
 const router = useRouter()
 
@@ -69,7 +68,7 @@ const fetchBlogs = async () => {
   
   loading.value = true
   try {
-    const res = await getBlogPosts(currentPage.value, pageSize.value)
+    const res = await getBlogs(currentPage.value, pageSize.value)
     blogs.value = [...blogs.value, ...res.list]
     hasMore.value = res.hasMore
     
