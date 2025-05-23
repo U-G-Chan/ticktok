@@ -32,14 +32,14 @@ export const uploadFile = async (file: File, type: 'photo' | 'video'): Promise<U
     };
     
     // 发送文件上传请求
-    const response = await http.post<UploadResponse>('/upload/media', formData, config);
-    
+    const response = await http.post('/upload/media', formData, config) as UploadResponse;
+
     // 检查响应格式
-    if (response && response.data && response.data.code === 200 && response.data.data && response.data.data.length > 0) {
-      return response.data.data[0];
+    if (response && response.code === 200 && response.data && response.data.length > 0) {
+      return response.data[0];
+    } else {
+      throw new Error(response?.msg || '上传失败');
     }
-    
-    throw new Error(response?.data?.msg || '上传失败');
     
   } catch (error) {
     if (error instanceof Error) {
