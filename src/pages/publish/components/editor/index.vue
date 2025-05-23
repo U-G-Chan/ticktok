@@ -44,11 +44,13 @@
 import { defineComponent, ref, reactive, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { usePublishStore } from '@/store/publish';
+import { useUserStore } from '@/store/user';
 import { getFilesystem, Directory } from '@/utils/web-capacitor-adapter';
 import MediaPreviewer from './components/MediaPreviewer.vue';
 import InfoEditor from './components/InfoEditor.vue';
 import EditorFooter from './components/EditorFooter.vue';
 import { saveDraft, publishContent, type PublishMessage, type MediaItem as ApiMediaItem } from '@/api/modules/publish';
+import { createContentItem } from '@/api/modules/userContent';
 import { uploadFile } from '@/utils/upload';
 
 // 导入类型
@@ -88,6 +90,7 @@ export default defineComponent({
   setup() {
     const router = useRouter();
     const publishStore = usePublishStore();
+    const userStore = useUserStore();
     
     // 媒体项列表
     const mediaItems = ref<MediaItem[]>([]);
@@ -108,6 +111,59 @@ export default defineComponent({
     // 通过pinia获取选中的媒体项（原getSelectedFiles函数）
     const getSelectedItems = () => {
       return publishStore.getSelectedItems;
+    };
+    
+    // 获取第一张图片的缩略图URL（后端上传后的URL）
+    const getThumbnailUrl = (uploadedMediaItems: ApiMediaItem[]): string => {
+      // 优先选择第一张图片，如果没有图片则使用第一个媒体项
+      const firstImage = uploadedMediaItems.find(item => item.type === 'photo');
+      const firstItem = firstImage || uploadedMediaItems[0];
+      const baseUrl = 'http://localhost:8080';//@TODO 需要修改为后端地址
+      return baseUrl + firstItem?.url || '';
+    };
+    
+    // 创建用户内容项
+    const createUserContentItem = async (publishId: string, workType: 'draft' | 'published', uploadedMediaItems: ApiMediaItem[]) => {
+      try {
+        const thumbnailUrl = getThumbnailUrl(uploadedMediaItems);
+        
+        // 计算duration：如果有视频则设置默认时长，图片为0
+        const hasVideo = uploadedMediaItems.some(item => item.type === 'video');
+        const duration = hasVideo ? 60 : 0; // 视频默认60秒，图片为0
+        
+        await createContentItem({
+          userId: userStore.userId.toString(),
+          listType: 'works',
+          thumbnail: thumbnailUrl,
+          likes: 0,
+          itemId: publishId,
+          title: formData.title || '无标题',
+          description: formData.description || '',
+          workType: workType,
+          duration: duration,
+          tags: formData.tags,
+          isPublic: formData.visibility === 'public',
+          other: {
+            topics: formData.topics,
+            mentions: formData.mentions,
+            location: formData.location,
+            visibility: formData.visibility,
+            isDaily: formData.isDaily,
+            mediaCount: uploadedMediaItems.length,
+            mediaTypes: uploadedMediaItems.map(item => item.type),
+            hasVideo: hasVideo,
+            publishTime: new Date().toISOString(),
+            createdAt: formData.createdAt,
+            updatedAt: formData.updatedAt,
+            backendMediaItems: uploadedMediaItems // 保存后端媒体项信息
+          }
+        });
+        
+        console.log(`用户内容项创建成功 - 类型: ${workType}, ID: ${publishId}, 缩略图: ${thumbnailUrl}`);
+      } catch (error) {
+        console.error('创建用户内容项失败:', error);
+        // 不影响主流程，只记录错误
+      }
     };
     
     // 处理选中的媒体项
@@ -195,8 +251,12 @@ export default defineComponent({
         // 调用API保存草稿
         const result = await saveDraft(draftData);
         
-        if (result.success) {
+        if (result.success && result.draftId) {
           console.log('草稿保存成功:', result.draftId);
+          
+          // 同时在用户内容中创建草稿项
+          await createUserContentItem(result.draftId, 'draft', uploadedMediaItems);
+          
           alert('草稿保存成功！');
           
           // 清空pinia中的选中项
@@ -294,8 +354,12 @@ export default defineComponent({
         // 调用API发布作品
         const result = await publishContent(publishData);
         
-        if (result.success) {
+        if (result.success && result.publishId) {
           console.log('作品发布成功:', result.publishId);
+          
+          // 同时在用户内容中创建发布项
+          await createUserContentItem(result.publishId, 'published', uploadedMediaItems);
+          
           const message = formData.isDaily ? '朋友日常发布成功！' : '作品发布成功！';
           alert(message);
           
