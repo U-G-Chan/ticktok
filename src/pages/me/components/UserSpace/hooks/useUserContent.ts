@@ -1,6 +1,6 @@
 import { ref, reactive, computed } from 'vue'
-import { ContentItem, ListType, ContentListParams } from '@/types/userContent'
-import { getUserContentList } from '@/api/modules/userContent'
+import { ContentItem, ListType, ContentListParams, CreateContentParams, UpdateContentParams } from '@/types/userContent'
+import { getUserContentList, createContentItem, updateContentItem, deleteContentItem, toggleContentLike } from '@/api/modules/userContent'
 
 // 内容状态管理
 interface ContentState {
@@ -105,6 +105,84 @@ export function useUserContent(userId: string) {
     }
   }
 
+  // 创建新内容
+  const createContent = async (params: CreateContentParams): Promise<ContentItem | null> => {
+    try {
+      const newItem = await createContentItem(params)
+      
+      // 将新创建的内容添加到对应的列表顶部
+      const state = contentStates[params.listType]
+      state.items.unshift(newItem)
+      state.total += 1
+      
+      return newItem
+    } catch (error) {
+      console.error('创建内容失败:', error)
+      throw error
+    }
+  }
+
+  // 更新内容
+  const updateContent = async (params: UpdateContentParams): Promise<ContentItem | null> => {
+    try {
+      const updatedItem = await updateContentItem(params)
+      
+      // 更新所有列表中的对应项
+      Object.values(contentStates).forEach(state => {
+        const index = state.items.findIndex(item => item.itemId === params.itemId)
+        if (index !== -1) {
+          state.items[index] = updatedItem
+        }
+      })
+      
+      return updatedItem
+    } catch (error) {
+      console.error('更新内容失败:', error)
+      throw error
+    }
+  }
+
+  // 删除内容
+  const deleteContent = async (itemId: string): Promise<boolean> => {
+    try {
+      await deleteContentItem(itemId, userId)
+      
+      // 从所有列表中移除对应项
+      Object.values(contentStates).forEach(state => {
+        const index = state.items.findIndex(item => item.itemId === itemId)
+        if (index !== -1) {
+          state.items.splice(index, 1)
+          state.total = Math.max(0, state.total - 1)
+        }
+      })
+      
+      return true
+    } catch (error) {
+      console.error('删除内容失败:', error)
+      throw error
+    }
+  }
+
+  // 切换内容喜欢状态
+  const toggleLike = async (itemId: string, isLiked: boolean): Promise<{ likes: number; isLiked: boolean } | null> => {
+    try {
+      const result = await toggleContentLike(itemId, userId, isLiked)
+      
+      // 更新所有列表中对应项的点赞数
+      Object.values(contentStates).forEach(state => {
+        const item = state.items.find(item => item.itemId === itemId)
+        if (item) {
+          item.likes = result.likes
+        }
+      })
+      
+      return result
+    } catch (error) {
+      console.error('切换喜欢状态失败:', error)
+      throw error
+    }
+  }
+
   // 刷新当前标签内容
   const refreshCurrentContent = () => {
     return loadContent(currentTab.value, true)
@@ -156,13 +234,19 @@ export function useUserContent(userId: string) {
     currentState,
     contentStates,
     
-    // 方法
+    // 查询方法
     switchTab,
     loadContent,
     refreshCurrentContent,
     loadMoreCurrentContent,
     getContentState,
     clearAllContent,
-    init
+    init,
+    
+    // 内容操作方法
+    createContent,
+    updateContent,
+    deleteContent,
+    toggleLike
   }
-} 
+}

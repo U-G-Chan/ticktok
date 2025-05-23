@@ -22,6 +22,37 @@ export interface ContentItem {
   };
 }
 
+// 创建内容项参数接口
+export interface CreateContentParams {
+  userId: string;
+  listType: ListType;
+  thumbnail: string;
+  title?: string;
+  description?: string;
+  workType?: WorkType;
+  duration?: number;
+  tags?: string[];
+  isPublic?: boolean;
+  other?: {
+    [key: string]: any;
+  };
+}
+
+// 更新内容项参数接口
+export interface UpdateContentParams {
+  itemId: string;
+  userId: string;
+  title?: string;
+  description?: string;
+  thumbnail?: string;
+  workType?: WorkType;
+  isPublic?: boolean;
+  tags?: string[];
+  other?: {
+    [key: string]: any;
+  };
+}
+
 // 列表查询参数
 export interface ContentListParams {
   userId: string;
