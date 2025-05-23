@@ -1,6 +1,19 @@
 import axios, { AxiosInstance, InternalAxiosRequestConfig, AxiosResponse, AxiosError } from 'axios';
 import apiConfig from '../config/api.config';
 
+// 不需要认证的接口列表
+const publicApis = [
+  '/upload/media',
+  '/auth/login',
+  '/auth/register',
+  // 可以根据需要添加更多公开接口
+];
+
+// 检查是否是公开接口
+const isPublicApi = (url: string): boolean => {
+  return publicApis.some(api => url.includes(api));
+};
+
 // 创建axios实例
 const http: AxiosInstance = axios.create({
   baseURL: apiConfig.baseURL,
@@ -13,13 +26,18 @@ const http: AxiosInstance = axios.create({
 // 请求拦截器
 http.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
-    // 从localStorage获取token
-    const token = localStorage.getItem('token');
+    // 检查当前请求是否是公开接口
+    const isPublic = isPublicApi(config.url || '');
     
-    // 如果有token则添加到请求头
-    if (token) {
-      config.headers.set('Authorization', `Bearer ${token}`);
+    // 只对非公开接口添加认证
+    if (!isPublic) {
+      const token = localStorage.getItem('token');
+      if (token) {
+        config.headers.set('Authorization', `Bearer ${token}`);
+      }
     }
+    
+    console.log(`请求 ${config.url}: ${isPublic ? '公开接口' : '需要认证'}`);
     
     return config;
   },
@@ -33,22 +51,9 @@ http.interceptors.response.use(
   (response: AxiosResponse) => {
     const res = response.data;
     
-    // 根据实际后端接口定义，可以统一处理错误码
-    if (res.code && res.code !== 200) {
-      // 处理特定的错误码，例如401表示未授权
-      if (res.code === 401) {
-        // 处理未授权情况，比如跳转到登录页
-        console.error('未授权，请重新登录');
-        // 可以在这里执行路由跳转
-        // router.push('/login');
-      }
-      
-      // 返回错误信息
-      return Promise.reject(new Error(res.message || '请求错误'));
-    }
-    
-    // 直接返回数据部分
-    return res.data;
+    // 直接返回响应数据，不进行复杂的错误码判断
+    // 让具体的业务逻辑处理错误
+    return res;
   },
   (error: AxiosError) => {
     console.error('请求出错:', error);
@@ -56,24 +61,19 @@ http.interceptors.response.use(
     // 可以在这里统一处理HTTP错误状态码
     if (error.response) {
       const { status } = error.response;
+      const url = error.config?.url || '';
       
-      switch (status) {
-        case 401:
-          console.error('未授权，请重新登录');
-          // router.push('/login');
-          break;
-        case 403:
-          console.error('拒绝访问');
-          break;
-        case 404:
-          console.error('请求的资源不存在');
-          break;
-        case 500:
-          console.error('服务器错误');
-          break;
-        default:
-          console.error(`请求失败，状态码: ${status}`);
+      console.error(`请求失败，状态码: ${status}, 接口: ${url}`);
+      
+      // 特别处理401错误
+      if (status === 401) {
+        const isPublic = isPublicApi(url);
+        if (!isPublic) {
+          console.warn('🔐 认证失败！请检查Token是否正确设置');
+          console.warn('💡 可以访问 /clear-storage.html 来设置测试Token');
+        }
       }
+      
     } else if (error.request) {
       console.error('网络错误，请检查网络连接');
     } else {
