@@ -1,13 +1,13 @@
 <template>
-  <div>
+  <div class="content-area-container">
     <!-- 内容标签页 -->
     <div class="content-tabs" ref="contentTabs">
       <div 
         v-for="tab in tabs" 
         :key="tab.id" 
         class="tab" 
-        :class="{ active: activeTab === tab.id }"
-        @click="switchTab(tab.id)"
+        :class="{ active: currentTab === tab.id }"
+        @click="handleTabSwitch(tab.id)"
       >
         {{ tab.name }}
       </div>
@@ -15,66 +15,52 @@
 
     <!-- 内容区域 -->
     <div class="content-area">
-      <div v-if="activeTab === 'works'" class="tab-content works-content">
-        <div class="empty-content">
-          <div class="icon-camera-background">
-            <icon-camera theme="outline" size="35" fill="#000000"/>
-          </div>
-          <div class="empty-tip">
-            <div class="tip-title">发作品，留下记忆</div>
-            <div class="tip-desc">开始在TickTok记录生活</div>
-          </div>
-          <div class="publish-btn" @click="handlePublish">去发布</div>
-        </div>
-      </div>
-      
-      <div v-if="activeTab === 'recommend'" class="tab-content recommend-content">
-        <!-- 推荐内容区域 -->
-        <div class="subtabs">
-          <div 
-            v-for="subTab in recommendSubTabs" 
-            :key="subTab.id" 
-            class="subtab" 
-            :class="{ active: activeSubTab === subTab.id }"
-            @click="switchSubTab(subTab.id)"
-          >
-            {{ subTab.name }}
-          </div>
-        </div>
-        
-        <div class="subtab-content">
-          <!-- 子标签内容区 -->
-        </div>
-      </div>
-      
-      <div v-if="activeTab === 'collection'" class="tab-content collection-content">
-        <div class="locked-notice">
-          <i class="icon-lock"></i>
-          <span>内容已设为私密</span>
-        </div>
-      </div>
-      
-      <div v-if="activeTab === 'likes'" class="tab-content likes-content">
-        <!-- 喜欢内容区域 -->
-      </div>
+      <ContentGrid
+          :content-items="currentState.items"
+          :loading="currentState.loading"
+          :has-more="currentState.hasMore"
+          :list-type="currentTab"
+          @item-click="handleItemClick"
+          @empty-action="handleEmptyAction"
+        />
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue'
+import { defineComponent, ref, onMounted, onUnmounted } from 'vue'
+import { useRouter } from 'vue-router'
+import { ContentItem, ListType } from '@/types/userContent'
+import { useUserContent } from './hooks/useUserContent'
+import ContentGrid from './ContentGrid.vue'
 
 export default defineComponent({
   name: 'ContentArea',
+  components: {
+    ContentGrid
+  },
   setup() {
-    const activeTab = ref('works')
+    const router = useRouter()
+    const contentTabs = ref<HTMLElement | null>(null)
     const activeSubTab = ref('videos')
     
+    // 模拟当前用户ID，实际项目中应该从store或路由参数获取
+    const currentUserId = '123456'
+    
+    // 使用内容管理hook
+    const {
+      currentTab,
+      currentState,
+      switchTab,
+      loadMoreCurrentContent,
+      init
+    } = useUserContent(currentUserId)
+    
     const tabs = [
-      { id: 'works', name: '作品' },
-      { id: 'recommend', name: '推荐' },
-      { id: 'collection', name: '收藏' },
-      { id: 'likes', name: '喜欢' }
+      { id: 'works' as ListType, name: '作品' },
+      { id: 'recommend' as ListType, name: '推荐' },
+      { id: 'collection' as ListType, name: '收藏' },
+      { id: 'likes' as ListType, name: '喜欢' }
     ]
     
     const recommendSubTabs = [
@@ -82,35 +68,80 @@ export default defineComponent({
       { id: 'locations', name: '地点' }
     ]
     
-    const contentTabs = ref<HTMLElement | null>(null)
-    
-    const switchTab = (tabId: string) => {
-      activeTab.value = tabId
+    // 处理标签切换
+    const handleTabSwitch = async (tabId: ListType) => {
+      await switchTab(tabId)
     }
     
+    // 处理推荐子标签切换
     const switchSubTab = (subTabId: string) => {
       activeSubTab.value = subTabId
+      // TODO: 根据子标签加载不同内容
     }
     
-    const handlePublish = () => {
-      console.log('去发布按钮点击')
+    // 处理内容项点击
+    const handleItemClick = (item: ContentItem) => {
+      console.log('点击内容项:', item)
+      // TODO: 跳转到内容详情页
+      // router.push(`/content/${item.itemId}`)
     }
+    
+    // 处理空状态按钮点击
+    const handleEmptyAction = (listType: ListType) => {
+      if (listType === 'works') {
+        // 跳转到发布页面
+        router.push('/publish')
+      }
+    }
+    
+    // 滚动加载更多
+    const handleScroll = () => {
+      const scrollTop = window.pageYOffset || document.documentElement.scrollTop
+      const windowHeight = window.innerHeight
+      const documentHeight = document.documentElement.scrollHeight
+      
+      // 距离底部100px时触发加载更多
+      if (scrollTop + windowHeight >= documentHeight - 100) {
+        if (currentState.value.hasMore && !currentState.value.loading) {
+          loadMoreCurrentContent()
+        }
+      }
+    }
+    
+    onMounted(async () => {
+      // 初始化加载内容
+      await init()
+      
+      // 添加滚动事件监听
+      window.addEventListener('scroll', handleScroll)
+    })
+    
+    onUnmounted(() => {
+      // 移除滚动事件监听
+      window.removeEventListener('scroll', handleScroll)
+    })
     
     return {
-      activeTab,
-      activeSubTab,
+      currentTab,
+      currentState,
       tabs,
       recommendSubTabs,
+      activeSubTab,
       contentTabs,
-      switchTab,
+      handleTabSwitch,
       switchSubTab,
-      handlePublish
+      handleItemClick,
+      handleEmptyAction
     }
   }
 })
 </script>
 
 <style scoped>
+.content-area-container {
+  background-color: #fff;
+}
+
 /* 内容标签页 */
 .content-tabs {
   display: flex;
@@ -128,6 +159,8 @@ export default defineComponent({
   font-size: 15px;
   color: #666;
   position: relative;
+  cursor: pointer;
+  transition: color 0.2s ease;
 }
 
 .tab.active {
@@ -145,86 +178,13 @@ export default defineComponent({
   background-color: #000;
 }
 
+.tab:hover {
+  color: #333;
+}
+
 /* 内容区域 */
 .content-area {
   min-height: 400px;
 }
 
-.tab-content {
-  padding: 30px 0;
-}
-
-.empty-content {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.icon-camera-background {
-  font-size: 40px;
-  color: #ddd;
-  margin-bottom: 15px;
-  background-color: #f5f5f5;
-  border-radius: 50%;
-  padding: 15px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.empty-tip {
-  text-align: center;
-  margin-bottom: 20px;
-}
-
-.tip-title {
-  font-weight: bold;
-  margin-bottom: 5px;
-  color: #333;
-}
-
-.tip-desc {
-  color: #999;
-  font-size: 14px;
-}
-
-.publish-btn {
-  padding: 8px 20px;
-  background-color: #fe2c55;
-  color: #fff;
-  border-radius: 20px;
-  font-size: 14px;
-}
-
-.subtabs {
-  display: flex;
-  padding: 5px 15px 15px;
-  gap: 15px;
-}
-
-.subtab {
-  padding: 5px 15px;
-  background-color: #f5f5f5;
-  border-radius: 15px;
-  font-size: 14px;
-  color: #666;
-}
-
-.subtab.active {
-  background-color: #000;
-  color: #fff;
-}
-
-.locked-notice {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  color: #999;
-  padding: 40px 0;
-}
-
-.icon-lock {
-  font-size: 30px;
-  margin-bottom: 10px;
-}
 </style> 
