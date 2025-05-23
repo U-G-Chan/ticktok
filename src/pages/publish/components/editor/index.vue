@@ -43,21 +43,16 @@
 <script lang="ts">
 import { defineComponent, ref, reactive, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
+import { usePublishStore } from '@/store/publish';
+import { getFilesystem, Directory } from '@/utils/web-capacitor-adapter';
 import MediaPreviewer from './components/MediaPreviewer.vue';
 import InfoEditor from './components/InfoEditor.vue';
 import EditorFooter from './components/EditorFooter.vue';
-import { saveDraft, publishContent } from '@/api/modules/publish';
-import { uploadMultipleFiles, uploadFile } from '@/utils/upload';
+import { saveDraft, publishContent, type PublishMessage, type MediaItem as ApiMediaItem } from '@/api/modules/publish';
+import { uploadFile } from '@/utils/upload';
 
-// 导入或定义类型
-interface MediaItem {
-  id: string;
-  type: 'photo' | 'video';
-  url: string;
-  thumbnail?: string;
-  duration?: number;
-  path: string;
-}
+// 导入类型
+import type { MediaItem } from '@/store/publish';
 
 interface Location {
   name: string;
@@ -66,19 +61,21 @@ interface Location {
   latitude?: number;
 }
 
-interface Message {
-  id?: string;
+interface FormData {
   title: string;
   description: string;
-  mediaItems: MediaItem[];
   topics: string[];
   mentions: string[];
   location?: Location;
   tags: string[];
   visibility: 'public' | 'friends' | 'private';
   isDaily: boolean;
-  createdAt?: number;
-  updatedAt?: number;
+  createdAt: number;
+  updatedAt: number;
+}
+
+interface FilesystemInterface {
+  readFile: (options: any) => Promise<{ data: string }>;
 }
 
 export default defineComponent({
@@ -90,15 +87,15 @@ export default defineComponent({
   },
   setup() {
     const router = useRouter();
+    const publishStore = usePublishStore();
     
     // 媒体项列表
     const mediaItems = ref<MediaItem[]>([]);
     
     // 表单数据
-    const formData = reactive<Message>({
+    const formData = reactive<FormData>({
       title: '',
       description: '',
-      mediaItems: [],
       topics: [],
       mentions: [],
       tags: [],
@@ -108,99 +105,22 @@ export default defineComponent({
       updatedAt: Date.now()
     });
     
-    // 从路由参数获取选中的文件
-    const getSelectedFiles = async (): Promise<{ files: File[], mediaItems: MediaItem[] }> => {
-      try {
-        // 从 sessionStorage 中获取文件信息
-        const fileDataStr = sessionStorage.getItem('selectedFiles');
-        if (!fileDataStr) {
-          console.warn('sessionStorage 中没有文件数据');
-          return { files: [], mediaItems: [] };
-        }
-        
-        // 解析文件信息
-        const fileDataArray = JSON.parse(fileDataStr);
-        const files: File[] = [];
-        const mediaItems: MediaItem[] = [];
-        
-        // 处理每个文件
-        for (let i = 0; i < fileDataArray.length; i++) {
-          const fileData = fileDataArray[i];
-          try {
-            // 创建媒体项
-            const mediaItem: MediaItem = {
-              id: `media-${i}`,
-              type: fileData.type.startsWith('image') ? 'photo' : 'video',
-              url: fileData.url,
-              thumbnail: fileData.url,
-              path: fileData.id || `file-${i}`
-            };
-            
-            // 添加到媒体项列表
-            mediaItems.push(mediaItem);
-            
-            // 处理数据URL或者常规URL
-            const response = await fetch(fileData.url);
-            const blob = await response.blob();
-            const file = new File([blob], fileData.name, { type: fileData.type });
-            files.push(file);
-          } catch (error) {
-            console.error('处理文件失败:', error);
-          }
-        }
-        
-        // 清理 sessionStorage
-        sessionStorage.removeItem('selectedFiles');
-        
-        return { files, mediaItems };
-      } catch (error) {
-        console.error('获取文件数据失败:', error);
-        return { files: [], mediaItems: [] };
-      }
+    // 通过pinia获取选中的媒体项（原getSelectedFiles函数）
+    const getSelectedItems = () => {
+      return publishStore.getSelectedItems;
     };
     
-    // 处理上传的文件
-    const processFiles = async () => {
-      try {
-        // 获取选中的文件
-        const { files: selectedFiles, mediaItems: initialMediaItems } = await getSelectedFiles();
-        
-        // 检查是否有文件需要处理
-        if (selectedFiles.length === 0) {
-          console.warn('没有文件可处理');
-          return;
-        }
-        
-        // 更新媒体项列表用于预览
-        mediaItems.value = initialMediaItems;
-        
-        // 上传文件并获取URL
-        const mediaType = initialMediaItems[0].type; // 使用第一个文件的类型作为批量上传的类型
-        
-        try {
-          // 上传文件
-          const uploadedUrls = await uploadMultipleFiles(selectedFiles, mediaType);
-          
-          // 更新媒体项的实际路径
-          const finalMediaItems: MediaItem[] = initialMediaItems.map((item, index) => ({
-            ...item,
-            path: uploadedUrls[index] || item.path,
-            // 保持原始URL用于预览，实际开发中这里应该是服务器返回的URL
-            // url: uploadedUrls[index] || item.url
-          }));
-          
-          // 更新媒体项列表
-          mediaItems.value = finalMediaItems;
-          formData.mediaItems = finalMediaItems;
-        } catch (uploadError) {
-          console.error('上传文件失败:', uploadError);
-          // 即使上传失败，也使用初始媒体项展示
-          mediaItems.value = initialMediaItems;
-          formData.mediaItems = initialMediaItems;
-        }
-        
-      } catch (error) {
-        console.error('处理文件失败:', error);
+    // 处理选中的媒体项
+    const processSelectedItems = () => {
+      const selectedItems = getSelectedItems();
+      if (selectedItems.length > 0) {
+        mediaItems.value = selectedItems;
+        console.log('已获取选中的媒体项:', selectedItems.length, '个');
+      } else {
+        console.warn('没有选中的媒体项');
+        // 可以考虑跳转回Album页面
+        alert('没有选中的媒体项，请返回相册选择');
+        router.push('/publish/album');
       }
     };
     
@@ -210,61 +130,66 @@ export default defineComponent({
         // 更新时间戳
         formData.updatedAt = Date.now();
         
-        // 收集需要上传的媒体文件
-        const mediaFilesToUpload: { index: number; file: File }[] = [];
-        
-        // 为每个媒体项准备文件
-        for (let i = 0; i < formData.mediaItems.length; i++) {
-          const item = formData.mediaItems[i];
-          // 如果URL是data:开头，说明是base64数据，需要上传
-          if (item.url.startsWith('data:')) {
-            try {
-              const response = await fetch(item.url);
-              const blob = await response.blob();
-              const extension = item.type === 'photo' ? 'jpg' : 'mp4';
-              const file = new File([blob], `file-${item.id}.${extension}`, { 
-                type: item.type === 'photo' ? 'image/jpeg' : 'video/mp4' 
-              });
-              mediaFilesToUpload.push({ index: i, file });
-            } catch (error) {
-              console.error('处理媒体文件失败:', error);
-            }
-          }
+        // 获取选中的媒体项
+        const selectedItems = getSelectedItems();
+        if (selectedItems.length === 0) {
+          alert('没有媒体文件可保存');
+          return;
         }
         
-        // 上传所有媒体文件
-        if (mediaFilesToUpload.length > 0) {
+        // 准备上传的媒体项
+        const uploadedMediaItems: ApiMediaItem[] = [];
+        
+        // 通过selectedItems的url读取媒体的真实数据并上传
+        for (const item of selectedItems) {
           try {
-            // 逐个上传文件以获取路径
-            for (const { index, file } of mediaFilesToUpload) {
-              const mediaType = formData.mediaItems[index].type as 'photo' | 'video';
-              // 上传文件并获取路径
-              const uploadedPath = await uploadFile(file, mediaType);
-              
-              // 更新媒体项，使用路径替代base64数据
-              formData.mediaItems[index] = {
-                ...formData.mediaItems[index],
-                url: uploadedPath, // 替换为服务器路径
-                path: uploadedPath // 更新路径
-              };
-            }
+            // 通过IndexedDB获取媒体资源
+            const Filesystem = await getFilesystem() as FilesystemInterface;
+            const fileData = await Filesystem.readFile({
+              path: item.path,
+              directory: Directory.Data
+            });
             
-            console.log('所有媒体文件已上传');
-          } catch (uploadError) {
-            console.error('上传媒体文件失败:', uploadError);
-            // 继续保存草稿，但内容可能包含base64数据
+            // 将base64数据转换为File对象
+            const response = await fetch(`data:${item.type === 'photo' ? 'image/jpeg' : 'video/mp4'};base64,${fileData.data}`);
+            const blob = await response.blob();
+            const file = new File([blob], `${item.id}`, { 
+              type: item.type === 'photo' ? 'image/jpeg' : 'video/mp4' 
+            });
+            
+            // 上传文件到后端
+            const uploadResult = await uploadFile(file, item.type);
+            
+            // 封装成表单中的mediaItems
+            uploadedMediaItems.push({
+              id: uploadResult.id || '',
+              type: uploadResult.type,
+              url: uploadResult.url
+            });
+            
+          } catch (error) {
+            console.error('处理媒体文件失败:', error);
+            // 继续处理其他文件，不中断整个流程
           }
         }
         
-        // 准备提交的数据，只包含必要字段
-        const draftData = {
-          ...formData,
-          mediaItems: formData.mediaItems.map(item => ({
-            id: item.id,
-            type: item.type,
-            url: item.url, // 此时url应已替换为服务器路径
-            path: item.path,
-          }))
+        if (uploadedMediaItems.length === 0) {
+          alert('媒体文件上传失败，无法保存草稿');
+          return;
+        }
+        
+        // 构建表单数据
+        const draftData: PublishMessage = {
+          title: formData.title,
+          description: formData.description,
+          mediaItems: uploadedMediaItems,
+          topics: formData.topics,
+          mentions: formData.mentions,
+          tags: formData.tags,
+          visibility: formData.visibility,
+          isDaily: formData.isDaily,
+          createdAt: formData.createdAt,
+          updatedAt: formData.updatedAt
         };
         
         // 调用API保存草稿
@@ -272,13 +197,14 @@ export default defineComponent({
         
         if (result.success) {
           console.log('草稿保存成功:', result.draftId);
+          alert('草稿保存成功！');
           
-          // 使用confirm确认框
-          if (window.confirm('草稿保存成功，是否返回首页？')) {
-            router.push('/home');
-          }
+          // 清空pinia中的选中项
+          publishStore.clearSelectedItems();
+          
+          // 返回首页
+          router.push('/home');
         } else {
-          console.error('保存草稿失败');
           alert('保存草稿失败，请重试');
         }
       } catch (error) {
@@ -290,11 +216,8 @@ export default defineComponent({
     // 发布朋友日常
     const handlePublishDaily = async () => {
       try {
-        // 设置为朋友日常
         formData.isDaily = true;
-        
-        // 调用发布API
-        await handlePublishContent(true);
+        await handlePublishContent();
       } catch (error) {
         console.error('发布朋友日常失败:', error);
         alert('发布朋友日常失败，请重试');
@@ -302,41 +225,104 @@ export default defineComponent({
     };
     
     // 发布作品
-    const handlePublishContent = async (isDaily = false) => {
+    const handlePublishContent = async () => {
       try {
         // 更新时间戳
         formData.updatedAt = Date.now();
-        formData.isDaily = isDaily;
+        
+        // 获取选中的媒体项
+        const selectedItems = getSelectedItems();
+        if (selectedItems.length === 0) {
+          alert('没有媒体文件可发布');
+          return;
+        }
+        
+        // 准备上传的媒体项
+        const uploadedMediaItems: ApiMediaItem[] = [];
+        
+        // 通过selectedItems的url读取媒体的真实数据并上传
+        for (const item of selectedItems) {
+          try {
+            // 通过IndexedDB获取媒体资源
+            const Filesystem = await getFilesystem() as FilesystemInterface;
+            const fileData = await Filesystem.readFile({
+              path: item.path,
+              directory: Directory.Data
+            });
+            
+            // 将base64数据转换为File对象
+            const response = await fetch(`data:${item.type === 'photo' ? 'image/jpeg' : 'video/mp4'};base64,${fileData.data}`);
+            const blob = await response.blob();
+            const file = new File([blob], `${item.id}`, { 
+              type: item.type === 'photo' ? 'image/jpeg' : 'video/mp4' 
+            });
+            
+            // 上传文件到后端
+            const uploadResult = await uploadFile(file, item.type);
+            
+            // 封装成表单中的mediaItems
+            uploadedMediaItems.push({
+              id: uploadResult.id || '',
+              type: uploadResult.type,
+              url: uploadResult.url
+            });
+            
+          } catch (error) {
+            console.error('处理媒体文件失败:', error);
+          }
+        }
+        
+        if (uploadedMediaItems.length === 0) {
+          alert('媒体文件上传失败，无法发布');
+          return;
+        }
+        
+        // 构建发布数据
+        const publishData: PublishMessage = {
+          title: formData.title,
+          description: formData.description,
+          mediaItems: uploadedMediaItems,
+          topics: formData.topics,
+          mentions: formData.mentions,
+          tags: formData.tags,
+          visibility: formData.visibility,
+          isDaily: formData.isDaily,
+          createdAt: formData.createdAt,
+          updatedAt: formData.updatedAt
+        };
         
         // 调用API发布作品
-        const result = await publishContent(formData);
+        const result = await publishContent(publishData);
         
         if (result.success) {
           console.log('作品发布成功:', result.publishId);
+          const message = formData.isDaily ? '朋友日常发布成功！' : '作品发布成功！';
+          alert(message);
           
-          // 使用confirm确认框
-          const message = isDaily ? '朋友日常发布成功，是否返回首页？' : '作品发布成功，是否返回首页？';
-          if (window.confirm(message)) {
-            router.push('/home');
-          }
+          // 清空pinia中的选中项
+          publishStore.clearSelectedItems();
+          
+          // 返回首页
+          router.push('/home');
         } else {
-          console.error('发布作品失败');
-          alert('发布作品失败，请重试');
+          alert('发布失败，请重试');
         }
       } catch (error) {
         console.error('发布作品失败:', error);
-        alert('发布作品失败，请重试');
+        alert('发布失败，请重试');
       }
     };
     
     // 返回上一页
     const goBack = () => {
+      // 清空选中项
+      publishStore.clearSelectedItems();
       router.push('/publish/album');
     };
     
-    // 组件挂载时处理文件
-    onMounted(async () => {
-      await processFiles();
+    // 组件挂载时处理选中的媒体项
+    onMounted(() => {
+      processSelectedItems();
     });
     
     return {
@@ -354,25 +340,23 @@ export default defineComponent({
 <style scoped>
 .editor-container {
   width: 100%;
-  height: 100vh; /* 使用视口高度确保填满整个屏幕 */
+  height: 100vh;
   display: flex;
   flex-direction: column;
   background-color: #fff;
   position: relative;
-  overflow: hidden; /* 防止内容溢出 */
+  overflow: hidden;
 }
 
-/* 滚动内容区域 */
 .scrollable-content {
   flex: 1;
-  overflow-y: auto; /* 允许内容过多时滚动 */
+  overflow-y: auto;
   overflow-x: hidden;
-  padding-bottom: 15px; /* 为底部留出一些空间 */
-  -webkit-overflow-scrolling: touch; /* 提供惯性滚动 */
-  position: relative; /* 确保子元素相对于这个容器定位 */
+  padding-bottom: 15px;
+  -webkit-overflow-scrolling: touch;
+  position: relative;
 }
 
-/* EditorFooter 固定在底部 */
 .editor-container :deep(.editor-footer) {
   position: sticky;
   bottom: 0;
@@ -383,7 +367,6 @@ export default defineComponent({
   box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
 }
 
-/* 返回按钮样式 */
 .back-button {
   position: absolute;
   top: 15px;
@@ -397,17 +380,5 @@ export default defineComponent({
   z-index: 100;
   cursor: pointer;
   backdrop-filter: blur(2px);
-  -webkit-backdrop-filter: blur(2px);
-  transition: background-color 0.2s;
-}
-
-.back-button:hover {
-  background-color: rgba(0, 0, 0, 0.1);
-}
-
-.back-icon {
-  color: white;
-  font-size: 20px;
-  font-style: normal;
 }
 </style> 

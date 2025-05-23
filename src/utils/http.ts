@@ -37,8 +37,6 @@ http.interceptors.request.use(
       }
     }
     
-    console.log(`请求 ${config.url}: ${isPublic ? '公开接口' : '需要认证'}`);
-    
     return config;
   },
   (error: AxiosError) => {
@@ -50,36 +48,9 @@ http.interceptors.request.use(
 http.interceptors.response.use(
   (response: AxiosResponse) => {
     const res = response.data;
-    
-    // 直接返回响应数据，不进行复杂的错误码判断
-    // 让具体的业务逻辑处理错误
     return res;
   },
   (error: AxiosError) => {
-    console.error('请求出错:', error);
-    
-    // 可以在这里统一处理HTTP错误状态码
-    if (error.response) {
-      const { status } = error.response;
-      const url = error.config?.url || '';
-      
-      console.error(`请求失败，状态码: ${status}, 接口: ${url}`);
-      
-      // 特别处理401错误
-      if (status === 401) {
-        const isPublic = isPublicApi(url);
-        if (!isPublic) {
-          console.warn('🔐 认证失败！请检查Token是否正确设置');
-          console.warn('💡 可以访问 /clear-storage.html 来设置测试Token');
-        }
-      }
-      
-    } else if (error.request) {
-      console.error('网络错误，请检查网络连接');
-    } else {
-      console.error('请求配置错误');
-    }
-    
     return Promise.reject(error);
   }
 );

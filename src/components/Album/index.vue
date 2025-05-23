@@ -28,21 +28,12 @@
 import { defineComponent, ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { getFilesystem, Directory } from '@/utils/web-capacitor-adapter'
+import { usePublishStore, type MediaItem } from '@/store/publish'
 import AlbumHeader from './components/AlbumHeader.vue'
 import AlbumTabs from './components/AlbumTabs.vue'
 import MediaGrid from './components/MediaGrid.vue'
 import MediaPreview from './components/MediaPreview.vue'
 import EmptyState from './components/EmptyState.vue'
-
-interface MediaItem {
-    id: string;
-    type: 'photo' | 'video';
-    url: string;
-    thumbnail?: string;
-    date: Date;
-    duration?: number;
-    path: string;
-}
 
 interface FilesystemInterface {
     readdir: (options: any) => Promise<{ files: any[] }>;
@@ -63,6 +54,7 @@ export default defineComponent({
     },
     setup() {
         const router = useRouter()
+        const publishStore = usePublishStore()
         const activeTab = ref('all')
         const mediaItems = ref<MediaItem[]>([])
         const previewedMedia = ref<MediaItem | null>(null)
@@ -116,11 +108,11 @@ export default defineComponent({
                             items.push({
                                 id: entry.name,
                                 type: isVideo ? 'video' : 'photo',
-                                url,
+                                url, // 这是IndexedDB中的路径
                                 thumbnail: isVideo ? url : undefined,
                                 date,
                                 duration: isVideo ? 0 : undefined,
-                                path: `photos/${entry.name}`
+                                path: `photos/${entry.name}` // 完整路径
                             })
                         } catch (readErr) {
                             console.error('读取文件失败:', readErr)
@@ -159,62 +151,18 @@ export default defineComponent({
         }
         
         // 处理下一步，跳转到编辑器页面
-        const handleNextStep = async (selectedItemIds: string[]) => {
+        const handleNextStep = (selectedItemIds: string[]) => {
             try {
-                // 收集选中的媒体项
+                // 1. 收集选中的媒体项
                 const selectedItems = mediaItems.value.filter(item => 
                     selectedItemIds.includes(item.id)
                 )
                 
-                // 转换为文件对象
-                const files: File[] = []
+                // 2. 通过pinia store管理和储存selectedItems
+                publishStore.setSelectedItems(selectedItems)
                 
-                for (const item of selectedItems) {
-                    try {
-                        // 处理数据URL或者常规URL
-                        if (item.url.startsWith('data:')) {
-                            // 数据URL转为Blob
-                            const response = await fetch(item.url)
-                            const blob = await response.blob()
-                            const file = new File([blob], `file-${item.id}`, { 
-                                type: item.type === 'photo' ? 'image/jpeg' : 'video/mp4' 
-                            })
-                            files.push(file)
-                        } else {
-                            // 常规URL，获取文件
-                            const response = await fetch(item.url)
-                            const blob = await response.blob()
-                            const file = new File([blob], `file-${item.id}`, { 
-                                type: item.type === 'photo' ? 'image/jpeg' : 'video/mp4' 
-                            })
-                            files.push(file)
-                        }
-                    } catch (error) {
-                        console.error('处理文件失败:', error)
-                    }
-                }
-                
-                // 将文件数组传递给编辑器页面
-                router.push({
-                    path: '/publish/editor',
-                    // 使用查询参数传递一些基本信息
-                    query: { 
-                        count: files.length.toString(),
-                        types: selectedItems.map(i => i.type).join(',')
-                    }
-                })
-                
-                // 使用 sessionStorage 临时存储文件数据
-                // 注意：这种方法适用于少量小文件，大文件或大量文件应考虑其他方法
-                sessionStorage.setItem('selectedFiles', JSON.stringify(
-                    selectedItems.map(item => ({
-                        id: item.id,
-                        name: `file-${item.id}`,
-                        type: item.type === 'photo' ? 'image/jpeg' : 'video/mp4',
-                        url: item.url,
-                        isDataUrl: item.url.startsWith('data:')
-                    }))
-                ))
+                // 3. 通过router跳转到editor页面
+                router.push('/publish/editor')
             } catch (error) {
                 console.error('处理选中媒体失败:', error)
                 alert('处理选中媒体失败，请重试')
@@ -278,5 +226,4 @@ export default defineComponent({
     color: #333;
     overflow-y: auto;
 }
-
 </style> 
