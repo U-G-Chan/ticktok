@@ -7,29 +7,39 @@
       <div class="follow-btn">+</div>
     </div>
     <div class="sidebar-item">
-      <div class="icon like-icon" @click="toggleLike">
-        <icon-like theme="filled" size="35" :fill="isLiked ? '#ff4040' : '#fff'" :class="{ 'icon-pop': isLikePop }" />
+      <div class="icon like-icon" @click="handleLike" :class="{ loading: interaction.state.value.loading }">
+        <icon-like 
+          theme="filled" 
+          size="35" 
+          :fill="interaction.state.value.isLiked ? '#ff4040' : '#fff'" 
+          :class="{ 'icon-pop': interaction.state.value.isLikePop }" 
+        />
       </div>
-      <span class="count">{{ formatCount(likes) }}</span>
+      <span class="count">{{ interaction.formatCount(likes) }}</span>
     </div>
     <div class="sidebar-item">
       <div class="icon">
         <!-- <icon-message theme="outline" size="35" fill="#ffffff"/> -->
         <icon-comment theme="filled" size="35" fill="#ffffff"/>
       </div>
-      <span class="count">{{ formatCount(comments) }}</span>
+      <span class="count">{{ interaction.formatCount(comments) }}</span>
     </div>
     <div class="sidebar-item">
-      <div class="icon" @click="toggleStar">
-        <icon-star theme="filled" size="35" :fill="isStarred ? '#ffc107' : '#fff'" :class="{ 'icon-pop': isStarPop }" />
+      <div class="icon" @click="handleStar" :class="{ loading: interaction.state.value.loading }">
+        <icon-star 
+          theme="filled" 
+          size="35" 
+          :fill="interaction.state.value.isStarred ? '#ffc107' : '#fff'" 
+          :class="{ 'icon-pop': interaction.state.value.isStarPop }" 
+        />
       </div>
-      <span class="count">{{ formatCount(stars) }}</span>
+      <span class="count">{{ interaction.formatCount(stars) }}</span>
     </div>
     <div class="sidebar-item">
       <div class="icon">
-        <icon-share-two theme="filled" size="35" fill="#ffffff"  strokeLinejoin="bevel"/>
+        <icon-share-two theme="filled" size="35" fill="#ffffff" strokeLinejoin="bevel"/>
       </div>
-      <span class="count">{{ formatCount(forwards) }}</span>
+      <span class="count">{{ interaction.formatCount(forwards) }}</span>
     </div>
     <div class="sidebar-item">
       <div class="icon music-icon">
@@ -40,7 +50,8 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, onMounted, onUnmounted, watch } from 'vue'
+import { useContentInteraction } from '@/pages/home/hooks/useContentInteraction'
 
 const props = withDefaults(defineProps<{
   avatar: string
@@ -57,42 +68,44 @@ const props = withDefaults(defineProps<{
 })
 
 defineOptions({
-  name: 'VideoSidebar'
+  name: 'PictureSidebar'
 })
 
-const isLiked = ref(false)
-const isStarred = ref(false)
-const isLikePop = ref(false)
-const isStarPop = ref(false)
+// 使用内容交互hook
+const interaction = useContentInteraction()
 
 const opacityStyle = computed(() => {
   if (props.opacity === undefined) return 1
   return Math.max(0.5, props.opacity)
 })
 
-const formatCount = (count: number | undefined) => {
-  if (count === undefined || count === null) return '0'
-  if (count >= 10000) {
-    return (count / 10000).toFixed(1) + '万'
+// 处理点赞
+const handleLike = async () => {
+  await interaction.handleLike()
+}
+
+// 处理收藏
+const handleStar = async () => {
+  await interaction.handleStar()
+}
+
+// 监听当前内容变化，重置状态
+watch(() => interaction.currentItem.value?.id, (newId, oldId) => {
+  if (newId !== oldId) {
+    interaction.resetState()
+    interaction.initializeState()
   }
-  return count.toString()
-}
+})
 
-const toggleLike = () => {
-  isLiked.value = !isLiked.value
-  isLikePop.value = true
-  setTimeout(() => {
-    isLikePop.value = false
-  }, 300)
-}
+// 组件挂载时初始化状态
+onMounted(() => {
+  interaction.initializeState()
+})
 
-const toggleStar = () => {
-  isStarred.value = !isStarred.value
-  isStarPop.value = true
-  setTimeout(() => {
-    isStarPop.value = false
-  }, 300)
-}
+// 组件卸载时清理
+onUnmounted(() => {
+  interaction.resetState()
+})
 </script>
 
 <style scoped>
@@ -162,10 +175,29 @@ const toggleStar = () => {
   justify-content: center;
   cursor: pointer;
   transition: all 0.2s ease;
+  position: relative;
 }
 
 .icon:active {
   transform: scale(0.9);
+}
+
+.icon.loading {
+  pointer-events: none;
+}
+
+.icon.loading::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 20px;
+  height: 20px;
+  border: 2px solid transparent;
+  border-top: 2px solid #fff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
 }
 
 .count {
@@ -191,5 +223,10 @@ const toggleStar = () => {
   100% {
     transform: scale(1);
   }
+}
+
+@keyframes spin {
+  0% { transform: translate(-50%, -50%) rotate(0deg); }
+  100% { transform: translate(-50%, -50%) rotate(360deg); }
 }
 </style> 
