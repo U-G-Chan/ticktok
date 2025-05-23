@@ -27,6 +27,8 @@ export interface CreateContentParams {
   userId: string;
   listType: ListType;
   thumbnail: string;
+  likes: number;
+  itemId: string;
   title?: string;
   description?: string;
   workType?: WorkType;

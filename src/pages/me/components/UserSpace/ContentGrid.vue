@@ -44,7 +44,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType, computed } from 'vue'
+import { defineComponent, PropType, computed, watch } from 'vue'
 import { ContentItem, ListType } from '@/types/userContent'
 import ContentGridItem from './ContentGridItem.vue'
 
@@ -80,6 +80,16 @@ export default defineComponent({
   },
   emits: ['item-click', 'empty-action'],
   setup(props, { emit }) {
+    // 添加调试信息
+    watch(() => [props.contentItems, props.loading, props.listType], ([items, loading, listType]) => {
+      console.log(`[ContentGrid] 状态更新:`, { 
+        listType, 
+        loading, 
+        itemsLength: (items as ContentItem[])?.length || 0,
+        items: items
+      })
+    }, { immediate: true, deep: true })
+    
     // 空状态配置
     const emptyStateConfig = computed((): EmptyStateConfig => {
       switch (props.listType) {

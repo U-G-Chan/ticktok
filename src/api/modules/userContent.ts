@@ -1,13 +1,14 @@
 import { get, post, put, del } from "@/utils/http";
-import { ContentListParams, ContentListResult, ContentItem, CreateContentParams, UpdateContentParams } from "@/types/userContent";
+import { ContentListParams, ContentListResult, ContentItem, CreateContentParams, UpdateContentParams, ApiResponse } from "@/types/userContent";
 
 /**
  * 获取用户内容列表
  * @param params 查询参数
  * @returns 内容列表
  */
-export const getUserContentList = (params: ContentListParams): Promise<ContentListResult> => {
-  return get<ContentListResult>('/user/content/list', params);
+export const getUserContentList = async (params: ContentListParams): Promise<ContentListResult> => {
+  const response = await get<ApiResponse<ContentListResult>>('/user/content/list', params);
+  return response.data;
 };
 
 /**
@@ -15,8 +16,9 @@ export const getUserContentList = (params: ContentListParams): Promise<ContentLi
  * @param params 创建参数
  * @returns 创建的内容项
  */
-export const createContentItem = (params: CreateContentParams): Promise<ContentItem> => {
-  return post<ContentItem>('/user/content/create', params);
+export const createContentItem = async (params: CreateContentParams): Promise<ContentItem> => {
+  const response = await post<ApiResponse<ContentItem>>('/user/content/create', params);
+  return response.data;
 };
 
 /**
@@ -24,8 +26,9 @@ export const createContentItem = (params: CreateContentParams): Promise<ContentI
  * @param params 更新参数
  * @returns 更新后的内容项
  */
-export const updateContentItem = (params: UpdateContentParams): Promise<ContentItem> => {
-  return put<ContentItem>('/user/content/update', params);
+export const updateContentItem = async (params: UpdateContentParams): Promise<ContentItem> => {
+  const response = await put<ApiResponse<ContentItem>>('/user/content/update', params);
+  return response.data;
 };
 
 /**
@@ -34,8 +37,9 @@ export const updateContentItem = (params: UpdateContentParams): Promise<ContentI
  * @param userId 用户ID
  * @returns 删除结果
  */
-export const deleteContentItem = (itemId: string, userId: string): Promise<{ success: boolean; message: string }> => {
-  return del<{ success: boolean; message: string }>('/user/content/delete', { itemId, userId });
+export const deleteContentItem = async (itemId: string, userId: string): Promise<{ success: boolean; message: string }> => {
+  const response = await del<ApiResponse<{ success: boolean; message: string }>>('/user/content/delete', { itemId, userId });
+  return response.data;
 };
 
 /**
@@ -45,6 +49,7 @@ export const deleteContentItem = (itemId: string, userId: string): Promise<{ suc
  * @param isLiked 是否喜欢
  * @returns 更新后的喜欢数
  */
-export const toggleContentLike = (itemId: string, userId: string, isLiked: boolean): Promise<{ likes: number; isLiked: boolean }> => {
-  return post<{ likes: number; isLiked: boolean }>('/user/content/toggle-like', { itemId, userId, isLiked });
+export const toggleContentLike = async (itemId: string, userId: string, isLiked: boolean): Promise<{ likes: number; isLiked: boolean }> => {
+  const response = await post<ApiResponse<{ likes: number; isLiked: boolean }>>('/user/content/toggle-like', { itemId, userId, isLiked });
+  return response.data;
 }; 

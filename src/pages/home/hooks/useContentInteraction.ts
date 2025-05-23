@@ -50,6 +50,8 @@ export function useContentInteraction() {
       userId: currentUserId.value,
       listType,
       thumbnail: item.cover || '', // 使用data.json中的cover字段
+      likes: item.likes || 0, // 添加点赞数
+      itemId: item.itemId || item.id, // 添加itemId
       title: item.title || '',
       description: item.title || '',
       other: {

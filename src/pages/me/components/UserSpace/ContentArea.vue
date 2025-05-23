@@ -30,6 +30,7 @@
 <script lang="ts">
 import { defineComponent, ref, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
+import { useUserStore } from '@/store/user'
 import { ContentItem, ListType } from '@/types/userContent'
 import { useUserContent } from './hooks/useUserContent'
 import ContentGrid from './ContentGrid.vue'
@@ -41,11 +42,12 @@ export default defineComponent({
   },
   setup() {
     const router = useRouter()
+    const userStore = useUserStore()
     const contentTabs = ref<HTMLElement | null>(null)
     const activeSubTab = ref('videos')
     
-    // 模拟当前用户ID，实际项目中应该从store或路由参数获取
-    const currentUserId = '123456'
+    // 从userStore获取当前用户ID
+    const currentUserId = userStore.userId.toString()
     
     // 使用内容管理hook
     const {

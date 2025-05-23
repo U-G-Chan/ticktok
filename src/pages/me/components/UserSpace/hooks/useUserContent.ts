@@ -98,7 +98,7 @@ export function useUserContent(userId: string) {
       state.hasMore = result.hasMore
       
     } catch (error) {
-      console.error('加载内容失败:', error)
+      console.error(`[useUserContent] 加载内容失败:`, { listType, error })
       state.error = error instanceof Error ? error.message : '加载失败'
     } finally {
       state.loading = false
