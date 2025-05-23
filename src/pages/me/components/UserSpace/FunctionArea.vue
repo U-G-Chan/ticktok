@@ -4,7 +4,7 @@
       <div class="func-icon">
         <icon-shopping  theme="outline" size="24" fill="#1e1e1e"/>
       </div>
-      <div class="func-name">抖音商城</div>
+      <div class="func-name">TiTo商城</div>
     </div>
     <div class="function-item" @click="handleFunction('history')">
       <div class="func-icon">
