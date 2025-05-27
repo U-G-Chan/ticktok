@@ -1,7 +1,7 @@
 [
   {
     "id": 1,
-    "image": "/product/product10.jpg",
+    "image": "/product/六神花露水.png",
     "title": "高颜值 咔咔护肤品",
     "headLabel": "品牌正品",
     "labels": [
@@ -17,7 +17,7 @@
   },
   {
     "id": 2,
-    "image": "/product/product2.jpg",
+    "image": "/product/面包车.png",
     "title": "百搭 乐享面包",
     "headLabel": "优选好物",
     "labels": [
@@ -33,7 +33,7 @@
   },
   {
     "id": 3,
-    "image": "/product/product6.jpg",
+    "image": "/product/你的背包.png",
     "title": "超值 咔咔背包",
     "headLabel": "",
     "labels": [],
@@ -46,7 +46,7 @@
   },
   {
     "id": 4,
-    "image": "/product/product3.jpg",
+    "image": "/product/奥特曼书包.png",
     "title": "时尚 悦臻背包",
     "headLabel": "好店合集",
     "labels": [],
@@ -59,7 +59,7 @@
   },
   {
     "id": 5,
-    "image": "/product/product4.jpg",
+    "image": "/product/荔枝.png",
     "title": "精选 品悦水果",
     "headLabel": "",
     "labels": [
@@ -75,7 +75,7 @@
   },
   {
     "id": 6,
-    "image": "/product/product6.jpg",
+    "image": "/product/短裤.png",
     "title": "独家 乐享短裤",
     "headLabel": "",
     "labels": [],
@@ -88,7 +88,7 @@
   },
   {
     "id": 7,
-    "image": "/product/product8.jpg",
+    "image": "/product/薯片.png",
     "title": "新款 优优零食",
     "headLabel": "",
     "labels": [
@@ -104,7 +104,7 @@
   },
   {
     "id": 8,
-    "image": "/product/product6.jpg",
+    "image": "/product/洗发水.png",
     "title": "新款 乐享洗发水",
     "headLabel": "",
     "labels": [],
@@ -117,7 +117,7 @@
   },
   {
     "id": 9,
-    "image": "/product/product4.jpg",
+    "image": "/product/辣条.png",
     "title": "时尚 品悦零食",
     "headLabel": "",
     "labels": [
@@ -132,7 +132,7 @@
   },
   {
     "id": 10,
-    "image": "/product/product8.jpg",
+    "image": "/product/手表.png",
     "title": "热卖 锐步手表",
     "headLabel": "官方旗舰",
     "labels": [],

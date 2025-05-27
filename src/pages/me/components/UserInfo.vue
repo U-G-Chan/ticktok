@@ -5,13 +5,13 @@
     </div>
     <div class="user-info-right">
       <div class="username">
-        <span>用户名</span>
+        <span>开发者用户</span>
         <div class="icon-wrapper">
           <icon-play-one theme="filled" size="14" fill="#ffffff"/>
         </div>
       </div>
       <div class="user-id">
-        <span>抖音号：00000000000</span>
+        <span>TiTo号：00000000000</span>
         <icon-two-dimensional-code-two theme="outline" size="14" fill="#ffffff"/>
       </div>
     </div>

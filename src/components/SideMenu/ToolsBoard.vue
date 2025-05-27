@@ -39,7 +39,7 @@ export default defineComponent({
       { name: '离线缓存', iconName: 'download-two' },
       { name: '稍后再看', iconName: 'folder-plus' },
       { name: '打车', iconName: 'car' },
-      { name: '抖音创作者', iconName: 'tips' },
+      { name: '创作者', iconName: 'tips' },
       { name: '直播广场', iconName: 'monitor' },
       { name: '附近团购', iconName: 'fork-spoon' },
       { name: '放映厅', iconName: 'movie' }

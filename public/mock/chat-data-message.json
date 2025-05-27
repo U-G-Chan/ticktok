@@ -17,7 +17,7 @@
     "id": 1,
     "sender": {
       "id": 1,
-      "name": "何以为家",
+      "name": "我的好友1",
       "avatar": "/avatar/vue-color-avatar-1.png",
       "online": true,
       "lastActive": "刚刚",
@@ -31,7 +31,7 @@
     "id": 2,
     "sender": {
       "id": 3,
-      "name": "心 之痕",
+      "name": "我的好友3",
       "avatar": "/avatar/vue-color-avatar-3.png",
       "online": true,
       "lastActive": "刚刚",

@@ -55,7 +55,7 @@ export interface UserInfo {
 export const mockFriends: Friend[] = [
   {
     id: 1,
-    name: '何以为家',
+    name: '我的好友1',
     avatar: '/avatar/vue-color-avatar-1.png',
     online: true,
     lastActive: '刚刚',
@@ -63,7 +63,7 @@ export const mockFriends: Friend[] = [
   },
   {
     id: 2,
-    name: '浅唱＼我心',
+    name: '我的好友2',
     avatar: '/avatar/vue-color-avatar-2.png',
     online: false,
     lastActive: '30分钟前',
@@ -71,7 +71,7 @@ export const mockFriends: Friend[] = [
   },
   {
     id: 3,
-    name: '心 之痕',
+    name: '我的好友3',
     avatar: '/avatar/vue-color-avatar-3.png',
     online: true,
     lastActive: '刚刚',
@@ -79,7 +79,7 @@ export const mockFriends: Friend[] = [
   },
   {
     id: 4,
-    name: '铁 _保镖',
+    name: '我的好友4',
     avatar: '/avatar/vue-color-avatar-4.png',
     online: false,
     lastActive: '2小时前',
@@ -87,7 +87,7 @@ export const mockFriends: Friend[] = [
   },
   {
     id: 5,
-    name: '好好先生',
+    name: '我的好友5',
     avatar: '/avatar/vue-color-avatar-5.png',
     online: true,
     lastActive: '刚刚',
@@ -325,7 +325,7 @@ export const mockUsers: Record<number, UserInfo> = {
   1: {
     id: 1,
     uid: 1,
-    nickname: '何以为家',
+    nickname: '我的好友1',
     avatar: '/avatar/vue-color-avatar-1.png',
     status: 'online',
     lastSeen: '刚刚',
@@ -334,7 +334,7 @@ export const mockUsers: Record<number, UserInfo> = {
   2: {
     id: 2,
     uid: 2,
-    nickname: '浅唱＼我心',
+    nickname: '我的好友2',
     avatar: '/avatar/vue-color-avatar-2.png',
     status: 'offline',
     lastSeen: '30分钟前',
@@ -343,7 +343,7 @@ export const mockUsers: Record<number, UserInfo> = {
   3: {
     id: 3,
     uid: 3,
-    nickname: '心 之痕',
+    nickname: '我的好友3',
     avatar: '/avatar/vue-color-avatar-3.png',
     status: 'online',
     lastSeen: '刚刚',
@@ -352,7 +352,7 @@ export const mockUsers: Record<number, UserInfo> = {
   4: {
     id: 4,
     uid: 4,
-    nickname: '铁 _保镖',
+    nickname: '我的好友4',
     avatar: '/avatar/vue-color-avatar-4.png',
     status: 'offline',
     lastSeen: '2小时前',
@@ -361,7 +361,7 @@ export const mockUsers: Record<number, UserInfo> = {
   5: {
     id: 5,
     uid: 5,
-    nickname: '好好先生',
+    nickname: '我的好友5',
     avatar: '/avatar/vue-color-avatar-5.png',
     status: 'online',
     lastSeen: '刚刚',

@@ -50,7 +50,7 @@ const menuItems = [
   { text: '大牌试用', icon: 'icon-theme' },
   { text: '跟榜买', icon: 'icon-ranking-list' },
   { text: '附近美食', icon: 'icon-drumstick' },
-  { text: '抖音月付', icon: 'icon-consume' },
+  { text: 'TiTo月付', icon: 'icon-consume' },
   { text: '关注店铺', icon: 'icon-application' },
   { text: '全球购', icon: 'icon-world' },
   { text: '品牌会员', icon: 'icon-vip' },
