@@ -1,7 +1,21 @@
 {
   "name": "ticktok",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.1.0",
+  "description": "",
+  "license": "MIT",
+  "author": "ugchan000@gmail.com",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/U-G-Chan/ticktok.git"
+  },
+  "keywords": [
+    "vite",
+    "vue",
+    "pinia",
+    "frontend",
+    "mobile"
+  ],
   "type": "module",
   "scripts": {
     "dev": "vite",
