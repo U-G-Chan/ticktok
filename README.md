@@ -38,6 +38,10 @@
   - 构建：yarn build（或 npm run build / pnpm build）
   - 预览：npx vite preview --host
 
+
+- 后端服务：
+  - https://github.com/U-G-Chan/ticktok-service.git
+
 - 可选说明：
   - 聊天模块默认使用演示/本地模式；如需接入真实后端，请在对应 Store/Service 中将 WebSocket 地址替换为你的服务地址。
   - 需要相机能力时，Web 会自动回退到浏览器实现（基于 input capture + IndexedDB），无需真机即可调试拍摄/相册核心流程。
