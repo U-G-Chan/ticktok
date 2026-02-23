@@ -5,7 +5,7 @@ export abstract class BaseEffectService {
     protected glProgram: WebGLProgram | null = null
     protected glTexture: WebGLTexture | null = null
     protected glBuffer: WebGLBuffer | null = null
-    protected canvasElement: HTMLCanvasElement | null = null
+    protected canvasElement: HTMLCanvasElement | null=null
     protected isInitialized = false
 
     /**
