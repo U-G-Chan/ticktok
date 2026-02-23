@@ -1,6 +1,9 @@
+
+
 # 仿抖音短视频社交 APP（TickTok）
 
 一个全栈开发练习项目。
+
 参考抖音的产品形态，尝试在可控范围内还原其核心功能；受限于精力与个人技术水平，对部分技术细节进行了有意识的取舍与简化。
 
 ## 项目架构
@@ -9,40 +12,48 @@
 
 - 前端：Vue 3 + TypeScript + Vite + Pinia + Vue Router
 - 后端：Go(Gin/GORM/Viper/Zap) + MySQL/Redis/MinIO
-  本仓库为前端代码，后端代码请参考 [https://github.com/U-G-Chan/ticktok-service](https://github.com/U-G-Chan/ticktok-service)。
+
+本仓库为前端代码，后端代码请参考 [https://github.com/U-G-Chan/ticktok-service](https://github.com/U-G-Chan/ticktok-service)。
 
 采用本地离线数据，不请求官方 API。
 
 ## 效果预览
-
+<!-- 
+https://github.com/user-attachments/assets/014e1384-15e1-4cd0-9f3b-e8f548d51f39
+https://github.com/user-attachments/assets/acf9fb86-b036-483f-ac87-2b2e1fc486e3
+https://github.com/user-attachments/assets/2d70f15a-67e3-44f3-9e21-96eb154abe61
+https://github.com/user-attachments/assets/f0053509-65c3-4103-b27e-3ab920d4518b
+https://github.com/user-attachments/assets/0d17a55e-cab6-4afc-9312-71beec1ed224
+https://github.com/user-attachments/assets/0e48dd77-6234-4f47-8a84-c9c153657972
+--> 
 <table>
   <tr>
     <td align="center">
-      <video src="./doc/readme/effect_preview/1.mp4" autoplay controls muted width="240"></video>
+      <video src="https://github.com/user-attachments/assets/014e1384-15e1-4cd0-9f3b-e8f548d51f39" autoplay controls muted width="240"></video>
       <div>1. 主页推荐</div>
     </td>
     <td align="center">
-      <video src="./doc/readme/effect_preview/2.mp4" autoplay controls muted width="240"></video>
+      <video src="https://github.com/user-attachments/assets/acf9fb86-b036-483f-ac87-2b2e1fc486e3" autoplay controls muted width="240"></video>
       <div>2. 侧栏/商城/博客</div>
     </td>
   </tr>
   <tr>
     <td align="center">
-      <video src="./doc/readme/effect_preview/3.mp4" autoplay controls muted width="240"></video>
+      <video src="https://github.com/user-attachments/assets/2d70f15a-67e3-44f3-9e21-96eb154abe61" autoplay controls muted width="240"></video>
       <div>3. 点赞收藏</div>
     </td>
     <td align="center">
-      <video src="./doc/readme/effect_preview/4.mp4" autoplay controls muted width="240"></video>
+      <video src="https://github.com/user-attachments/assets/f0053509-65c3-4103-b27e-3ab920d4518b" autoplay controls muted width="240"></video>
       <div>4. Chatbot</div>
     </td>
   </tr>
   <tr>
     <td align="center">
-      <video src="./doc/readme/effect_preview/5.mp4" autoplay controls muted width="240"></video>
+      <video src="https://github.com/user-attachments/assets/0d17a55e-cab6-4afc-9312-71beec1ed224" autoplay controls muted width="240"></video>
       <div>5. 拍摄/滤镜</div>
     </td>
     <td align="center">
-      <video src="./doc/readme/effect_preview/6.mp4" autoplay controls muted width="240"></video>
+      <video src="https://github.com/user-attachments/assets/0e48dd77-6234-4f47-8a84-c9c153657972" autoplay controls muted width="240"></video>
       <div>6. 发表作品</div>
     </td>
   </tr>
