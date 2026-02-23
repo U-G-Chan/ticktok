@@ -1,74 +1,93 @@
 # 仿抖音短视频社交 APP（TickTok）
 
-一个用于前端综合能力练习的个人项目，参考抖音的产品形态，围绕“短视频/图片浏览、内容发布、商城、社交聊天”等场景，系统性实践移动端 Web 的工程化、组件化与多媒体特效能力。
+一个全栈开发练习项目。
+参考抖音的产品形态，尝试在可控范围内还原其核心功能；受限于精力与个人技术水平，对部分技术细节进行了有意识的取舍与简化。
 
+## 项目架构
 
-一、项目简介与技术栈
+采用前后端分离架构：
 
-- 项目定位：个人练习项目，仿抖音的移动端短视频社交应用（前端部分）。
-- 核心技术：
-  - 框架与语言：Vue 3、TypeScript、Vite、Pinia、Vue Router
-  - UI/交互：IconPark（icon-park/vue-next）、Swiper（滑动/轮播）、自定义组件（侧边栏、底部导航、二级导航等）
-  - 网络与数据：Axios（统一封装/拦截器）、本地缓存（localStorage、IndexedDB）
-  - 多媒体与能力：
-    - 相机能力：Capacitor Camera（浏览器端提供 Web 适配回退：input capture + IndexedDB 相册模拟）
-    - 特效与滤镜：Canvas/WebGL、Mediapipe FaceMesh（人脸关键点）、自定义滤镜与装饰图层
-    - 媒体处理：@ffmpeg/ffmpeg（WASM 转码/裁剪/截图）
-  - AI/扩展：基于 LangChain 的多模型接入（未配置密钥时走演示模式）
-- 说明：本项目前端以模块化为主，部分业务使用 Mock 数据（博客/商城），便于在无后端依赖环境下完成演示。
+- 前端：Vue 3 + TypeScript + Vite + Pinia + Vue Router
+- 后端：Go(Gin/GORM/Viper/Zap) + MySQL/Redis/MinIO
+  本仓库为前端代码，后端代码请参考 [https://github.com/U-G-Chan/ticktok-service](https://github.com/U-G-Chan/ticktok-service)。
 
+采用本地离线数据，不请求官方 API。
 
-二、运行与构建
+## 效果预览
 
-- 环境准备：
-  - Node.js（建议 18+）
-  - 包管理器（npm / pnpm / yarn 均可）
+<table>
+  <tr>
+    <td align="center">
+      <video src="./doc/readme/effect_preview/1.mp4" autoplay controls muted width="240"></video>
+      <div>1. 主页推荐</div>
+    </td>
+    <td align="center">
+      <video src="./doc/readme/effect_preview/2.mp4" autoplay controls muted width="240"></video>
+      <div>2. 侧栏/商城/博客</div>
+    </td>
+  </tr>
+  <tr>
+    <td align="center">
+      <video src="./doc/readme/effect_preview/3.mp4" autoplay controls muted width="240"></video>
+      <div>3. 点赞收藏</div>
+    </td>
+    <td align="center">
+      <video src="./doc/readme/effect_preview/4.mp4" autoplay controls muted width="240"></video>
+      <div>4. Chatbot</div>
+    </td>
+  </tr>
+  <tr>
+    <td align="center">
+      <video src="./doc/readme/effect_preview/5.mp4" autoplay controls muted width="240"></video>
+      <div>5. 拍摄/滤镜</div>
+    </td>
+    <td align="center">
+      <video src="./doc/readme/effect_preview/6.mp4" autoplay controls muted width="240"></video>
+      <div>6. 发表作品</div>
+    </td>
+  </tr>
+</table>
 
-- 安装依赖：
-  - 进入项目根目录后执行：
-    - yarn install（或 npm install / pnpm install）
+## 快速开始
 
-- 启动开发服务器：
-  - 如果 package.json 配置了脚本：
-    - yarn dev（或 npm run dev / pnpm dev）
-  - 若未配置脚本，可直接使用 Vite：
-    - npx vite --host
+### 拉取项目代码
 
-- 生产构建与本地预览：
-  - 构建：yarn build（或 npm run build / pnpm build）
-  - 预览：npx vite preview --host
+```bash
+git clone https://github.com/U-G-Chan/ticktok.git
+git clone https://github.com/U-G-Chan/ticktok-service.git
+```
 
+### 运行后端服务
 
-- 后端服务：
-  - https://github.com/U-G-Chan/ticktok-service.git
+确保已安装 Go 环境，确保已安装 Docker。
 
-- 可选说明：
-  - 聊天模块默认使用演示/本地模式；如需接入真实后端，请在对应 Store/Service 中将 WebSocket 地址替换为你的服务地址。
-  - 需要相机能力时，Web 会自动回退到浏览器实现（基于 input capture + IndexedDB），无需真机即可调试拍摄/相册核心流程。
+```bash
+cd ticktok-service
+go mod download
+task docker-up
+task run-all
+```
 
+### 运行前端服务
 
-三、菜单与路由布局
+确保已安装 Node.js 环境。
 
-- 一级导航（底部）：
-  - 首页（Home）
-  - 朋友（Friend）
-  - 消息（Chat）
-  - 我（Me）
+```bash
+cd ticktok
+npm install
+npm run dev
+```
 
-- 二级内容导航（首页内部）：
-  - 推荐（Recommend）：主信息流，浏览多媒体内容
-  - 商城（Mall）：商品瀑布流、搜索、购物车等
-  - 经验（Blog/Experience）：图文/博文的瀑布流与详情页
+访问 [http://localhost:3000](http://localhost:3000)，键入 `F12` + `Ctrl+Shift+M` 切换至移动设备视图， 即可查看项目效果。
 
-- 主要路由：
-  - /home：包含 /home/recommend、/home/mall、/home/blog 等子路由
-  - /search：全局搜索或子模块搜索入口
-  - /publish：发布页，含相册（/publish/album）与编辑器（/publish/editor）
-  - /chat：聊天页，含动态会话窗口 /chat/window/:id
-  - /me：个人主页
+## 前端设计
 
+### 菜单与路由布局
 
-四、核心功能与实现亮点
+- 一级导航（底部）：首页Home | 朋友Friend | 发表Publish | 消息Chat | 我的Me
+- 二级内容导航（首页内部）：推荐Recommend | 商城Mall | 经验Blog
+
+### 核心功能与实现亮点
 
 - 架构与工程实践
   - 移动端布局与交互：Flex/Grid 自适应布局；滑块播放流与瀑布流布局组件化封装
@@ -103,8 +122,7 @@
     - 通用存储：localStorage 封装，统一管理
   - 跨域与代理：结合 Vite 与 Axios，按需配置代理解决跨域问题
 
-
-五、后续开发计划
+## 后续开发计划
 
 - 性能优化
   - 媒体展示：图片/视频懒加载、预加载、占位与骨架屏
