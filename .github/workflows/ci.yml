@@ -11,15 +11,12 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    # 让 checkout/setup-node 等 JS Action 使用 Node 24 运行时，避免 Node 20 弃用告警（与下方 node-version 无关）
-    env:
-      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: "20"
           cache: npm
