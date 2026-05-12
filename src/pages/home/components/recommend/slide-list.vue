@@ -3,7 +3,8 @@
     <div class="slide-container" :style="containerStyle">
       <!-- 只渲染可见区域附近的元素 -->
       <slide-item v-for="(item, index) in visibleItems" :key="item.id" :content-type="item.contentType"
-        :item-status="slideStore.getItemStatus(visibleStartIndex + index)" :style="getItemStyle(visibleStartIndex + index)">
+        :item-status="slideStore.getItemStatus(visibleStartIndex + index)"
+        :style="getItemStyle(visibleStartIndex + index)">
         <template #default="{ itemStatus }">
           <component :is="getContentComponent(item.contentType)" :data="item" :item-status="itemStatus" />
         </template>
@@ -14,7 +15,7 @@
 
 <script lang="ts">
 import { defineComponent, ref, computed, onMounted, onUnmounted, defineAsyncComponent, watch } from 'vue'
-import { getSlideItems } from '@/api/modules/slide'
+import { getSlideItems, resetSlideFeedCursor } from '@/api/modules/slide'
 import { useSlideStore } from '@/store/slide'
 
 const SlideItem = defineAsyncComponent(() => import('./slide-item.vue'))
@@ -52,27 +53,28 @@ export default defineComponent({
     const isDragging = ref(false)
     const startX = ref(0)
     const itemHeight = ref(0)
-    
+
     // 可见区域的开始索引
     const visibleStartIndex = ref(0)
     // 可见区域的结束索引
     const visibleEndIndex = ref(props.pageSize - 1)
-    
+
     // 使用Pinia状态管理
     const slideStore = useSlideStore()
     slideStore.setCurrentIndex(props.defaultIndex)
-    
+
     // 设置最大缓存数量
     slideStore.setMaxItemsCount(15)
 
     // 获取滑动项数据
     const getSlideItemsData = async (startIndex: number) => {
-      return await getSlideItems({startIndex, pageSize: props.pageSize})
+      return await getSlideItems({ startIndex, pageSize: props.pageSize })
     }
 
     // 刷新滑动列表
     const refreshSlideList = async () => {
       slideStore.reset()
+      resetSlideFeedCursor()
       const items = await getSlideItemsData(0)
       slideStore.setSlideItems(items)
       updateVisibleRange()
@@ -81,13 +83,12 @@ export default defineComponent({
     // 获取更多滑动项
     const getMoreSlideItems = async () => {
       if (slideStore.slideItems.length === 0) return
+      const newItems = await getSlideItemsData(slideStore.slideItems.length)
 
-      // 获取最后一个元素的 id，并转换为数字
-      const lastItemId = parseInt(slideStore.slideItems[slideStore.slideItems.length - 1].id)
-      const newItems = await getSlideItemsData(lastItemId)
-      
       // 添加到store中
-      slideStore.addItems(newItems)
+      if (newItems.length > 0) {
+        slideStore.addItems(newItems)
+      }
     }
 
     const containerStyle = computed(() => ({
@@ -113,24 +114,24 @@ export default defineComponent({
           return null
       }
     }
-    
+
     // 更新可见区域范围
     const updateVisibleRange = () => {
       const currentIndex = slideStore.currentIndex
       const bufferSize = props.visibleBuffer
-      
+
       // 计算可见区域范围
       visibleStartIndex.value = Math.max(0, currentIndex - bufferSize)
       visibleEndIndex.value = Math.min(slideStore.slideItems.length - 1, currentIndex + bufferSize)
     }
-    
+
     // 计算可见元素
     const visibleItems = computed(() => {
       const start = visibleStartIndex.value
       const end = visibleEndIndex.value
       return slideStore.slideItems.slice(start, end + 1)
     })
-    
+
     // 监听当前索引和数据集变化，更新可见区域
     watch([
       () => slideStore.currentIndex,

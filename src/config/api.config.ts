@@ -9,19 +9,19 @@ interface ApiConfig {
 
 // 开发环境API配置
 const devConfig: ApiConfig = {
-  baseURL: '/api/v1',
+  baseURL: "/api/v1",
   timeout: 10000,
 };
 
 // 测试环境API配置
 const testConfig: ApiConfig = {
-  baseURL: 'https://test-api.example.com/api',
+  baseURL: "https://test-api.example.com/api",
   timeout: 10000,
 };
 
 // 生产环境API配置
 const prodConfig: ApiConfig = {
-  baseURL: 'https://api.example.com/api',
+  baseURL: "https://api.example.com/api",
   timeout: 15000,
 };
 
@@ -31,7 +31,7 @@ let config: ApiConfig;
 if (import.meta.env.PROD) {
   // 生产环境
   config = prodConfig;
-} else if (import.meta.env.MODE === 'test') {
+} else if (import.meta.env.MODE === "test") {
   // 测试环境
   config = testConfig;
 } else {

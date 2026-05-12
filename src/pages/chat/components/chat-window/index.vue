@@ -86,7 +86,7 @@ export default defineComponent({
     const peerInfo = computed(() => chatStore.currentPeer)
     
     // 头像信息
-    const peerAvatar = computed(() => peerInfo.value?.avatar || '/avatar/default-avatar.png')
+    const peerAvatar = computed(() => peerInfo.value?.avatar || '/avatar/me-avatar.jpg')
     const selfAvatar = computed(() => userStore.currentUser.avatar)
     
     // 判断好友类型

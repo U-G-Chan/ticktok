@@ -1,7 +1,20 @@
 import { defineStore } from "pinia";
 import { ref, computed } from "vue";
-import { LoginResult, UserInfo, getCurrentUserInfo, getUserInfo, login as apiLogin, logout as apiLogout, register as apiRegister } from "@/api/modules/user";
-import { clearAuth, getAccessToken, getStoredUserId, setAuth } from "@/utils/auth";
+import {
+  LoginResult,
+  UserInfo,
+  getCurrentUserInfo,
+  getUserInfo,
+  login as apiLogin,
+  logout as apiLogout,
+  register as apiRegister,
+} from "@/api/modules/user";
+import {
+  clearAuth,
+  getAccessToken,
+  getStoredUserId,
+  setAuth,
+} from "@/utils/auth";
 
 // 用户状态存储
 export const useUserStore = defineStore("user", () => {
@@ -11,7 +24,7 @@ export const useUserStore = defineStore("user", () => {
     uid: 0,
     username: "未登录用户",
     nickname: "未登录用户",
-    avatar: "/avatar/default-avatar.png",
+    avatar: "/avatar/me-avatar.jpg",
     status: "offline",
   });
 
@@ -59,7 +72,7 @@ export const useUserStore = defineStore("user", () => {
         uid: 0,
         username: "未登录用户",
         nickname: "未登录用户",
-        avatar: "/avatar/default-avatar.png",
+        avatar: "/avatar/me-avatar.jpg",
         status: "offline",
       };
     } finally {
@@ -70,8 +83,7 @@ export const useUserStore = defineStore("user", () => {
   async function loginWithPassword(username: string, password: string) {
     try {
       await apiRegister({ username, password });
-    } catch {
-    }
+    } catch {}
 
     const resp: LoginResult = await apiLogin({ username, password });
     const code = (resp as any)?.code ?? 0;
@@ -115,8 +127,7 @@ export const useUserStore = defineStore("user", () => {
   async function logout() {
     try {
       await apiLogout();
-    } catch {
-    }
+    } catch {}
     clearAuth();
     syncAuth();
     currentUser.value = {
@@ -124,7 +135,7 @@ export const useUserStore = defineStore("user", () => {
       uid: 0,
       username: "未登录用户",
       nickname: "未登录用户",
-      avatar: "/avatar/default-avatar.png",
+      avatar: "/avatar/me-avatar.jpg",
       status: "offline",
     };
   }

@@ -1,39 +1,14 @@
 <template>
   <div class="video-content">
-    <video-player
-      ref="videoPlayerRef"
-      :video-url="props.data.videoUrl"
-      :item-status="props.itemStatus"
-      :is-first-video="isFirstVideo"
-      @drag-start="handleDragStart"
-      @drag-move="handleDragMove"
-      @drag-end="handleDragEnd"
-      @timeupdate="handleTimeUpdate"
-      @is-paused-change="handlePausedChange"
-    />
-    <video-sidebar
-      :avatar="props.data.avatar"
-      :likes="props.data.likes"
-      :comments="props.data.comments"
-      :stars="props.data.stars"
-      :forwards="props.data.forwards"
-      :is-liked="isLiked"
-      :is-paused="isPaused"
-      :opacity="overlayOpacity"
-      @toggleLike="handleToggleLike"
-    />
-    <video-footer
-      :author="props.data.author"
-      :title="props.data.title"
-      :labels="props.data.labels"
-      :description="props.data.description"
-      :opacity="overlayOpacity"
-    />
-    <video-progress 
-      :progress="progress" 
-      :is-paused="isPaused"
-      @progress-change="handleProgressChange"
-    />
+    <video-player ref="videoPlayerRef" :video-url="props.data.videoUrl" :item-status="props.itemStatus"
+      :is-first-video="isFirstVideo" @drag-start="handleDragStart" @drag-move="handleDragMove" @drag-end="handleDragEnd"
+      @timeupdate="handleTimeUpdate" @is-paused-change="handlePausedChange" />
+    <video-sidebar :avatar="props.data.avatar" :likes="props.data.likes" :comments="props.data.comments"
+      :stars="props.data.stars" :forwards="props.data.forwards" :is-liked="isLiked" :is-paused="isPaused"
+      :opacity="overlayOpacity" @toggleLike="handleToggleLike" />
+    <video-footer :author="props.data.author" :title="props.data.title" :labels="props.data.labels"
+      :description="props.data.description" :opacity="overlayOpacity" />
+    <video-progress :progress="progress" :is-paused="isPaused" @progress-change="handleProgressChange" />
   </div>
 </template>
 
@@ -61,7 +36,7 @@ const isLiked = ref(false)
 
 // 计算是否是第一个视频
 const isFirstVideo = computed(() => {
-  return props.data.id === '1' // 假设第一个视频的 id 为 '1'
+  return props.data.isFirstVideo === true || props.data.id === '1'
 })
 
 const handleDragStart = (e: TouchEvent) => {
@@ -132,7 +107,8 @@ defineOptions({
 .video-controls {
   position: absolute;
   left: 12px;
-  bottom: calc(2px + 12px); /* 进度条高度 + 原来的底部间距 */
+  bottom: calc(2px + 12px);
+  /* 进度条高度 + 原来的底部间距 */
   z-index: 1;
   display: flex;
   align-items: center;
@@ -160,4 +136,4 @@ defineOptions({
   color: #fff;
   font-weight: 500;
 }
-</style> 
+</style>

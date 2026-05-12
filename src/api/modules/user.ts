@@ -60,7 +60,7 @@ const toUserInfo = (u: BackendUser): UserInfo => {
     uid: u.id,
     username: u.name,
     nickname: u.name,
-    avatar: u.avatar || "/avatar/default-avatar.png",
+    avatar: u.avatar || "/avatar/me-avatar.jpg",
     signature: u.signature || "",
     status: "online",
   };
