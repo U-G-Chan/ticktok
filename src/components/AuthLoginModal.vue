@@ -28,6 +28,7 @@
 <script lang="ts">
 import { defineComponent, ref, watch } from "vue";
 import { useUserStore } from "@/store/user";
+import { defaultAuth } from "@/config/auth.config";
 
 export default defineComponent({
   name: "AuthLoginModal",
@@ -39,8 +40,8 @@ export default defineComponent({
   },
   setup(props) {
     const userStore = useUserStore();
-    const username = ref("ticktok_test");
-    const password = ref("123456");
+    const username = ref(defaultAuth.username);
+    const password = ref(defaultAuth.password);
     const loading = ref(false);
     const errorText = ref("");
 
