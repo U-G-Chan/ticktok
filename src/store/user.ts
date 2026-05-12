@@ -1,6 +1,7 @@
 import { defineStore } from "pinia";
 import { ref, computed } from "vue";
-import { UserInfo, getUserInfo } from "@/api/modules/user";
+import { LoginResult, UserInfo, getCurrentUserInfo, getUserInfo, login as apiLogin, logout as apiLogout, register as apiRegister } from "@/api/modules/user";
+import { clearAuth, getAccessToken, getStoredUserId, setAuth } from "@/utils/auth";
 
 // 用户状态存储
 export const useUserStore = defineStore("user", () => {
@@ -8,19 +9,96 @@ export const useUserStore = defineStore("user", () => {
   const currentUser = ref<UserInfo>({
     id: 0,
     uid: 0,
-    username: "测试用户",
-    nickname: "测试用户",
-    avatar: "/avatar/me-avatar.jpg",
+    username: "未登录用户",
+    nickname: "未登录用户",
+    avatar: "/avatar/default-avatar.png",
     status: "offline",
   });
 
+  const ready = ref(false);
+  const accessToken = ref<string | null>(getAccessToken());
+
+  const syncAuth = () => {
+    accessToken.value = getAccessToken();
+  };
+
+  window.addEventListener("auth-changed", syncAuth);
+
   // 登录状态
-  const isLoggedIn = computed(() => currentUser.value.uid >= 0);
+  const isLoggedIn = computed(() => Boolean(accessToken.value));
 
   // 获取当前用户ID
   const userId = computed(() => currentUser.value.uid);
 
-  // 设置当前用户(模拟登录)
+  async function bootstrap() {
+    syncAuth();
+    const token = getAccessToken();
+    const uid = getStoredUserId();
+    if (!token || !uid) {
+      ready.value = true;
+      return;
+    }
+
+    currentUser.value = {
+      ...currentUser.value,
+      id: uid,
+      uid,
+      status: "online",
+    };
+
+    try {
+      const userInfo = await getCurrentUserInfo();
+      currentUser.value = {
+        ...userInfo,
+        status: "online",
+      };
+    } catch {
+      clearAuth();
+      currentUser.value = {
+        id: 0,
+        uid: 0,
+        username: "未登录用户",
+        nickname: "未登录用户",
+        avatar: "/avatar/default-avatar.png",
+        status: "offline",
+      };
+    } finally {
+      ready.value = true;
+    }
+  }
+
+  async function loginWithPassword(username: string, password: string) {
+    try {
+      await apiRegister({ username, password });
+    } catch {
+    }
+
+    const resp: LoginResult = await apiLogin({ username, password });
+    const code = (resp as any)?.code ?? 0;
+    if (!resp || code !== 0) {
+      throw new Error(resp?.msg || "登录失败");
+    }
+
+    setAuth({
+      accessToken: resp.access_token,
+      refreshToken: resp.refresh_token,
+      userId: resp.user_id,
+    });
+    syncAuth();
+
+    try {
+      const userInfo = await getCurrentUserInfo();
+      currentUser.value = {
+        ...userInfo,
+        status: "online",
+      };
+      return true;
+    } catch (error) {
+      clearAuth();
+      return false;
+    }
+  }
+
   async function login(userId: number) {
     try {
       const userInfo = await getUserInfo(userId);
@@ -28,18 +106,19 @@ export const useUserStore = defineStore("user", () => {
         ...userInfo,
         status: "online",
       };
-      console.log(
-        `[User] 用户已登录: ${userInfo.nickname}(ID:${userInfo.uid})`
-      );
       return true;
-    } catch (error) {
-      console.error("[User] 登录失败:", error);
+    } catch {
       return false;
     }
   }
 
-  // 模拟退出登录
-  function logout() {
+  async function logout() {
+    try {
+      await apiLogout();
+    } catch {
+    }
+    clearAuth();
+    syncAuth();
     currentUser.value = {
       id: 0,
       uid: 0,
@@ -48,7 +127,6 @@ export const useUserStore = defineStore("user", () => {
       avatar: "/avatar/default-avatar.png",
       status: "offline",
     };
-    console.log("[User] 用户已退出登录");
   }
 
   // 模拟更新用户信息
@@ -63,6 +141,9 @@ export const useUserStore = defineStore("user", () => {
     currentUser,
     isLoggedIn,
     userId,
+    ready,
+    bootstrap,
+    loginWithPassword,
     login,
     logout,
     updateUserInfo,

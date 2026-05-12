@@ -24,8 +24,11 @@ export interface LoginParams {
 
 // 登录响应结果接口
 export interface LoginResult {
-  token: string;
-  userInfo: UserInfo;
+  code?: number;
+  msg: string;
+  user_id: number;
+  access_token: string;
+  refresh_token: string;
 }
 
 // 注册请求参数接口
@@ -37,13 +40,39 @@ export interface RegisterParams {
   phone?: string;
 }
 
+type BackendUser = {
+  id: number;
+  name: string;
+  avatar?: string;
+  background_image?: string;
+  signature?: string;
+};
+
+type BackendUserInfoResponse = {
+  code?: number;
+  msg: string;
+  user: BackendUser;
+};
+
+const toUserInfo = (u: BackendUser): UserInfo => {
+  return {
+    id: u.id,
+    uid: u.id,
+    username: u.name,
+    nickname: u.name,
+    avatar: u.avatar || "/avatar/default-avatar.png",
+    signature: u.signature || "",
+    status: "online",
+  };
+};
+
 /**
  * 用户登录
  * @param params 登录参数
  * @returns 登录结果，包含token和用户信息
  */
 export const login = (params: LoginParams): Promise<LoginResult> => {
-  return post<LoginResult>("/user/login", params);
+  return post<LoginResult>("/auth/login", params);
 };
 
 /**
@@ -52,15 +81,16 @@ export const login = (params: LoginParams): Promise<LoginResult> => {
  * @returns 注册结果
  */
 export const register = (params: RegisterParams): Promise<LoginResult> => {
-  return post<LoginResult>("/user/register", params);
+  return post<LoginResult>("/auth/register", params);
 };
 
 /**
  * 获取当前用户信息
  * @returns 用户信息
  */
-export const getCurrentUserInfo = (): Promise<UserInfo> => {
-  return get<UserInfo>("/user/info");
+export const getCurrentUserInfo = async (): Promise<UserInfo> => {
+  const resp = await get<BackendUserInfoResponse>("/user/info");
+  return toUserInfo(resp.user);
 };
 
 /**
@@ -79,8 +109,10 @@ export const getUserInfo = (userId: number): Promise<UserInfo> => {
     });
   }
   //===============================</Mock>=========================================
-  return get<UserInfo>('/user/userInfo', { userId });
-}
+  return get<BackendUserInfoResponse>("/user/info", { user_id: userId }).then(
+    (resp) => toUserInfo(resp.user),
+  );
+};
 
 /**
  * 更新当前用户信息
@@ -88,7 +120,7 @@ export const getUserInfo = (userId: number): Promise<UserInfo> => {
  * @returns 更新后的用户信息
  */
 export const updateUserInfo = (
-  userInfo: Partial<UserInfo>
+  userInfo: Partial<UserInfo>,
 ): Promise<UserInfo> => {
   return put<UserInfo>("/user/info", userInfo);
 };
@@ -101,7 +133,7 @@ export const updateUserInfo = (
  */
 export const changePassword = (
   oldPassword: string,
-  newPassword: string
+  newPassword: string,
 ): Promise<void> => {
   return post<void>("/user/password", { oldPassword, newPassword });
 };
@@ -111,5 +143,6 @@ export const changePassword = (
  * @returns 操作结果
  */
 export const logout = (): Promise<void> => {
-  return post<void>("/user/logout");
+  const refreshToken = localStorage.getItem("refresh_token") || "";
+  return post<void>("/auth/logout", { refresh_token: refreshToken });
 };

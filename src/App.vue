@@ -15,22 +15,26 @@
         <div class="side-menu-mask" @click="sideMenuStore.close()"></div>
       </div>
     </template>
+    <AuthLoginModal :visible="showLogin" />
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, watch, computed } from 'vue'
+import { defineComponent, watch, computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import FootNav from '@/components/FootNav.vue'
 import SideMenu from '@/components/SideMenu'
+import AuthLoginModal from '@/components/AuthLoginModal.vue'
 import { useSideMenuStore } from '@/store/sideMenu'
 import { useSlideStore } from '@/store/slide'
+import { useUserStore } from '@/store/user'
 
 export default defineComponent({
   name: 'App',
   components: {
     FootNav,
-    SideMenu
+    SideMenu,
+    AuthLoginModal
   },
   setup() {
     // 使用路由
@@ -46,6 +50,9 @@ export default defineComponent({
     
     // 使用slide的 store
     const slideStore = useSlideStore()
+
+    const userStore = useUserStore()
+    const showLogin = computed(() => userStore.ready && !userStore.isLoggedIn)
     
     // 监听侧边栏状态变化
     watch(() => sideMenuStore.isOpen, (isOpen) => {
@@ -61,10 +68,15 @@ export default defineComponent({
     
     // 添加页面可见性监听
     document.addEventListener('visibilitychange', handleVisibilityChange)
+
+    onMounted(() => {
+      userStore.bootstrap()
+    })
     
     return {
       sideMenuStore,
-      isFullscreenRoute
+      isFullscreenRoute,
+      showLogin
     }
   }
 })
